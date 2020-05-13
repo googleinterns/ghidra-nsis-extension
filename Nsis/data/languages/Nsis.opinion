@@ -1,0 +1,5 @@
+<opinions>
+    <constraint loader="Nsis" compilerSpecID="default">
+    		<constraint primary="1" processor="Nsis"  size="32" variant="default" />
+    </constraint>
+</opinions>
