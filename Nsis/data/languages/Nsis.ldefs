@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language_definitions>
+   <language processor="Nsis"
+            endian="little"
+            size="32"
+            variant="default"
+            version="1.0"
+            slafile="Nsis.sla"
+            processorspec="Nsis.pspec"
+            id="Nsis:LE:32:default">
+    <description>Nsis</description>
+    <compiler name="default" spec="Nsis.cspec" id="default"/>
+  </language> 
+</language_definitions>
