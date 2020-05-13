@@ -11,9 +11,15 @@
 * You can test that everything is working in your project by selecting the `Run`menu, then `Run As` and `Ghidra`.
 * A new instance if Ghidra should be loaded, if you import an NSIS executable file, should see the 'Nsis' Format suggestion in the first entry of the import dialog.
 
+# Building with Gradle
+
+* Ensure the `GHIDRA_INSTALL_DIR` environment variable is set to root directory of the Ghidra installation.
+* In the project root run `gradle buildExtension`.
+* Upon completion a distributable zip file will be located in the dist directory and may be installed through Ghidra's user interface.
+
 # Updating The Disassembler Specification
 
-* If a change is made to Nsis.slaspec, it needs to be reprocessed by the sleight utility. Example commande: `<ghidra installer folder>/support/sleigh data/languages/Nsis.slaspec`
+* If a change is made to Nsis.slaspec, it needs to be reprocessed by the sleight utility. Example command: `<ghidra installer folder>/support/sleigh data/languages/Nsis.slaspec`
 * The newly generated files then need to be moved to the `<ghidra install folder>/Ghidra/Processors/Nsis/`folder.
 
 
