@@ -1,3 +1,5 @@
+**This is not an officially supported Google product.**
+
 # Loading Extension into Eclipse for Development
 
 * Install eclipse from [eclipse.org](https://www.eclipse.org/downloads/)
