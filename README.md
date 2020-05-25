@@ -1,21 +1,51 @@
 **This is not an officially supported Google product.**
 
 # Loading Extension into Eclipse for Development
-
+* Install Java
+  * Tested verison: `jdk-14.0.1`
 * Install eclipse from [eclipse.org](https://www.eclipse.org/downloads/)
+  * Tested version: `2020-03`
+* Install Ghidra
+  * Tested version: `ghidra_9.1.2_PUBLIC`
+  * Ghidra must be started atleast once.
 * Install Ghidra Eclipse extension, follow instructions [here](https://ghidra-sre.org/InstallationGuide.html#Extensions)
-* In eclipse's `File` menu, select `Import...` 
-* Select `Projects from Git` then select the git checkout location.
-* If there are build errors, you might need to fix your build path by right clicking on the project, then `Build Path` and `Configure Build Path` 
-* In the `GhidraDev`menu of Eclipse, use the `Link Ghidra...` and enter the path to the Ghidra binary install location.
+* Checkout git project `ghidra-nsis-extension` to local directory
+* In eclipse's `File` menu, select `New->Java Project`
+* Un-select `Use default location` and navigate to the `nsis` folder in the git
+  checkout location
+  * `ghidra-nsis-extension/nsis`
+* Press `Next`
+* Un-select `Create module-info.java file`
+* Press `Finish`
+  * There will be build errors
+* In the `GhidraDev` menu of Eclipse, use the `Link Ghidra...` and enter the path to the Ghidra binary install location
+  * Select the Java project `nsis` just created
+  * If there is Java conflict probably best to keep the current Java by pressing
+    `Cancel`
+  * Build errors should be resolved
 * You can test that everything is working in your project by selecting the `Run`menu, then `Run As` and `Ghidra`.
-* A new instance if Ghidra should be loaded, if you import an NSIS executable file, should see the 'Nsis' Format suggestion in the first entry of the import dialog.
+* A new instance of Ghidra should be loaded, if you import an NSIS executable file, should see the 'Nsis' Format suggestion in the first entry of the import dialog.
 
 # Updating The Disassembler Specification
 
 * If a change is made to Nsis.slaspec, it needs to be reprocessed by the sleight utility. Example commande: `<ghidra installer folder>/support/sleigh data/languages/Nsis.slaspec`
 * The newly generated files then need to be moved to the `<ghidra install folder>/Ghidra/Processors/Nsis/`folder.
 
+# Build extension from the command line
+
+* Install [gradle](https://gradle.org/)
+  * Tested version: `6.4.1`
+* Execute the command from nsis folder
+```
+$ gradle -PGHIDRA_INSTALL_DIR=<path_to_ghidra>
+```
+* Zip file will be created in the `dist` folder
+
+# Installing extension
+
+* Open Ghidra and select `File->Install Extensions...`
+* Press the `plus` icon in the top right and find the extension zip file
+* Press `OK` you will be prompted to restart Ghidra
 
 # Resources
 
