@@ -47,8 +47,8 @@ import nsis.format.NsisBlockHeader;
 import nsis.format.NsisScriptHeader;
 
 public class NsisLoader extends PeLoader {
-	
-	public final static String NE_NAME = "NSIS Executable (NE)";
+
+	public final static String NE_NAME = "NSIS Executable (PE + NSIS)";
 
 	@Override
 	public String getName() {
@@ -56,23 +56,31 @@ public class NsisLoader extends PeLoader {
 	}
 
 	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException { //TODO call super to handle PE portion of the file
+	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider)
+			throws IOException { // TODO call super to handle PE portion of the
+									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
-		NsisExecutable ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider, SectionLayout.FILE);
-		if(ne.getHeaderOffset() != 0) {
-			LoadSpec my_spec = new LoadSpec(this, 0x400000, new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
+		NsisExecutable ne = NsisExecutable.createNsisExecutable(
+				RethrowContinuesFactory.INSTANCE, provider, SectionLayout.FILE);
+		if (ne.getHeaderOffset() != 0) {
+			LoadSpec my_spec = new LoadSpec(this, 0x400000,
+					new LanguageCompilerSpecPair("Nsis:LE:32:default",
+							"default"),
+					true);
 			loadSpecs.add(my_spec);
 		}
 		return loadSpecs;
 	}
 
 	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program,
-			TaskMonitor monitor, MessageLog log) throws CancelledException, IOException {
+	protected void load(ByteProvider provider, LoadSpec loadSpec,
+			List<Option> options, Program program, TaskMonitor monitor,
+			MessageLog log) throws CancelledException, IOException {
 
-			GenericFactory factory = MessageLogContinuesFactory.create(log);
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory, provider, SectionLayout.FILE);
-		
+		GenericFactory factory = MessageLogContinuesFactory.create(log);
+		NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
+				provider, SectionLayout.FILE);
+
 		try {
 			long nsis_header_offset = ne.getHeaderOffset();
 			if (nsis_header_offset == -1) {
@@ -88,26 +96,34 @@ public class NsisLoader extends PeLoader {
 
 			BinaryReader binary_reader = new BinaryReader(provider, true);
 			binary_reader.setPointerIndex(nsis_header_offset);
-			NsisScriptHeader script_header = new NsisScriptHeader(binary_reader);
+			NsisScriptHeader script_header = new NsisScriptHeader(
+					binary_reader);
 
 			System.out.print("Nsis header initialized!\n");
-			System.out.printf("inf_size: %x\n", script_header.getInflatedHeaderSize());
+			System.out.printf("inf_size: %x\n",
+					script_header.getInflatedHeaderSize());
 			System.out.printf("hdr_size: %x\n", script_header.getArchiveSize());
-			System.out.printf("cmpr_size: %x\n", script_header.getCompressedHeaderSize());
+			System.out.printf("cmpr_size: %x\n",
+					script_header.getCompressedHeaderSize());
 			System.out.printf("flags: %08x\n", script_header.getFlags());
 
-			ghidra.program.model.address.Address script_header_start = program.getAddressFactory()
-					.getDefaultAddressSpace().getAddress(0x0);
+			ghidra.program.model.address.Address script_header_start = program
+					.getAddressFactory().getDefaultAddressSpace()
+					.getAddress(0x0);
 
-			MemoryBlock new_block = mem.createInitializedBlock(".script_header", script_header_start, inputStream,
+			MemoryBlock new_block = mem.createInitializedBlock(".script_header",
+					script_header_start, inputStream,
 					script_header.getInflatedHeaderSize(), monitor, false);
 			new_block.setRead(true);
 			new_block.setWrite(true);
 			new_block.setExecute(true);
 
-			createData(program, program.getListing(), script_header_start, script_header.toDataType());
-			checkHeaderCompression(program, script_header, monitor, inputStream);
-			processBlockHeaders(program, monitor, binary_reader, nsis_header_offset);
+			createData(program, program.getListing(), script_header_start,
+					script_header.toDataType());
+			checkHeaderCompression(program, script_header, monitor,
+					inputStream);
+			processBlockHeaders(program, monitor, binary_reader,
+					nsis_header_offset);
 
 			System.out.printf("Done initializing block headers\n");
 		} catch (Exception e) {
@@ -116,7 +132,8 @@ public class NsisLoader extends PeLoader {
 		}
 	}
 
-	public Data createData(Program program, Listing listing, Address address, DataType dt) {
+	public Data createData(Program program, Listing listing, Address address,
+			DataType dt) {
 		try {
 			Data d = listing.getDataAt(address);
 			if (d == null || !dt.isEquivalent(d.getDataType())) {
@@ -130,8 +147,8 @@ public class NsisLoader extends PeLoader {
 		return null;
 	}
 
-	private void checkHeaderCompression(Program program, NsisScriptHeader header, TaskMonitor monitor,
-			InputStream reader) {
+	private void checkHeaderCompression(Program program,
+			NsisScriptHeader header, TaskMonitor monitor, InputStream reader) {
 		if ((header.getCompressedHeaderSize() & 0x80000000) == 0) {
 			System.out.print("Header is not compressed!\n");
 			return;
@@ -156,21 +173,26 @@ public class NsisLoader extends PeLoader {
 		System.out.print("Header is Z compressed\n");
 	}
 
-	private void processBlockHeaders(Program program, TaskMonitor monitor, BinaryReader reader, long nsis_header_offset) {
+	private void processBlockHeaders(Program program, TaskMonitor monitor,
+			BinaryReader reader, long nsis_header_offset) {
 		int block_header_offset = NsisScriptHeader.getHeaderSize();
 		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
-			System.out.printf("Processing block at offset %08x\n", block_header_offset);
+			System.out.printf("Processing block at offset %08x\n",
+					block_header_offset);
 			ghidra.program.model.address.Address block_address;
-			block_address = program.getAddressFactory().getDefaultAddressSpace().getAddress(block_header_offset);
+			block_address = program.getAddressFactory().getDefaultAddressSpace()
+					.getAddress(block_header_offset);
 
 			reader.setPointerIndex(nsis_header_offset + block_header_offset);
 			NsisBlockHeader block_header = new NsisBlockHeader(reader);
 			System.out.printf("Block index: %d\n", i);
-			System.out.printf("Block number of entries: %d\n", block_header.getNum());
+			System.out.printf("Block number of entries: %d\n",
+					block_header.getNum());
 			System.out.printf("Block offset: %08x\n", block_header.getOffset());
 
 			try {
-				createData(program, program.getListing(), block_address, block_header.toDataType());
+				createData(program, program.getListing(), block_address,
+						block_header.toDataType());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
