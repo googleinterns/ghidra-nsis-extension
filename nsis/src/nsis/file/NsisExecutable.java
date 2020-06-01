@@ -36,19 +36,17 @@ public class NsisExecutable {
 
 	private void findHeaderOffset() {
 		if (this.header_offset == -1) {
-			for (long offset = 0; offset
-					+ NsisConstants.NSIS_MAGIC.length <= this
-							.getFileLength(); offset++) {
-				try {
+			try {
+				for (long offset = 0; offset + NsisConstants.NSIS_MAGIC.length <= reader.length(); offset++) {
 					byte[] content = reader.readByteArray(offset,
 							NsisConstants.NSIS_MAGIC.length);
 					if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
 						this.header_offset = offset;
 						return;
 					}
-				} catch (IOException e) {
-					return;
 				}
+			} catch (IOException e) {
+					return;
 			}
 		}
 	}
