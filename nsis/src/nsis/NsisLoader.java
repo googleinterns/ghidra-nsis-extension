@@ -62,7 +62,7 @@ public class NsisLoader extends PeLoader {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 		NsisExecutable ne = NsisExecutable.createNsisExecutable(
 				RethrowContinuesFactory.INSTANCE, provider, SectionLayout.FILE);
-		if (ne.getHeaderOffset() != 0) {
+		if (ne.getHeaderOffset() != -1) {
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default",
 							"default"),

@@ -57,14 +57,4 @@ public class NsisExecutable {
 		return this.header_offset;
 	}
 
-	public long getFileLength() {
-		if (reader != null) {
-			try {
-				return reader.length();
-			} catch (IOException e) {
-				return 0;
-			}
-		}
-		return 0;
-	}
 }
