@@ -34,7 +34,8 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 
 		// TODO: Name the analyzer and give it a description.
 
-		super("Nsis", "Analyzer description goes here", AnalyzerType.BYTE_ANALYZER);
+		super("Nsis", "Analyzer description goes here",
+				AnalyzerType.BYTE_ANALYZER);
 	}
 
 	@Override
@@ -48,7 +49,8 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean canAnalyze(Program program) {
 
-		// TODO: Examine 'program' to determine of this analyzer should analyze it.
+		// TODO: Examine 'program' to determine of this analyzer should analyze
+		// it.
 		// Return true
 		// if it can.
 
@@ -60,14 +62,16 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 
 		// TODO: If this analyzer has custom options, register them here
 
-		options.registerOption("Option name goes here", false, null, "Option description goes here");
+		options.registerOption("Option name goes here", false, null,
+				"Option description goes here");
 	}
 
 	@Override
-	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
-			throws CancelledException {
+	public boolean added(Program program, AddressSetView set,
+			TaskMonitor monitor, MessageLog log) throws CancelledException {
 
-		// TODO: Perform analysis when things get added to the 'program'. Return true if
+		// TODO: Perform analysis when things get added to the 'program'. Return
+		// true if
 		// the
 		// analysis succeeded.
 

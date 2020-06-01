@@ -59,16 +59,19 @@ public class NsisFileSystem implements GFileSystem {
 	 * @param monitor A cancellable task monitor.
 	 */
 	public void mount(TaskMonitor monitor) {
-		monitor.setMessage("Opening " + NsisFileSystem.class.getSimpleName() + "...");
+		monitor.setMessage(
+				"Opening " + NsisFileSystem.class.getSimpleName() + "...");
 
-		// TODO: Customize how things in the file system are stored. The following
+		// TODO: Customize how things in the file system are stored. The
+		// following
 		// should be
 		// treated as pseudo-code.
 		for (MyMetadata metadata : new MyMetadata[10]) {
 			if (monitor.isCancelled()) {
 				break;
 			}
-			fsih.storeFile(metadata.path, fsih.getFileCount(), false, metadata.size, metadata);
+			fsih.storeFile(metadata.path, fsih.getFileCount(), false,
+					metadata.size, metadata);
 		}
 	}
 
@@ -113,13 +116,18 @@ public class NsisFileSystem implements GFileSystem {
 	}
 
 	@Override
-	public InputStream getInputStream(GFile file, TaskMonitor monitor) throws IOException, CancelledException {
+	public InputStream getInputStream(GFile file, TaskMonitor monitor)
+			throws IOException, CancelledException {
 
-		// TODO: Get an input stream for a file. The following is an example of how the
+		// TODO: Get an input stream for a file. The following is an example of
+		// how the
 		// metadata
 		// might be used to get an input stream from a stored provider offset.
 		MyMetadata metadata = fsih.getMetadata(file);
-		return (metadata != null) ? new ByteProviderInputStream(provider, metadata.offset, metadata.size) : null;
+		return (metadata != null)
+				? new ByteProviderInputStream(provider, metadata.offset,
+						metadata.size)
+				: null;
 	}
 
 	@Override
@@ -130,26 +138,31 @@ public class NsisFileSystem implements GFileSystem {
 	@Override
 	public String getInfo(GFile file, TaskMonitor monitor) {
 		MyMetadata metadata = fsih.getMetadata(file);
-		return (metadata == null) ? null : FSUtilities.infoMapToString(getInfoMap(metadata));
+		return (metadata == null) ? null
+				: FSUtilities.infoMapToString(getInfoMap(metadata));
 	}
 
 	public Map<String, String> getInfoMap(MyMetadata metadata) {
 		Map<String, String> info = new LinkedHashMap<>();
 
-		// TODO: Customize information about a file system entry. The following is
+		// TODO: Customize information about a file system entry. The following
+		// is
 		// sample
 		// information that might be useful.
 		info.put("Name", metadata.name);
-		info.put("Size", "" + Long.toString(metadata.size) + ", 0x" + Long.toHexString(metadata.size));
+		info.put("Size", "" + Long.toString(metadata.size) + ", 0x"
+				+ Long.toHexString(metadata.size));
 		return info;
 	}
 
 	// TODO: Customize for the real file system.
-	public static class MyFileSystemFactory implements GFileSystemFactoryFull<NsisFileSystem>, GFileSystemProbeFull {
+	public static class MyFileSystemFactory implements
+			GFileSystemFactoryFull<NsisFileSystem>, GFileSystemProbeFull {
 
 		@Override
-		public NsisFileSystem create(FSRL containerFSRL, FSRLRoot targetFSRL, ByteProvider byteProvider,
-				File containerFile, FileSystemService fsService, TaskMonitor monitor)
+		public NsisFileSystem create(FSRL containerFSRL, FSRLRoot targetFSRL,
+				ByteProvider byteProvider, File containerFile,
+				FileSystemService fsService, TaskMonitor monitor)
 				throws IOException, CancelledException {
 
 			NsisFileSystem fs = new NsisFileSystem(targetFSRL, byteProvider);
@@ -158,10 +171,12 @@ public class NsisFileSystem implements GFileSystem {
 		}
 
 		@Override
-		public boolean probe(FSRL containerFSRL, ByteProvider byteProvider, File containerFile,
-				FileSystemService fsService, TaskMonitor monitor) throws IOException, CancelledException {
+		public boolean probe(FSRL containerFSRL, ByteProvider byteProvider,
+				File containerFile, FileSystemService fsService,
+				TaskMonitor monitor) throws IOException, CancelledException {
 
-			// TODO: Quickly and efficiently examine the bytes in 'byteProvider' to
+			// TODO: Quickly and efficiently examine the bytes in 'byteProvider'
+			// to
 			// determine if
 			// it's a valid file system. If it is, return true.
 
@@ -171,7 +186,8 @@ public class NsisFileSystem implements GFileSystem {
 
 	// TODO: Customize with metadata from files in the real file system. This is
 	// just a stub.
-	// The elements of the file system will most likely be modeled by Java classes
+	// The elements of the file system will most likely be modeled by Java
+	// classes
 	// external to this
 	// file.
 	private static class MyMetadata {

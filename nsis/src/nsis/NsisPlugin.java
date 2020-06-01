@@ -67,7 +67,8 @@ public class NsisPlugin extends ProgramPlugin {
 		// TODO: Acquire services if necessary
 	}
 
-	// TODO: If provider is desired, it is recommended to move it to its own file
+	// TODO: If provider is desired, it is recommended to move it to its own
+	// file
 	private static class MyProvider extends ComponentProvider {
 
 		private JPanel panel;
