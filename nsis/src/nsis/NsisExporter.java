@@ -44,7 +44,8 @@ public class NsisExporter extends Exporter {
 	}
 
 	@Override
-	public boolean export(File file, DomainObject domainObj, AddressSetView addrSet, TaskMonitor monitor)
+	public boolean export(File file, DomainObject domainObj,
+			AddressSetView addrSet, TaskMonitor monitor)
 			throws ExporterException, IOException {
 
 		// TODO: Perform the export, and return true if it succeeded
@@ -57,7 +58,8 @@ public class NsisExporter extends Exporter {
 		List<Option> list = new ArrayList<>();
 
 		// TODO: If this exporter has custom options, add them to 'list'
-		list.add(new Option("Option name goes here", "Default option value goes here"));
+		list.add(new Option("Option name goes here",
+				"Default option value goes here"));
 
 		return list;
 	}
