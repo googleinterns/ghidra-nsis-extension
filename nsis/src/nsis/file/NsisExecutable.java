@@ -19,7 +19,7 @@ public class NsisExecutable {
 	}
 
 	public static NsisExecutable createNsisExecutable(GenericFactory factory,
-			ByteProvider bp, SectionLayout layout) {
+			ByteProvider bp, SectionLayout layout) throws IOException {
 		NsisExecutable nsisExecutable = (NsisExecutable) factory
 				.create(NsisExecutable.class);
 		nsisExecutable.initNsisExecutable(factory, bp, layout);
@@ -27,26 +27,24 @@ public class NsisExecutable {
 	}
 
 	private void initNsisExecutable(GenericFactory factory, ByteProvider bp,
-			SectionLayout layout) {
+			SectionLayout layout) throws IOException {
 		this.reader = new FactoryBundledWithBinaryReader(factory, bp, true);
 		this.header_offset = -1;
 		findHeaderOffset();
 		// TODO Init sections and headers
 	}
 
-	private void findHeaderOffset() {
+	private void findHeaderOffset() throws IOException {
 		if (this.header_offset == -1) {
-			try {
-				for (long offset = 0; offset + NsisConstants.NSIS_MAGIC.length <= reader.length(); offset++) {
-					byte[] content = reader.readByteArray(offset,
-							NsisConstants.NSIS_MAGIC.length);
-					if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
-						this.header_offset = offset;
-						return;
-					}
-				}
-			} catch (IOException e) {
+			for (long offset = 0; offset
+					+ NsisConstants.NSIS_MAGIC.length <= reader
+							.length(); offset++) {
+				byte[] content = reader.readByteArray(offset,
+						NsisConstants.NSIS_MAGIC.length);
+				if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
+					this.header_offset = offset;
 					return;
+				}
 			}
 		}
 	}
