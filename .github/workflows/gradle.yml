@@ -25,6 +25,12 @@ jobs:
       run: test -d nsis/dist/ghidra*.zip
 
     - uses: actions/checkout@v2
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v2
+      with: 
+        path: nsis/dist/
+
     - name: Download Ghidra release
       uses: carlosperate/download-file-action@v1.0.3
       id: download-ghidra
