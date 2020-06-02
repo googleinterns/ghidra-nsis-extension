@@ -32,6 +32,7 @@ jobs:
       with:
         file-url: ${{ env.ghidra-url }}
         file-name: ${{ env.ghidra-zip-filename }}
+        location: nsis/dist/
     
     - name: Unzip Ghidra
       uses: TonyBogdanov/zip@1.0
