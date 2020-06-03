@@ -17,6 +17,7 @@ public class NsisScriptHeader implements StructConverter {
 	private int archiveSize;
 	private int compressedHeaderSize;
 	private int flags;
+	private static Structure STRUCTURE;
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException {
 		setMagic(reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length));
@@ -24,21 +25,26 @@ public class NsisScriptHeader implements StructConverter {
 			throw new IOException("not a nsis file.");
 		}
 
+		initStructure();
 		setInflatedHeaderSize(reader.readNextInt());
 		setArchiveSize(reader.readNextInt());
 		setCompressedHeaderSize(reader.readNextInt());
 		setFlags(reader.readNextInt());
+		checkHeaderCompression(reader);
+	}
+
+	private static void initStructure() {
+		STRUCTURE = new StructureDataType("script_header", 0);
+		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "inf_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "hdr_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "cmpr_hdr_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
 	}
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-		Structure structure = new StructureDataType("script_header", 0);
-		structure.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
-		structure.add(DWORD, 4, "inf_size", null);
-		structure.add(DWORD, 4, "hdr_size", null);
-		structure.add(DWORD, 4, "cmpr_hdr_size", null);
-		structure.add(DWORD, 4, "flags", null);
-		return structure;
+		return STRUCTURE;
 	}
 
 	public byte[] getMagic() {
@@ -74,7 +80,7 @@ public class NsisScriptHeader implements StructConverter {
 	}
 
 	public static int getHeaderSize() {
-		return NsisConstants.NSIS_MAGIC.length + 4 + 4 + 4 + 4;
+		return STRUCTURE.getLength();
 	}
 
 	public int getFlags() {
@@ -83,5 +89,30 @@ public class NsisScriptHeader implements StructConverter {
 
 	public void setFlags(int flags) {
 		this.flags = flags;
+	}
+
+	public void checkHeaderCompression(BinaryReader reader) {
+		if ((this.compressedHeaderSize & 0x80000000) == 0) {
+			System.out.print("Header is not compressed!\n");
+			return;
+		}
+
+		int firstByte = 0;
+		try {
+			firstByte = reader.readByte(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+
+		if (firstByte == NsisConstants.COMPRESSION_LZMA) {
+			System.out.print("Header is LZMA compressed\n");
+		}
+
+		if (firstByte == NsisConstants.COMPRESSION_BZIP2) {
+			System.out.print("Header is BZip2 compressed\n");
+		}
+
+		System.out.print("Header is Zlib compressed\n");
 	}
 }

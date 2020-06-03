@@ -17,7 +17,9 @@ package nsis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import generic.continues.GenericFactory;
 import generic.continues.RethrowContinuesFactory;
@@ -96,16 +98,6 @@ public class NsisLoader extends PeLoader {
 
 			BinaryReader binary_reader = new BinaryReader(provider, true);
 			binary_reader.setPointerIndex(nsis_header_offset);
-			NsisScriptHeader script_header = new NsisScriptHeader(
-					binary_reader);
-
-			System.out.print("Nsis header initialized!\n");
-			System.out.printf("inf_size: %x\n",
-					script_header.getInflatedHeaderSize());
-			System.out.printf("hdr_size: %x\n", script_header.getArchiveSize());
-			System.out.printf("cmpr_size: %x\n",
-					script_header.getCompressedHeaderSize());
-			System.out.printf("flags: %08x\n", script_header.getFlags());
 
 			ghidra.program.model.address.Address script_header_start = program
 					.getAddressFactory().getDefaultAddressSpace()
@@ -113,15 +105,13 @@ public class NsisLoader extends PeLoader {
 
 			MemoryBlock new_block = mem.createInitializedBlock(".script_header",
 					script_header_start, inputStream,
-					script_header.getInflatedHeaderSize(), monitor, false);
+					ne.getInflatedHeaderSize(), monitor, false);
 			new_block.setRead(true);
 			new_block.setWrite(true);
 			new_block.setExecute(true);
 
 			createData(program, program.getListing(), script_header_start,
-					script_header.toDataType());
-			checkHeaderCompression(program, script_header, monitor,
-					inputStream);
+					ne.getHeaderDataType());
 			processBlockHeaders(program, monitor, binary_reader,
 					nsis_header_offset);
 
@@ -145,32 +135,6 @@ public class NsisLoader extends PeLoader {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	private void checkHeaderCompression(Program program,
-			NsisScriptHeader header, TaskMonitor monitor, InputStream reader) {
-		if ((header.getCompressedHeaderSize() & 0x80000000) == 0) {
-			System.out.print("Header is not compressed!\n");
-			return;
-		}
-
-		int first_data_byte = 0;
-		try {
-			first_data_byte = reader.read();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		if (first_data_byte == 0x5d) {
-			System.out.print("Header is LZMA compressed\n");
-		}
-
-		if (first_data_byte == 0x31) {
-			System.out.print("Header is BZip2 compressed\n");
-		}
-
-		System.out.print("Header is Z compressed\n");
 	}
 
 	private void processBlockHeaders(Program program, TaskMonitor monitor,
