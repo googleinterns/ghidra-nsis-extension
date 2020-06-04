@@ -32,8 +32,8 @@ public class NsisExecutableTest {
 
 		assertEquals((long) 36356, ne.getHeaderOffset());
 		assertEquals(2046, ne.getArchiveSize());
-		assertEquals(2010, ne.getCompressedHeaderSize());
-		assertEquals(128, ne.getFlags());
+		assertEquals(0x000007da, ne.getCompressedHeaderSize());
+		assertEquals(0x00000080, ne.getFlags());
 		assertEquals(2010, ne.getInflatedHeaderSize());
 
 		binaryInputStream.close();
@@ -50,8 +50,8 @@ public class NsisExecutableTest {
 
 		assertEquals((long) 34820, ne.getHeaderOffset());
 		assertEquals(399, ne.getArchiveSize());
-		assertEquals(-2147483285, ne.getCompressedHeaderSize());
-		assertEquals(-2147483555, ne.getFlags());
+		assertEquals(0x8000016b, ne.getCompressedHeaderSize());
+		assertEquals(0x8000005d, ne.getFlags());
 		assertEquals(2010, ne.getInflatedHeaderSize());
 
 		binaryInputStream.close();
@@ -65,11 +65,11 @@ public class NsisExecutableTest {
 				binaryInputStream.readAllBytes());
 		NsisExecutable ne = NsisExecutable.createNsisExecutable(
 				RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
-		
+
 		assertEquals((long) 36356, ne.getHeaderOffset());
 		assertEquals(419, ne.getArchiveSize());
-		assertEquals(-2147483265, ne.getCompressedHeaderSize());
-		assertEquals(1270830573, ne.getFlags());
+		assertEquals(0x8000017f, ne.getCompressedHeaderSize());
+		assertEquals(0x4bbf55ed, ne.getFlags());
 		assertEquals(2010, ne.getInflatedHeaderSize());
 
 		binaryInputStream.close();
@@ -83,13 +83,13 @@ public class NsisExecutableTest {
 				binaryInputStream.readAllBytes());
 		NsisExecutable ne = NsisExecutable.createNsisExecutable(
 				RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
-		
+
 		assertEquals((long) 35332, ne.getHeaderOffset());
 		assertEquals(463, ne.getArchiveSize());
-		assertEquals(-2147483221, ne.getCompressedHeaderSize());
-		assertEquals(-100597711, ne.getFlags());
+		assertEquals(0x800001ab, ne.getCompressedHeaderSize());
+		assertEquals(0xfa010031, ne.getFlags());
 		assertEquals(2010, ne.getInflatedHeaderSize());
-		
+
 		binaryInputStream.close();
 	}
 
