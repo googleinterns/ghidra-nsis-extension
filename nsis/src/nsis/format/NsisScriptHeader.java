@@ -29,21 +29,19 @@ public class NsisScriptHeader implements StructConverter {
 		this.archiveSize = reader.readNextInt();
 		this.compressedHeaderSize = reader.readNextInt();
 		this.flags = reader.readNextInt();
-		initStructure();
 		checkHeaderCompression(reader);
-	}
-
-	private static void initStructure() {
-		STRUCTURE = new StructureDataType("script_header", 0);
-		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "inf_size", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "hdr_size", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "cmpr_hdr_size", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
 	}
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
+		if(STRUCTURE == null) {
+			STRUCTURE = new StructureDataType("script_header", 0);
+			STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
+			STRUCTURE.add(DWORD, DWORD.getLength(), "inf_size", null);
+			STRUCTURE.add(DWORD, DWORD.getLength(), "hdr_size", null);
+			STRUCTURE.add(DWORD, DWORD.getLength(), "cmpr_hdr_size", null);
+			STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
+		}
 		return STRUCTURE;
 	}
 
