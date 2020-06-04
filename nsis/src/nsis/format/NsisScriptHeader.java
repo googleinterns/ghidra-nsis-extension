@@ -20,16 +20,16 @@ public class NsisScriptHeader implements StructConverter {
 	private static Structure STRUCTURE;
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException {
-		setMagic(reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length));
+		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
 		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, getMagic())) {
-			throw new IOException("not a nsis file.");
+			throw new IOException("Not a nsis file.");
 		}
 
+		this.inflatedHeaderSize = reader.readNextInt();
+		this.archiveSize = reader.readNextInt();
+		this.compressedHeaderSize = reader.readNextInt();
+		this.flags = reader.readNextInt();
 		initStructure();
-		setInflatedHeaderSize(reader.readNextInt());
-		setArchiveSize(reader.readNextInt());
-		setCompressedHeaderSize(reader.readNextInt());
-		setFlags(reader.readNextInt());
 		checkHeaderCompression(reader);
 	}
 
@@ -51,32 +51,16 @@ public class NsisScriptHeader implements StructConverter {
 		return magic;
 	}
 
-	public void setMagic(byte[] magic) {
-		this.magic = magic;
-	}
-
 	public int getInflatedHeaderSize() {
 		return inflatedHeaderSize;
-	}
-
-	public void setInflatedHeaderSize(int inflated_header_size) {
-		this.inflatedHeaderSize = inflated_header_size;
 	}
 
 	public int getArchiveSize() {
 		return archiveSize;
 	}
 
-	public void setArchiveSize(int archiveSize) {
-		this.archiveSize = archiveSize;
-	}
-
 	public int getCompressedHeaderSize() {
 		return compressedHeaderSize;
-	}
-
-	public void setCompressedHeaderSize(int compressedHeaderSize) {
-		this.compressedHeaderSize = compressedHeaderSize;
 	}
 
 	public static int getHeaderSize() {
@@ -85,10 +69,6 @@ public class NsisScriptHeader implements StructConverter {
 
 	public int getFlags() {
 		return flags;
-	}
-
-	public void setFlags(int flags) {
-		this.flags = flags;
 	}
 
 	public void checkHeaderCompression(BinaryReader reader) {
