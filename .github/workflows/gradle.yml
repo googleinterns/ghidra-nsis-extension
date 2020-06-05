@@ -22,11 +22,9 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
-
     - name: Download Ghidra release
       uses: carlosperate/download-file-action@v1.0.3
       id: download-ghidra
-      if: failure()
       with:
         file-url: ${{ env.ghidra-url }}
         file-name: ${{ env.ghidra-zip-filename }}
@@ -34,7 +32,6 @@ jobs:
     
     - name: Unzip Ghidra
       uses: TonyBogdanov/zip@1.0
-      if: failure()
       with:
         args: unzip -qq ${{ steps.download-ghidra.outputs.file-path }} -d .
     - uses: actions/setup-java@v1
