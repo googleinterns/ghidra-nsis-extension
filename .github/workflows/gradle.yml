@@ -22,6 +22,7 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
+
     - name: Download Ghidra release
       uses: carlosperate/download-file-action@v1.0.3
       id: download-ghidra
@@ -46,7 +47,7 @@ jobs:
         arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
 
    - name: Run tests
-     uses: eskatos/gradle-command-action@v1
+     #uses: eskatos/gradle-command-action@v1
      with:
        gradle-version: '5.0'
        build-root-directory: ${{ github.workspace }}/nsis
