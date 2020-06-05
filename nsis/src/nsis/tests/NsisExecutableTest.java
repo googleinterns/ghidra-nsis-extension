@@ -1,14 +1,15 @@
 package nsis.tests;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import nsis.file.NsisExecutable;
-import static org.junit.Assert.*;
-
-import java.io.IOException;
 
 public class NsisExecutableTest {
 
