@@ -46,8 +46,6 @@ jobs:
         build-root-directory: ${{ github.workspace }}/nsis
         arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
 
-    - name: Test
-      run: echo Test
 
     - name: Run tests
       uses: eskatos/gradle-command-action@v1
