@@ -44,3 +44,10 @@ jobs:
         gradle-version: '5.0'
         build-root-directory: ${{ github.workspace }}/nsis
         arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
+
+   - name: Run tests
+     uses: eskatos/gradle-command-action@v1
+     with:
+       gradle-version: '5.0'
+       build-root-directory: ${{ github.workspace }}/nsis
+       arguments: 'clean test -PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
