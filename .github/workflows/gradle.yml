@@ -21,15 +21,7 @@ jobs:
 
     steps:
 
-    - name: Check if Ghidra artifact exists
-      run: test -d nsis/dist/ghidra*.zip
-
     - uses: actions/checkout@v2
-
-    - name: Download all artifacts
-      uses: actions/download-artifact@v2
-      with: 
-        path: nsis/dist/
 
     - name: Download Ghidra release
       uses: carlosperate/download-file-action@v1.0.3
@@ -55,9 +47,3 @@ jobs:
         gradle-version: '5.0'
         build-root-directory: ${{ github.workspace }}/nsis
         arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      if: failure()
-      with:
-        path: nsis/dist/ghidra*.zip
