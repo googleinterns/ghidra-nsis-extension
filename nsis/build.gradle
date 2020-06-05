@@ -48,6 +48,11 @@ test {
 	}
 
 	useJUnitPlatform()
+
+	testLogging {
+		events "failed"
+		exceptionFormat "long"
+	}
 }
 
 sourceSets {
