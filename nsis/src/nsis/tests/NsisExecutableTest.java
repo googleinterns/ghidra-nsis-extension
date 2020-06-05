@@ -23,7 +23,7 @@ public class NsisExecutableTest {
 		NsisExecutable ne = NsisExecutable.createNsisExecutable(
 				RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 		long headerOffset = ne.getHeaderOffset();
-		assertEquals((long) 3, headerOffset);
+		assertEquals((long) 2, headerOffset);
 	}
 
 }
