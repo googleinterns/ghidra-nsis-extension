@@ -12,6 +12,10 @@ import ghidra.program.model.data.DataType;
 import ghidra.util.exception.DuplicateNameException;
 import nsis.format.NsisScriptHeader;
 
+
+/*
+ * 
+ * */
 public class NsisExecutable {
 
 	public static final String NAME = "NULLSOFT_SCRIPTABLE_INSTALLER_SYSTEM";
@@ -80,7 +84,7 @@ public class NsisExecutable {
 	}
 
 	public DataType getHeaderDataType()
-			throws DuplicateNameException, IOException {
+			throws IOException, DuplicateNameException {
 		return this.scriptHeader.toDataType();
 	}
 }

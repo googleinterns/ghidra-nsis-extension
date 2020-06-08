@@ -17,12 +17,21 @@ public class NsisScriptHeader implements StructConverter {
 	public final int archiveSize;
 	public final int compressedHeaderSize;
 	public final int flags;
-	private static Structure STRUCTURE;
+	private final static Structure STRUCTURE;
+	
+	static {
+		STRUCTURE = new StructureDataType("script_header", 0);
+		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "inf_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "hdr_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "cmpr_hdr_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
+	}
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException {
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
 		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, getMagic())) {
-			throw new IOException("Not a nsis file.");
+			throw new IOException(new InvalidFormatException("Invalid format. Could not find magic bytes."));
 		}
 
 		this.inflatedHeaderSize = reader.readNextInt();
@@ -34,14 +43,6 @@ public class NsisScriptHeader implements StructConverter {
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-		if(STRUCTURE == null) {
-			STRUCTURE = new StructureDataType("script_header", 0);
-			STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
-			STRUCTURE.add(DWORD, DWORD.getLength(), "inf_size", null);
-			STRUCTURE.add(DWORD, DWORD.getLength(), "hdr_size", null);
-			STRUCTURE.add(DWORD, DWORD.getLength(), "cmpr_hdr_size", null);
-			STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
-		}
 		return STRUCTURE;
 	}
 

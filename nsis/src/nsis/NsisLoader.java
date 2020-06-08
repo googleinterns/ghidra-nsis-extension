@@ -62,8 +62,10 @@ public class NsisLoader extends PeLoader {
 			throws IOException { // TODO call super to handle PE portion of the
 									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
-		NsisExecutable ne = NsisExecutable.createNsisExecutable(
+		NsisExecutable ne;
+		ne = NsisExecutable.createNsisExecutable(
 				RethrowContinuesFactory.INSTANCE, provider, SectionLayout.FILE);
+
 		if (ne.getHeaderOffset() != -1) {
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default",
@@ -96,7 +98,8 @@ public class NsisLoader extends PeLoader {
 			inputStream = provider.getInputStream(nsis_header_offset);
 			Memory mem = program.getMemory();
 
-			BinaryReader binary_reader = new BinaryReader(provider, /*isLittleEndian=*/ true);
+			BinaryReader binary_reader = new BinaryReader(provider,
+					/* isLittleEndian= */ true);
 			binary_reader.setPointerIndex(nsis_header_offset);
 
 			ghidra.program.model.address.Address script_header_start = program
