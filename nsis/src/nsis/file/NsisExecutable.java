@@ -65,19 +65,19 @@ public class NsisExecutable {
 	}
 
 	public int getInflatedHeaderSize() {
-		return this.scriptHeader.getInflatedHeaderSize();
+		return this.scriptHeader.inflatedHeaderSize;
 	}
 
 	public int getArchiveSize() {
-		return this.scriptHeader.getArchiveSize();
+		return this.scriptHeader.archiveSize;
 	}
 
 	public int getCompressedHeaderSize() {
-		return this.scriptHeader.getCompressedHeaderSize();
+		return this.scriptHeader.compressedHeaderSize;
 	}
 
 	public int getFlags() {
-		return this.scriptHeader.getFlags();
+		return this.scriptHeader.flags;
 	}
 
 	public DataType getHeaderDataType()

@@ -13,10 +13,10 @@ import nsis.file.NsisConstants;
 
 public class NsisScriptHeader implements StructConverter {
 	private byte[] magic;
-	private int inflatedHeaderSize;
-	private int archiveSize;
-	private int compressedHeaderSize;
-	private int flags;
+	public final int inflatedHeaderSize;
+	public final int archiveSize;
+	public final int compressedHeaderSize;
+	public final int flags;
 	private static Structure STRUCTURE;
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException {
@@ -48,26 +48,11 @@ public class NsisScriptHeader implements StructConverter {
 	public byte[] getMagic() {
 		return magic;
 	}
-
-	public int getInflatedHeaderSize() {
-		return inflatedHeaderSize;
-	}
-
-	public int getArchiveSize() {
-		return archiveSize;
-	}
-
-	public int getCompressedHeaderSize() {
-		return compressedHeaderSize;
-	}
-
+	
 	public static int getHeaderSize() {
 		return STRUCTURE.getLength();
 	}
 
-	public int getFlags() {
-		return flags;
-	}
 
 	public void checkHeaderCompression(BinaryReader reader) {
 		if ((this.compressedHeaderSize & 0x80000000) == 0) {
