@@ -33,29 +33,28 @@ public class NsisExecutable {
 
 	private void initNsisExecutable(GenericFactory factory, ByteProvider bp,
 			SectionLayout layout) throws IOException {
-		this.reader = new FactoryBundledWithBinaryReader(factory, bp, true);
-		this.headerOffset = -1;
-		findHeaderOffset();
+		this.reader = new FactoryBundledWithBinaryReader(factory, bp, /*isLittleEndian=*/ true);
+		this.headerOffset = findHeaderOffset();
 		initScriptHeader(bp);
 	}
 
-	private void findHeaderOffset() throws IOException {
-		if (this.headerOffset == -1) {
-			for (long offset = 0; offset
-					+ NsisConstants.NSIS_MAGIC.length <= reader
-							.length(); offset++) {
-				byte[] content = reader.readByteArray(offset,
-						NsisConstants.NSIS_MAGIC.length);
-				if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
-					this.headerOffset = offset;
-					return;
-				}
+	private long findHeaderOffset() throws IOException {
+		long offset = -1;
+		for (long testOffset = 0; testOffset
+				+ NsisConstants.NSIS_MAGIC.length <= reader
+						.length(); testOffset++) {
+			byte[] content = reader.readByteArray(testOffset,
+					NsisConstants.NSIS_MAGIC.length);
+			if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
+				offset = testOffset;
+				break;
 			}
 		}
+		return offset;
 	}
 
 	private void initScriptHeader(ByteProvider bp) throws IOException {
-		BinaryReader br = new BinaryReader(bp, true);
+		BinaryReader br = new BinaryReader(bp, /*isLittleEndian=*/ true);
 		br.setPointerIndex(this.headerOffset);
 		this.scriptHeader = new NsisScriptHeader(br);
 	}
