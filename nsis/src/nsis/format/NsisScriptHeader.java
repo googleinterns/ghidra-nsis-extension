@@ -8,7 +8,6 @@ import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
-import ghidra.util.exception.DuplicateNameException;
 import nsis.file.NsisConstants;
 
 public class NsisScriptHeader implements StructConverter {
@@ -18,7 +17,7 @@ public class NsisScriptHeader implements StructConverter {
 	public final int compressedHeaderSize;
 	public final int flags;
 	private final static Structure STRUCTURE;
-	
+
 	static {
 		STRUCTURE = new StructureDataType("script_header", 0);
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
@@ -31,7 +30,8 @@ public class NsisScriptHeader implements StructConverter {
 	public NsisScriptHeader(BinaryReader reader) throws IOException {
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
 		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, getMagic())) {
-			throw new IOException(new InvalidFormatException("Invalid format. Could not find magic bytes."));
+			throw new IOException(new InvalidFormatException(
+					"Invalid format. Could not find magic bytes."));
 		}
 
 		this.inflatedHeaderSize = reader.readNextInt();
@@ -42,18 +42,17 @@ public class NsisScriptHeader implements StructConverter {
 	}
 
 	@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
+	public DataType toDataType() {
 		return STRUCTURE;
 	}
 
 	public byte[] getMagic() {
 		return magic;
 	}
-	
+
 	public static int getHeaderSize() {
 		return STRUCTURE.getLength();
 	}
-
 
 	public void checkHeaderCompression(BinaryReader reader) {
 		if ((this.compressedHeaderSize & 0x80000000) == 0) {
