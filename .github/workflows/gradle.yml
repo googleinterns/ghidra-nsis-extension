@@ -52,4 +52,4 @@ jobs:
       with:
         gradle-version: '5.0'
         build-root-directory: ${{ github.workspace }}/nsis
-        arguments: 'clean test -PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
+        arguments: 'test -PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
