@@ -17,10 +17,10 @@ import nsis.format.InvalidFormatException;
 
 public class NsisExecutableTest {
 
-	private final String pathWithoutCompression = "testData/nsis_without_compression.exe";
-	private final String pathWithBzip = "testData/nsis_with_bzip.exe";
-	private final String pathWithLZMA = "testData/nsis_with_lzma.exe";
-	private final String pathWithZlib = "testData/nsis_with_zlib.exe";
+	private final String pathWithoutCompression = "src/testData/nsis_without_compression.exe";
+	private final String pathWithBzip = "src/testData/nsis_with_bzip.exe";
+	private final String pathWithLZMA = "src/testData/nsis_with_lzma.exe";
+	private final String pathWithZlib = "src/testData/nsis_with_zlib.exe";
 
 	@Test
 	public void testNsisCreationNotCompressed()
