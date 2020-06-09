@@ -21,9 +21,9 @@ public class NsisScriptHeader implements StructConverter {
 	static {
 		STRUCTURE = new StructureDataType("script_header", 0);
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "inf_size", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "hdr_size", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "cmpr_hdr_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "inflated_header_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
 	}
 
@@ -55,6 +55,8 @@ public class NsisScriptHeader implements StructConverter {
 	}
 
 	public void checkHeaderCompression(BinaryReader reader) {
+		// TODO reimplement this function to throw invalidformat error when
+		// necessary and fix compression identification bug
 		if ((this.compressedHeaderSize & 0x80000000) == 0) {
 			System.out.print("Header is not compressed!\n");
 			return;

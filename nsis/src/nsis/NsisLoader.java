@@ -45,6 +45,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
+import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisScriptHeader;
 
@@ -63,15 +64,18 @@ public class NsisLoader extends PeLoader {
 									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 		NsisExecutable ne;
-		ne = NsisExecutable.createNsisExecutable(
-				RethrowContinuesFactory.INSTANCE, provider, SectionLayout.FILE);
-
-		if (ne.getHeaderOffset() != -1) {
+		try {
+			ne = NsisExecutable.createNsisExecutable(
+					RethrowContinuesFactory.INSTANCE, provider,
+					SectionLayout.FILE);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default",
 							"default"),
 					true);
 			loadSpecs.add(my_spec);
+		} catch (InvalidFormatException e) {
+			// Not a Nsis file, no loading spec added
+			// Do nothing
 		}
 		return loadSpecs;
 	}
@@ -81,11 +85,11 @@ public class NsisLoader extends PeLoader {
 			List<Option> options, Program program, TaskMonitor monitor,
 			MessageLog log) throws CancelledException, IOException {
 
-		GenericFactory factory = MessageLogContinuesFactory.create(log);
-		NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
-				provider, SectionLayout.FILE);
-
 		try {
+			GenericFactory factory = MessageLogContinuesFactory.create(log);
+			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
+					provider, SectionLayout.FILE);
+
 			long nsis_header_offset = ne.getHeaderOffset();
 			if (nsis_header_offset == -1) {
 				System.out.print("Could not find nsis_header_offset.\n");
