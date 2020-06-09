@@ -41,10 +41,11 @@ public class NsisExecutable {
 	 * @param layout       object used to load PE executables
 	 * @return The Nsis executable object
 	 * @throws IOException
-	 * @throws InvalidFormatException 
+	 * @throws InvalidFormatException
 	 */
 	public static NsisExecutable createNsisExecutable(GenericFactory factory,
-			ByteProvider bp, SectionLayout layout) throws IOException, InvalidFormatException {
+			ByteProvider bp, SectionLayout layout)
+			throws IOException, InvalidFormatException {
 		NsisExecutable nsisExecutable = (NsisExecutable) factory
 				.create(NsisExecutable.class);
 		nsisExecutable.initNsisExecutable(factory, bp, layout);
@@ -77,7 +78,8 @@ public class NsisExecutable {
 		return offset;
 	}
 
-	private void initScriptHeader(ByteProvider bp) throws IOException {
+	private void initScriptHeader(ByteProvider bp)
+			throws IOException, InvalidFormatException {
 		BinaryReader br = new BinaryReader(bp, /* isLittleEndian= */ true);
 		br.setPointerIndex(this.headerOffset);
 		this.scriptHeader = new NsisScriptHeader(br);

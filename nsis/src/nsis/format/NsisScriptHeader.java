@@ -27,11 +27,12 @@ public class NsisScriptHeader implements StructConverter {
 		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
 	}
 
-	public NsisScriptHeader(BinaryReader reader) throws IOException {
+	public NsisScriptHeader(BinaryReader reader)
+			throws IOException, InvalidFormatException {
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
 		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, getMagic())) {
-			throw new IOException(new InvalidFormatException(
-					"Invalid format. Could not find magic bytes."));
+			throw new InvalidFormatException(
+					"Invalid format. Could not find magic bytes.");
 		}
 
 		this.inflatedHeaderSize = reader.readNextInt();
