@@ -61,21 +61,16 @@ public class NsisExecutable {
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
-		long offset = -1;
-		for (long testOffset = 0; testOffset
+		for (long headerOffset = 0; headerOffset
 				+ NsisConstants.NSIS_MAGIC.length <= reader
-						.length(); testOffset++) {
-			byte[] content = reader.readByteArray(testOffset,
+						.length(); headerOffset++) {
+			byte[] content = reader.readByteArray(headerOffset,
 					NsisConstants.NSIS_MAGIC.length);
 			if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
-				offset = testOffset;
-				break;
+				return headerOffset;
 			}
 		}
-		if (offset == -1) {
-			throw new InvalidFormatException("Nsis magic not found.");
-		}
-		return offset;
+		throw new InvalidFormatException("Nsis magic not found.");
 	}
 
 	private void initScriptHeader(ByteProvider bp)
