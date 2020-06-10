@@ -5,4 +5,7 @@ public class NsisConstants {
 			(byte) 0xad, (byte) 0xde, 'N', 'u', 'l', 'l', 's', 'o', 'f', 't',
 			'I', 'n', 's', 't' };
 	public static final int NB_NSIS_BLOCKS = 8;
+	public static final byte COMPRESSION_LZMA = 0x5d;
+	public static final byte COMPRESSION_BZIP2 = 0x31;
+
 }
