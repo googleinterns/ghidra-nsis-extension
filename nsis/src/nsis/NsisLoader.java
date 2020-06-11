@@ -17,7 +17,9 @@ package nsis;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import generic.continues.GenericFactory;
 import generic.continues.RethrowContinuesFactory;
@@ -43,6 +45,7 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
+import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisScriptHeader;
 
@@ -60,14 +63,19 @@ public class NsisLoader extends PeLoader {
 			throws IOException { // TODO call super to handle PE portion of the
 									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
-		NsisExecutable ne = NsisExecutable.createNsisExecutable(
-				RethrowContinuesFactory.INSTANCE, provider, SectionLayout.FILE);
-		if (ne.getHeaderOffset() != -1) {
+		NsisExecutable ne;
+		try {
+			ne = NsisExecutable.createNsisExecutable(
+					RethrowContinuesFactory.INSTANCE, provider,
+					SectionLayout.FILE);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default",
 							"default"),
 					true);
 			loadSpecs.add(my_spec);
+		} catch (InvalidFormatException e) {
+			// Not a Nsis file, no loading spec added
+			// Do nothing
 		}
 		return loadSpecs;
 	}
@@ -77,11 +85,11 @@ public class NsisLoader extends PeLoader {
 			List<Option> options, Program program, TaskMonitor monitor,
 			MessageLog log) throws CancelledException, IOException {
 
-		GenericFactory factory = MessageLogContinuesFactory.create(log);
-		NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
-				provider, SectionLayout.FILE);
-
 		try {
+			GenericFactory factory = MessageLogContinuesFactory.create(log);
+			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
+					provider, SectionLayout.FILE);
+
 			long nsis_header_offset = ne.getHeaderOffset();
 			if (nsis_header_offset == -1) {
 				System.out.print("Could not find nsis_header_offset.\n");
@@ -94,18 +102,9 @@ public class NsisLoader extends PeLoader {
 			inputStream = provider.getInputStream(nsis_header_offset);
 			Memory mem = program.getMemory();
 
-			BinaryReader binary_reader = new BinaryReader(provider, true);
+			BinaryReader binary_reader = new BinaryReader(provider,
+					/* isLittleEndian= */ true);
 			binary_reader.setPointerIndex(nsis_header_offset);
-			NsisScriptHeader script_header = new NsisScriptHeader(
-					binary_reader);
-
-			System.out.print("Nsis header initialized!\n");
-			System.out.printf("inf_size: %x\n",
-					script_header.getInflatedHeaderSize());
-			System.out.printf("hdr_size: %x\n", script_header.getArchiveSize());
-			System.out.printf("cmpr_size: %x\n",
-					script_header.getCompressedHeaderSize());
-			System.out.printf("flags: %08x\n", script_header.getFlags());
 
 			ghidra.program.model.address.Address script_header_start = program
 					.getAddressFactory().getDefaultAddressSpace()
@@ -113,15 +112,13 @@ public class NsisLoader extends PeLoader {
 
 			MemoryBlock new_block = mem.createInitializedBlock(".script_header",
 					script_header_start, inputStream,
-					script_header.getInflatedHeaderSize(), monitor, false);
+					ne.getInflatedHeaderSize(), monitor, false);
 			new_block.setRead(true);
 			new_block.setWrite(true);
 			new_block.setExecute(true);
 
 			createData(program, program.getListing(), script_header_start,
-					script_header.toDataType());
-			checkHeaderCompression(program, script_header, monitor,
-					inputStream);
+					ne.getHeaderDataType());
 			processBlockHeaders(program, monitor, binary_reader,
 					nsis_header_offset);
 
@@ -145,32 +142,6 @@ public class NsisLoader extends PeLoader {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	private void checkHeaderCompression(Program program,
-			NsisScriptHeader header, TaskMonitor monitor, InputStream reader) {
-		if ((header.getCompressedHeaderSize() & 0x80000000) == 0) {
-			System.out.print("Header is not compressed!\n");
-			return;
-		}
-
-		int first_data_byte = 0;
-		try {
-			first_data_byte = reader.read();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		if (first_data_byte == 0x5d) {
-			System.out.print("Header is LZMA compressed\n");
-		}
-
-		if (first_data_byte == 0x31) {
-			System.out.print("Header is BZip2 compressed\n");
-		}
-
-		System.out.print("Header is Z compressed\n");
 	}
 
 	private void processBlockHeaders(Program program, TaskMonitor monitor,
