@@ -1,13 +1,13 @@
 package nsis.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.ByteArrayProvider;

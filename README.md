@@ -2,7 +2,7 @@
 
 # Loading Extension into Eclipse for Development
 * Install Java
-  * Tested verison: `jdk-14.0.1`
+  * Tested verison: `jdk-11.0.2`
 * Install eclipse from [eclipse.org](https://www.eclipse.org/downloads/)
   * Tested version: `2020-03`
 * Install Ghidra
@@ -34,7 +34,7 @@
 # Build extension from the command line
 
 * Install [gradle](https://gradle.org/)
-  * Tested version: `6.4.1`
+  * Tested version: `5.0`
 * Execute the command from nsis folder
 ```
 $ gradle -PGHIDRA_INSTALL_DIR=<path_to_ghidra>
