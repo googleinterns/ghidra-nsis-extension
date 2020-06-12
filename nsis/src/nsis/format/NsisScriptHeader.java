@@ -12,7 +12,7 @@ import nsis.file.NsisConstants;
 
 public class NsisScriptHeader implements StructConverter {
 	private byte[] magic;
-	public final int inflatedHeaderSize;
+	public final int headerSize;
 	public final int archiveSize;
 	public final int compressedHeaderSize;
 	public final int flags;
@@ -21,8 +21,8 @@ public class NsisScriptHeader implements StructConverter {
 	static {
 		STRUCTURE = new StructureDataType("script_header", 0);
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "inflated_header_size", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "length_of_following_data", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
 	}
@@ -35,7 +35,7 @@ public class NsisScriptHeader implements StructConverter {
 					"Invalid format. Could not find magic bytes.");
 		}
 
-		this.inflatedHeaderSize = reader.readNextInt();
+		this.headerSize = reader.readNextInt();
 		this.archiveSize = reader.readNextInt();
 		this.compressedHeaderSize = reader.readNextInt();
 		this.flags = reader.readNextInt();

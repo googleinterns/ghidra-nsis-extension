@@ -23,6 +23,7 @@ import java.util.List;
 
 import generic.continues.GenericFactory;
 import generic.continues.RethrowContinuesFactory;
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
@@ -32,6 +33,7 @@ import ghidra.app.util.importer.MessageLogContinuesFactory;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.PeLoader;
 import ghidra.framework.store.LockException;
+import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.data.DataType;
@@ -96,26 +98,21 @@ public class NsisLoader extends PeLoader {
 
 			long nsis_header_offset = ne.getHeaderOffset();
 
-			// TODO we probably don't need both types of readers (input
-			// stream and binary reader)
-			InputStream inputStream;
-			inputStream = provider.getInputStream(nsis_header_offset);
-
 			BinaryReader binary_reader = new BinaryReader(provider,
 					/* isLittleEndian= */ true);
 			binary_reader.setPointerIndex(nsis_header_offset);
 
 			Address script_header_start = program.getAddressFactory()
 					.getDefaultAddressSpace().getAddress(0x0);
+			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, nsis_header_offset, ne.getArchiveSize(), monitor);
 
-			initScriptHeader(inputStream, monitor, script_header_start,
+			initScriptHeader(fileBytes, script_header_start,
 					ne.getInflatedHeaderSize(), program,
 					ne.getHeaderDataType());
 			initBlockHeaders(program, binary_reader, nsis_header_offset);
 
 		} catch (Exception e) {
-			System.out.print(e.getMessage());
-			log.appendException(e);
+			throw new IOException(e); //Ghidra handles the thrown exception
 		}
 	}
 
@@ -133,13 +130,12 @@ public class NsisLoader extends PeLoader {
 	 * @throws DuplicateNameException
 	 * @throws LockException
 	 */
-	private void initScriptHeader(InputStream inputStream, TaskMonitor monitor,
-			Address start, long size, Program program, DataType dt)
+	private void initScriptHeader(FileBytes fileBytes, Address start, long size, Program program, DataType dt)
 			throws MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, LockException {
 		Memory memory = program.getMemory();
 		MemoryBlock new_block = memory.createInitializedBlock(".script_header",
-				start, inputStream, size, monitor, false);
+				start, fileBytes, 0, size, false);
 		new_block.setRead(true);
 		new_block.setWrite(true);
 		new_block.setExecute(true);
