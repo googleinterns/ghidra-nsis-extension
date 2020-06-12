@@ -107,8 +107,7 @@ public class NsisLoader extends PeLoader {
 					provider, scriptHeaderOffset, ne.getArchiveSize(), monitor);
 
 			initScriptHeader(fileBytes, scriptHeaderAddress,
-					ne.getInflatedHeaderSize(), program,
-					ne.getHeaderDataType());
+					fileBytes.getSize(), program, ne.getHeaderDataType());
 			initBlockHeaders(program, binary_reader, scriptHeaderAddress);
 
 		} catch (Exception e) {
