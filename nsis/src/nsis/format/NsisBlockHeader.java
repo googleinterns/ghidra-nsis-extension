@@ -20,17 +20,9 @@ public class NsisBlockHeader implements StructConverter {
 		STRUCTURE.add(DWORD, DWORD.getLength(), "nb_entries", null);
 	}
 
-	public NsisBlockHeader(BinaryReader reader) {
-		this.offset = 0;
-		this.nbEntries = 0;
-
-		try {
-			this.offset = reader.readNextInt();
-			this.nbEntries = reader.readNextInt();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	public NsisBlockHeader(BinaryReader reader) throws IOException {
+		this.offset = reader.readNextInt();
+		this.nbEntries = reader.readNextInt();
 	}
 
 	@Override

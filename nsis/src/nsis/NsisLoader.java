@@ -179,9 +179,10 @@ public class NsisLoader extends PeLoader {
 	 * @param program
 	 * @param reader
 	 * @param startingAddr, the Address where the nsis script header starts
+	 * @throws IOException
 	 */
 	private void initBlockHeaders(Program program, BinaryReader reader,
-			Address startingAddr) {
+			Address startingAddr) throws IOException {
 		int block_header_offset = NsisScriptHeader.getHeaderSize();
 		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
 			System.out.printf("Processing block at offset %08x\n",
