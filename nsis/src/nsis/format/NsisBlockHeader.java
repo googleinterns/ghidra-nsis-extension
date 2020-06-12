@@ -13,14 +13,13 @@ public class NsisBlockHeader implements StructConverter {
 	private int offset;
 	private int nbEntries;
 	private final static Structure STRUCTURE;
-	
+
 	static {
 		STRUCTURE = new StructureDataType("block_header", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "offset", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "nb_entries", null);
 	}
-	
-	
+
 	public NsisBlockHeader(BinaryReader reader) {
 		this.offset = 0;
 		this.nbEntries = 0;

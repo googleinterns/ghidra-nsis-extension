@@ -22,7 +22,8 @@ public class NsisScriptHeader implements StructConverter {
 		STRUCTURE = new StructureDataType("script_header", 0);
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "magic", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "length_of_following_data", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "length_of_following_data",
+				null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size", null);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", null);
 	}

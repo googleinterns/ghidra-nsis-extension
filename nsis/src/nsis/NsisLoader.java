@@ -103,7 +103,8 @@ public class NsisLoader extends PeLoader {
 
 			Address scriptHeaderAddress = program.getAddressFactory()
 					.getDefaultAddressSpace().getAddress(scriptHeaderOffset);
-			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program, provider, scriptHeaderOffset, ne.getArchiveSize(), monitor);
+			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program,
+					provider, scriptHeaderOffset, ne.getArchiveSize(), monitor);
 
 			initScriptHeader(fileBytes, scriptHeaderAddress,
 					ne.getInflatedHeaderSize(), program,
@@ -111,24 +112,29 @@ public class NsisLoader extends PeLoader {
 			initBlockHeaders(program, binary_reader, scriptHeaderAddress);
 
 		} catch (Exception e) {
-			throw new IOException(e); //Ghidra handles the thrown exception
+			throw new IOException(e); // Ghidra handles the thrown exception
 		}
 	}
 
 	/**
-	 * Initializes the script header and adds it to the "Program Trees" view in Ghidra.
-	 * @param fileBytes object that starts at the NSIS magic bytes
-	 * @param scriptHeaderAddress, the address at which the nsis script header starts
-	 * @param size of the header
-	 * @param program object
-	 * @param dataType of the script header
+	 * Initializes the script header and adds it to the "Program Trees" view in
+	 * Ghidra.
+	 * 
+	 * @param fileBytes            object that starts at the NSIS magic bytes
+	 * @param scriptHeaderAddress, the address at which the nsis script header
+	 *                             starts
+	 * @param size                 of the header
+	 * @param program              object
+	 * @param dataType             of the script header
 	 * @throws MemoryConflictException
 	 * @throws AddressOverflowException
 	 * @throws CancelledException
 	 * @throws DuplicateNameException
 	 * @throws LockException
 	 */
-	private void initScriptHeader(FileBytes fileBytes, Address scriptHeaderAddress, long size, Program program, DataType dataType)
+	private void initScriptHeader(FileBytes fileBytes,
+			Address scriptHeaderAddress, long size, Program program,
+			DataType dataType)
 			throws MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, LockException {
 		Memory memory = program.getMemory();
@@ -138,14 +144,16 @@ public class NsisLoader extends PeLoader {
 		new_block.setWrite(true);
 		new_block.setExecute(true);
 
-		createData(program, program.getListing(), scriptHeaderAddress, dataType);
+		createData(program, program.getListing(), scriptHeaderAddress,
+				dataType);
 	}
 
 	/**
 	 * Applies the DataType structure to the data at given address.
+	 * 
 	 * @param program
 	 * @param listing
-	 * @param address at which to apply the data structure
+	 * @param address  at which to apply the data structure
 	 * @param dataType to apply to the bytes
 	 * @return
 	 */
@@ -165,7 +173,9 @@ public class NsisLoader extends PeLoader {
 	}
 
 	/**
-	 * Initializes the block headers and adds them to the "Program Trees" view in Ghidra.
+	 * Initializes the block headers and adds them to the "Program Trees" view
+	 * in Ghidra.
+	 * 
 	 * @param program
 	 * @param reader
 	 * @param startingAddr, the Address where the nsis script header starts
@@ -175,11 +185,12 @@ public class NsisLoader extends PeLoader {
 		int block_header_offset = NsisScriptHeader.getHeaderSize();
 		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
 			System.out.printf("Processing block at offset %08x\n",
-					block_header_offset+startingAddr.getOffset());
+					block_header_offset + startingAddr.getOffset());
 			Address block_address = startingAddr.add(block_header_offset);
 
-			reader.setPointerIndex(startingAddr.getOffset() + block_header_offset);
-			
+			reader.setPointerIndex(
+					startingAddr.getOffset() + block_header_offset);
+
 			NsisBlockHeader block_header = new NsisBlockHeader(reader);
 			System.out.printf("Block index: %d\n", i);
 			System.out.printf("Block number of entries: %d\n",
