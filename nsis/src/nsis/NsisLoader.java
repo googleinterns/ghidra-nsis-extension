@@ -190,7 +190,7 @@ public class NsisLoader extends PeLoader {
 			NsisBlockHeader block_header = new NsisBlockHeader(reader);
 			System.out.printf("Block index: %d\n", i);
 			System.out.printf("Block number of entries: %d\n",
-					block_header.getNum());
+					block_header.getNbEntries());
 			System.out.printf("Block offset: %08x\n", block_header.getOffset());
 
 			try {

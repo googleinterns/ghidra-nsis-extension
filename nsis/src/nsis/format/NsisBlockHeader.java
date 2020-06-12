@@ -11,7 +11,7 @@ import ghidra.util.exception.DuplicateNameException;
 
 public class NsisBlockHeader implements StructConverter {
 	private int offset;
-	private int num;
+	private int nbEntries;
 	private final static Structure STRUCTURE;
 	
 	static {
@@ -22,12 +22,12 @@ public class NsisBlockHeader implements StructConverter {
 	
 	
 	public NsisBlockHeader(BinaryReader reader) {
-		setOffset(0);
-		setNum(0);
+		this.offset = 0;
+		this.nbEntries = 0;
 
 		try {
-			setOffset(reader.readNextInt());
-			setNum(reader.readNextInt());
+			this.offset = reader.readNextInt();
+			this.nbEntries = reader.readNextInt();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,16 +43,8 @@ public class NsisBlockHeader implements StructConverter {
 		return this.offset;
 	}
 
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
-
-	public int getNum() {
-		return num;
-	}
-
-	public void setNum(int num) {
-		this.num = num;
+	public int getNbEntries() {
+		return nbEntries;
 	}
 
 	public static int getHeaderSize() {
