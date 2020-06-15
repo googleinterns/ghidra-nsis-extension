@@ -3,9 +3,12 @@ package nsis.file;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.google.common.primitives.Bytes;
+
 import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
+import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.program.model.data.DataType;
@@ -62,12 +65,12 @@ public class NsisExecutable {
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
 		for (long headerOffset = 0; headerOffset
-				+ NsisConstants.NSIS_MAGIC.length <= reader
+				+ NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length <= reader
 						.length(); headerOffset++) {
 			byte[] content = reader.readByteArray(headerOffset,
-					NsisConstants.NSIS_MAGIC.length);
-			if (Arrays.equals(NsisConstants.NSIS_MAGIC, content)) {
-				return headerOffset;
+					NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length);
+			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO, NsisConstants.NSIS_MAGIC), content)) {
+				return headerOffset - StructConverter.DWORD.getLength(); //Include flags in header
 			}
 		}
 		throw new InvalidFormatException("Nsis magic not found.");
@@ -84,8 +87,8 @@ public class NsisExecutable {
 		return this.headerOffset;
 	}
 
-	public int getInflatedHeaderSize() {
-		return this.scriptHeader.inflatedHeaderSize;
+	public int getHeaderSize() {
+		return this.scriptHeader.headerSize;
 	}
 
 	public int getArchiveSize() {
@@ -95,8 +98,8 @@ public class NsisExecutable {
 	public int getCompressedHeaderSize() {
 		return this.scriptHeader.compressedHeaderSize;
 	}
-
-	public int getFlags() {
+	
+	public int getScriptHeaderFlags() {
 		return this.scriptHeader.flags;
 	}
 
