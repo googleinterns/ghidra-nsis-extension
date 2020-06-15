@@ -16,8 +16,8 @@ public class NsisBlockHeader implements StructConverter {
 
 	static {
 		STRUCTURE = new StructureDataType("block_header", 0);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "offset", null);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "nb_entries", null);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "offset", "Offset at which the block header starts");
+		STRUCTURE.add(DWORD, DWORD.getLength(), "num", "Number of entries in the block header");
 	}
 
 	public NsisBlockHeader(BinaryReader reader) throws IOException {
