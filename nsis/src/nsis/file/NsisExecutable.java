@@ -8,6 +8,7 @@ import com.google.common.primitives.Bytes;
 import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
+import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.program.model.data.DataType;
@@ -69,7 +70,7 @@ public class NsisExecutable {
 			byte[] content = reader.readByteArray(headerOffset,
 					NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length);
 			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO, NsisConstants.NSIS_MAGIC), content)) {
-				return headerOffset;
+				return headerOffset - StructConverter.DWORD.getLength(); //Include flags in header
 			}
 		}
 		throw new InvalidFormatException("Nsis magic not found.");
@@ -96,6 +97,10 @@ public class NsisExecutable {
 
 	public int getCompressedHeaderSize() {
 		return this.scriptHeader.compressedHeaderSize;
+	}
+	
+	public int getScriptHeaderFlags() {
+		return this.scriptHeader.flags;
 	}
 
 	/**

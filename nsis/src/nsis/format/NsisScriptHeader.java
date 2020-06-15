@@ -11,6 +11,7 @@ import ghidra.program.model.data.StructureDataType;
 import nsis.file.NsisConstants;
 
 public class NsisScriptHeader implements StructConverter {
+	public final int flags;
 	private byte[] siginfo;
 	private byte[] magic;
 	public final int headerSize;
@@ -20,6 +21,7 @@ public class NsisScriptHeader implements StructConverter {
 
 	static {
 		STRUCTURE = new StructureDataType("script_header", 0);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", "First header flags (FH_FLAGS_*)");
 		STRUCTURE.add(STRING, NsisConstants.NSIS_SIGINFO.length, "siginfo", "0xdeadbeef (FH_SIG)");
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "nsinst", "NSIS magic (FH_INT1, FH_INT2, FH_INT3)");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size", "points to the header+sections+entries+stringtable in the datablock");
@@ -30,6 +32,7 @@ public class NsisScriptHeader implements StructConverter {
 
 	public NsisScriptHeader(BinaryReader reader)
 			throws IOException, InvalidFormatException {
+		this.flags = reader.readNextInt();
 		this.siginfo = reader.readNextByteArray(NsisConstants.NSIS_SIGINFO.length);
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
 		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, this.magic) || !Arrays.equals(NsisConstants.NSIS_SIGINFO, this.siginfo)) {
