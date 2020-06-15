@@ -59,9 +59,7 @@ public class NsisScriptHeader implements StructConverter {
 		return STRUCTURE.getLength();
 	}
 
-	public void checkHeaderCompression(BinaryReader reader) {
-		// TODO reimplement this function to throw invalidformat error when
-		// necessary and fix compression identification bug
+	public void checkHeaderCompression(BinaryReader reader) throws InvalidFormatException {
 		if ((this.compressedHeaderSize & 0x80000000) == 0) {
 			System.out.print("Header is not compressed!\n");
 			return;
@@ -69,20 +67,23 @@ public class NsisScriptHeader implements StructConverter {
 
 		int firstByte = 0;
 		try {
-			firstByte = reader.readByte(0);
+			firstByte = reader.readNextByte();
 		} catch (IOException e) {
-			e.printStackTrace();
-			return;
+			throw new InvalidFormatException(e.getMessage());
 		}
 
-		if (firstByte == NsisConstants.COMPRESSION_LZMA) {
+		switch (firstByte) {
+		case NsisConstants.COMPRESSION_LZMA:
 			System.out.print("Header is LZMA compressed\n");
-		}
-
-		if (firstByte == NsisConstants.COMPRESSION_BZIP2) {
+			break;
+		
+		case NsisConstants.COMPRESSION_BZIP2:
 			System.out.print("Header is BZip2 compressed\n");
+			break;
+			
+		default:
+			System.out.print("Header is Zlib compressed\n");
+			break;
 		}
-
-		System.out.print("Header is Zlib compressed\n");
 	}
 }
