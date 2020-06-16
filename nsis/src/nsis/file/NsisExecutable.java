@@ -24,7 +24,7 @@ public class NsisExecutable {
 
 	public static final String NAME = "NULLSOFT_SCRIPTABLE_INSTALLER_SYSTEM";
 
-	private FactoryBundledWithBinaryReader reader;
+	private BinaryReader reader;
 	private NsisScriptHeader scriptHeader;
 	private long headerOffset;
 
@@ -60,7 +60,11 @@ public class NsisExecutable {
 		this.reader = new FactoryBundledWithBinaryReader(factory, bp,
 				/* isLittleEndian= */ true);
 		this.headerOffset = findHeaderOffset();
-		initScriptHeader(bp);
+		initScriptHeader();
+		if((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) {
+			uncompressData();
+		}
+		
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -76,11 +80,30 @@ public class NsisExecutable {
 		throw new InvalidFormatException("Nsis magic not found.");
 	}
 
-	private void initScriptHeader(ByteProvider bp)
+	private void initScriptHeader()
 			throws IOException, InvalidFormatException {
-		BinaryReader br = new BinaryReader(bp, /* isLittleEndian= */ true);
-		br.setPointerIndex(this.headerOffset);
-		this.scriptHeader = new NsisScriptHeader(br);
+		this.reader.setPointerIndex(this.headerOffset);
+		this.scriptHeader = new NsisScriptHeader(this.reader);
+	}
+	
+	private void uncompressData() throws IOException {
+		byte compression = this.reader.readNextByte();
+		if(isLZMA(compression)) {
+			System.out.println("Decompress LZMA");
+		}else if (isBzip2(compression)) {
+			System.out.println("Decompress Bzip");
+		}else {
+			System.out.println("Decompress Zlib");
+		}
+		return;
+	}
+	
+	private boolean isLZMA(byte significantByte) {
+		return NsisConstants.COMPRESSION_LZMA == significantByte;
+	}
+	
+	private boolean isBzip2(byte significantByte) {
+		return NsisConstants.COMPRESSION_BZIP2 == significantByte;
 	}
 
 	public long getHeaderOffset() {
