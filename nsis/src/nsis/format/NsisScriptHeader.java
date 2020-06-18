@@ -21,21 +21,28 @@ public class NsisScriptHeader implements StructConverter {
 
 	static {
 		STRUCTURE = new StructureDataType("script_header", 0);
-		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", "First header flags (FH_FLAGS_*)");
-		STRUCTURE.add(STRING, NsisConstants.NSIS_SIGINFO.length, "siginfo", "0xdeadbeef (FH_SIG)");
-		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "nsinst", "NSIS magic (FH_INT1, FH_INT2, FH_INT3)");
-		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size", "points to the header+sections+entries+stringtable in the datablock");
+		STRUCTURE.add(DWORD, DWORD.getLength(), "flags",
+				"First header flags (FH_FLAGS_*)");
+		STRUCTURE.add(STRING, NsisConstants.NSIS_SIGINFO.length, "siginfo",
+				"0xdeadbeef (FH_SIG)");
+		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "nsinst",
+				"NSIS magic (FH_INT1, FH_INT2, FH_INT3)");
+		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size",
+				"points to the header+sections+entries+stringtable in the datablock");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "length_of_following_data",
 				"Length of all the data (including the firstheader and the CRC)");
-		STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size", "If MSB is set following data is compressed");
+		STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size",
+				"If MSB is set following data is compressed");
 	}
 
 	public NsisScriptHeader(BinaryReader reader)
 			throws IOException, InvalidFormatException {
 		this.flags = reader.readNextInt();
-		this.siginfo = reader.readNextByteArray(NsisConstants.NSIS_SIGINFO.length);
+		this.siginfo = reader
+				.readNextByteArray(NsisConstants.NSIS_SIGINFO.length);
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
-		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, this.magic) || !Arrays.equals(NsisConstants.NSIS_SIGINFO, this.siginfo)) {
+		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, this.magic)
+				|| !Arrays.equals(NsisConstants.NSIS_SIGINFO, this.siginfo)) {
 			throw new InvalidFormatException(
 					"Invalid format. Could not find magic bytes.");
 		}

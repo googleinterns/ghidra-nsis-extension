@@ -65,12 +65,16 @@ public class NsisExecutable {
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
 		for (long headerOffset = 0; headerOffset
-				+ NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length <= reader
+				+ NsisConstants.NSIS_SIGINFO.length
+				+ NsisConstants.NSIS_MAGIC.length <= reader
 						.length(); headerOffset++) {
 			byte[] content = reader.readByteArray(headerOffset,
-					NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length);
-			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO, NsisConstants.NSIS_MAGIC), content)) {
-				return headerOffset - StructConverter.DWORD.getLength(); //Include flags in header
+					NsisConstants.NSIS_SIGINFO.length
+							+ NsisConstants.NSIS_MAGIC.length);
+			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO,
+					NsisConstants.NSIS_MAGIC), content)) {
+				// Include flags in header
+				return headerOffset - StructConverter.DWORD.getLength();
 			}
 		}
 		throw new InvalidFormatException("Nsis magic not found.");
@@ -98,7 +102,7 @@ public class NsisExecutable {
 	public int getCompressedHeaderSize() {
 		return this.scriptHeader.compressedHeaderSize;
 	}
-	
+
 	public int getScriptHeaderFlags() {
 		return this.scriptHeader.flags;
 	}
