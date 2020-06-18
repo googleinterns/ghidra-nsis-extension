@@ -1,7 +1,11 @@
 package nsis.file;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.python.bouncycastle.util.encoders.Hex;
+import org.tukaani.xz.LZMAInputStream;
 
 import com.google.common.primitives.Bytes;
 
@@ -61,49 +65,71 @@ public class NsisExecutable {
 				/* isLittleEndian= */ true);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		if((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) {
-			uncompressData();
+		if ((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) { // Check if MSB is set
+			decompressData();
 		}
-		
+
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
 		for (long headerOffset = 0; headerOffset
-				+ NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length <= reader
+				+ NsisConstants.NSIS_SIGINFO.length
+				+ NsisConstants.NSIS_MAGIC.length <= reader
 						.length(); headerOffset++) {
 			byte[] content = reader.readByteArray(headerOffset,
-					NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length);
-			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO, NsisConstants.NSIS_MAGIC), content)) {
-				return headerOffset - StructConverter.DWORD.getLength(); //Include flags in header
+					NsisConstants.NSIS_SIGINFO.length
+							+ NsisConstants.NSIS_MAGIC.length);
+			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO,
+					NsisConstants.NSIS_MAGIC), content)) {
+				return headerOffset - StructConverter.DWORD.getLength(); // Include
+																			// flags
+																			// in
+																			// header
 			}
 		}
 		throw new InvalidFormatException("Nsis magic not found.");
 	}
 
-	private void initScriptHeader()
-			throws IOException, InvalidFormatException {
+	private void initScriptHeader() throws IOException, InvalidFormatException {
 		this.reader.setPointerIndex(this.headerOffset);
 		this.scriptHeader = new NsisScriptHeader(this.reader);
 	}
-	
-	private void uncompressData() throws IOException {
-		byte compression = this.reader.readNextByte();
-		if(isLZMA(compression)) {
-			System.out.println("Decompress LZMA");
-		}else if (isBzip2(compression)) {
+
+	private void decompressData() throws IOException {
+		byte compressionByte = this.reader.readNextByte();
+		long compressedDataOffset;
+		int compressedDataLength;
+		byte[] compressedData;
+		if (isLZMA(compressionByte)) {
+			int dictionarySize = this.reader.readNextInt();
+			compressedDataOffset = this.headerOffset + NsisScriptHeader.getHeaderSize() + NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
+			compressedDataLength = (this.scriptHeader.compressedHeaderSize ^ 0x80000000) - NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH; // Flip the MSB to get the length
+			compressedData = this.reader.readByteArray(compressedDataOffset, compressedDataLength);
+			decompressLZMA(compressedData, compressionByte, dictionarySize);
+		} else if (isBzip2(compressionByte)) {
+			//TODO Bzip2 decompress
 			System.out.println("Decompress Bzip");
-		}else {
+		} else {
+			//TODO Zlib decompress
 			System.out.println("Decompress Zlib");
 		}
 		return;
 	}
-	
+
 	private boolean isLZMA(byte significantByte) {
 		return NsisConstants.COMPRESSION_LZMA == significantByte;
 	}
-	
+
 	private boolean isBzip2(byte significantByte) {
 		return NsisConstants.COMPRESSION_BZIP2 == significantByte;
+	}
+
+	private void decompressLZMA(byte[] compressedData, byte propByte, int dictionarySize) throws IOException {
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
+		LZMAInputStream lzmaInputStream = new LZMAInputStream(byteArrayInputStream, -1, propByte, dictionarySize);
+		System.out.println("Uncompressed data: " + Hex.toHexString(lzmaInputStream.readAllBytes()));
+		lzmaInputStream.close();
+		return;
 	}
 
 	public long getHeaderOffset() {
@@ -121,7 +147,7 @@ public class NsisExecutable {
 	public int getCompressedHeaderSize() {
 		return this.scriptHeader.compressedHeaderSize;
 	}
-	
+
 	public int getScriptHeaderFlags() {
 		return this.scriptHeader.flags;
 	}
