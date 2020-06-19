@@ -42,27 +42,23 @@ public class NsisExecutable {
 	 * Creates and initializes a Nsis Executable object
 	 * 
 	 * @param factory      that will be used to create Nsis Executable
-	 * @param byteProvider object that will permit reading bytes from the file.
-	 *                     The lifespan of the byte provider is controlled by
-	 *                     Ghidra.
+	 * @param byteProvider object that will permit reading bytes from the file. The
+	 *                     lifespan of the byte provider is controlled by Ghidra.
 	 * @param layout       object used to load PE executables
 	 * @return The Nsis executable object
 	 * @throws IOException
 	 * @throws InvalidFormatException
 	 */
-	public static NsisExecutable createNsisExecutable(GenericFactory factory,
-			ByteProvider bp, SectionLayout layout)
-			throws IOException, InvalidFormatException {
-		NsisExecutable nsisExecutable = (NsisExecutable) factory
-				.create(NsisExecutable.class);
+	public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp,
+			SectionLayout layout) throws IOException, InvalidFormatException {
+		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
 		nsisExecutable.initNsisExecutable(factory, bp, layout);
 		return nsisExecutable;
 	}
 
-	private void initNsisExecutable(GenericFactory factory, ByteProvider bp,
-			SectionLayout layout) throws IOException, InvalidFormatException {
-		this.reader = new FactoryBundledWithBinaryReader(factory, bp,
-				/* isLittleEndian= */ true);
+	private void initNsisExecutable(GenericFactory factory, ByteProvider bp, SectionLayout layout)
+			throws IOException, InvalidFormatException {
+		this.reader = new FactoryBundledWithBinaryReader(factory, bp, /* isLittleEndian= */ true);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
 		if ((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) { // Check
@@ -75,15 +71,12 @@ public class NsisExecutable {
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
-		for (long headerOffset = 0; headerOffset
-				+ NsisConstants.NSIS_SIGINFO.length
-				+ NsisConstants.NSIS_MAGIC.length <= reader
-						.length(); headerOffset++) {
+		for (long headerOffset = 0; headerOffset + NsisConstants.NSIS_SIGINFO.length
+				+ NsisConstants.NSIS_MAGIC.length <= reader.length(); headerOffset++) {
 			byte[] content = reader.readByteArray(headerOffset,
-					NsisConstants.NSIS_SIGINFO.length
-							+ NsisConstants.NSIS_MAGIC.length);
-			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO,
-					NsisConstants.NSIS_MAGIC), content)) {
+					NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length);
+			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO, NsisConstants.NSIS_MAGIC),
+					content)) {
 				return headerOffset - StructConverter.DWORD.getLength(); // Include
 																			// flags
 																			// in
@@ -99,8 +92,8 @@ public class NsisExecutable {
 	}
 
 	/**
-	 * Attempt to decompress the data from the reader. Supports LZMA algorithm.
-	 * Will eventually support Bzip2 and Zlib.
+	 * Attempt to decompress the data from the reader. Supports LZMA algorithm. Will
+	 * eventually support Bzip2 and Zlib.
 	 * 
 	 * @throws IOException
 	 */
@@ -111,17 +104,14 @@ public class NsisExecutable {
 		byte[] compressedData;
 		if (isLZMA(compressionByte)) {
 			int dictionarySize = this.reader.readNextInt();
-			compressedDataOffset = this.headerOffset
-					+ NsisScriptHeader.getHeaderSize()
+			compressedDataOffset = this.headerOffset + NsisScriptHeader.getHeaderSize()
 					+ NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
-			compressedDataLength = (this.scriptHeader.compressedHeaderSize
-					^ 0x80000000)
+			compressedDataLength = (this.scriptHeader.compressedHeaderSize ^ 0x80000000)
 					- NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH; // Flip the
 																	// MSB to
 																	// get the
 																	// length
-			compressedData = this.reader.readByteArray(compressedDataOffset,
-					compressedDataLength);
+			compressedData = this.reader.readByteArray(compressedDataOffset, compressedDataLength);
 			decompressLZMA(compressedData, compressionByte, dictionarySize);
 		} else if (isBzip2(compressionByte)) {
 			// TODO Bzip2 decompress
@@ -142,21 +132,20 @@ public class NsisExecutable {
 	}
 
 	/**
-	 * Decompressed LZMA bytes using a known properties byte and dictionary
-	 * size. The properties byte is the first byte in the LZMA header and the
-	 * dictionary size corresponds to the 4 following bytes.
+	 * Decompressed LZMA bytes using a known properties byte and dictionary size.
+	 * The properties byte is the first byte in the LZMA header and the dictionary
+	 * size corresponds to the 4 following bytes.
 	 * 
 	 * @param compressedData
 	 * @param propByte       the byte indicating LZMA properties
 	 * @param dictionarySize the size of the dictionary to use for decompression
 	 * @throws IOException
 	 */
-	private void decompressLZMA(byte[] compressedData, byte propByte,
-			int dictionarySize) throws IOException {
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
-				compressedData);
-		LZMAInputStream lzmaInputStream = new LZMAInputStream(
-				byteArrayInputStream, -1, propByte, dictionarySize);
+	private void decompressLZMA(byte[] compressedData, byte propByte, int dictionarySize)
+			throws IOException {
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
+		LZMAInputStream lzmaInputStream = new LZMAInputStream(byteArrayInputStream, -1, propByte,
+				dictionarySize);
 		this.decompressedBytes = lzmaInputStream.readAllBytes();
 		lzmaInputStream.close();
 		return;

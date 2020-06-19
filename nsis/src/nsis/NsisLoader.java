@@ -65,19 +65,23 @@ public class NsisLoader extends PeLoader {
 	}
 
 	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider)
-			throws IOException { // TODO call super to handle PE portion of the
-									// file
+	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException { // TODO
+																									// call
+																									// super
+																									// to
+																									// handle
+																									// PE
+																									// portion
+																									// of
+																									// the
+																									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 		NsisExecutable ne;
 		try {
-			ne = NsisExecutable.createNsisExecutable(
-					RethrowContinuesFactory.INSTANCE, provider,
+			ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider,
 					SectionLayout.FILE);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
-					new LanguageCompilerSpecPair("Nsis:LE:32:default",
-							"default"),
-					true);
+					new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
 			loadSpecs.add(my_spec);
 		} catch (InvalidFormatException e) {
 			// Not a Nsis file, no loading spec added
@@ -87,43 +91,37 @@ public class NsisLoader extends PeLoader {
 	}
 
 	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec,
-			List<Option> options, Program program, TaskMonitor monitor,
-			MessageLog log) throws CancelledException, IOException {
+	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+			Program program, TaskMonitor monitor, MessageLog log)
+			throws CancelledException, IOException {
 		try {
 			GenericFactory factory = MessageLogContinuesFactory.create(log);
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
-					provider, SectionLayout.FILE);
+			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory, provider,
+					SectionLayout.FILE);
 			long scriptHeaderOffset = ne.getHeaderOffset();
-			BinaryReader binary_reader = new BinaryReader(provider,
-					/* isLittleEndian= */ true);
+			BinaryReader binary_reader = new BinaryReader(provider, /* isLittleEndian= */ true);
 			binary_reader.setPointerIndex(scriptHeaderOffset);
-			Address scriptHeaderAddress = program.getAddressFactory()
-					.getDefaultAddressSpace().getAddress(scriptHeaderOffset);
+			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
+					.getAddress(scriptHeaderOffset);
 
-			FileBytes fileBytesHeader = MemoryBlockUtils.createFileBytes(
-					program, provider, scriptHeaderOffset,
-					NsisScriptHeader.getHeaderSize(), monitor);
-			initScriptHeader(fileBytesHeader, scriptHeaderAddress,
-					fileBytesHeader.getSize(), program, ne.getHeaderDataType());
+			FileBytes fileBytesHeader = MemoryBlockUtils.createFileBytes(program, provider,
+					scriptHeaderOffset, NsisScriptHeader.getHeaderSize(), monitor);
+			initScriptHeader(fileBytesHeader, scriptHeaderAddress, fileBytesHeader.getSize(),
+					program, ne.getHeaderDataType());
 
 			FileBytes fileBytesBody;
 			byte[] decompressedBytes = ne.getDecompressedBytes();
 			if (decompressedBytes != null) { // if binary was compressed
-				ByteArrayProvider uncompressedBytes = new ByteArrayProvider(
-						decompressedBytes);
-				fileBytesBody = MemoryBlockUtils.createFileBytes(program,
-						uncompressedBytes, 0, uncompressedBytes.length(),
-						monitor);
+				ByteArrayProvider uncompressedBytes = new ByteArrayProvider(decompressedBytes);
+				fileBytesBody = MemoryBlockUtils.createFileBytes(program, uncompressedBytes, 0,
+						uncompressedBytes.length(), monitor);
 			} else {
-				fileBytesBody = MemoryBlockUtils.createFileBytes(program,
-						provider,
-						scriptHeaderOffset + NsisScriptHeader.getHeaderSize(),
-						ne.getArchiveSize(), monitor);
+				fileBytesBody = MemoryBlockUtils.createFileBytes(program, provider,
+						scriptHeaderOffset + NsisScriptHeader.getHeaderSize(), ne.getArchiveSize(),
+						monitor);
 			}
 			initBlockHeaders(program, binary_reader,
-					scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()),
-					fileBytesBody);
+					scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()), fileBytesBody);
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
@@ -145,21 +143,18 @@ public class NsisLoader extends PeLoader {
 	 * @throws DuplicateNameException
 	 * @throws LockException
 	 */
-	private void initScriptHeader(FileBytes fileBytes,
-			Address scriptHeaderAddress, long size, Program program,
-			DataType dataType)
-			throws MemoryConflictException, AddressOverflowException,
-			CancelledException, DuplicateNameException, LockException {
+	private void initScriptHeader(FileBytes fileBytes, Address scriptHeaderAddress, long size,
+			Program program, DataType dataType) throws MemoryConflictException,
+			AddressOverflowException, CancelledException, DuplicateNameException, LockException {
 		Memory memory = program.getMemory();
-		MemoryBlock new_block = memory.createInitializedBlock(".script_header",
-				scriptHeaderAddress, fileBytes, 0, size, false);
+		MemoryBlock new_block = memory.createInitializedBlock(".script_header", scriptHeaderAddress,
+				fileBytes, 0, size, false);
 
 		new_block.setRead(true);
 		new_block.setWrite(false);
 		new_block.setExecute(false);
 
-		createData(program, program.getListing(), scriptHeaderAddress,
-				dataType);
+		createData(program, program.getListing(), scriptHeaderAddress, dataType);
 	}
 
 	/**
@@ -171,8 +166,7 @@ public class NsisLoader extends PeLoader {
 	 * @param dataType to apply to the bytes
 	 * @return
 	 */
-	private Data createData(Program program, Listing listing, Address address,
-			DataType dt) {
+	private Data createData(Program program, Listing listing, Address address, DataType dt) {
 		try {
 			Data d = listing.getDataAt(address);
 			if (d == null || !dt.isEquivalent(d.getDataType())) {
@@ -187,8 +181,8 @@ public class NsisLoader extends PeLoader {
 	}
 
 	/**
-	 * Initializes the block headers and adds them to the "Program Trees" view
-	 * in Ghidra.
+	 * Initializes the block headers and adds them to the "Program Trees" view in
+	 * Ghidra.
 	 * 
 	 * @param program
 	 * @param reader
@@ -199,15 +193,14 @@ public class NsisLoader extends PeLoader {
 	 * @throws DuplicateNameException
 	 * @throws LockException
 	 */
-	private void initBlockHeaders(Program program, BinaryReader reader,
-			Address startingAddr, FileBytes fileBytes)
-			throws IOException, LockException, DuplicateNameException,
+	private void initBlockHeaders(Program program, BinaryReader reader, Address startingAddr,
+			FileBytes fileBytes) throws IOException, LockException, DuplicateNameException,
 			MemoryConflictException, AddressOverflowException {
 		int block_header_offset = 0;
 
 		Memory memory = program.getMemory();
-		MemoryBlock new_block = memory.createInitializedBlock(".block_headers",
-				startingAddr, fileBytes, 0, fileBytes.getSize(), false);
+		MemoryBlock new_block = memory.createInitializedBlock(".block_headers", startingAddr,
+				fileBytes, 0, fileBytes.getSize(), false);
 
 		new_block.setRead(true);
 		new_block.setWrite(false);
@@ -218,18 +211,15 @@ public class NsisLoader extends PeLoader {
 					block_header_offset + startingAddr.getOffset());
 			Address block_address = startingAddr.add(block_header_offset);
 
-			reader.setPointerIndex(
-					startingAddr.getOffset() + block_header_offset);
+			reader.setPointerIndex(startingAddr.getOffset() + block_header_offset);
 
 			NsisBlockHeader block_header = new NsisBlockHeader(reader);
 			System.out.printf("Block index: %d\n", i);
-			System.out.printf("Block number of entries: %d\n",
-					block_header.getNbEntries());
+			System.out.printf("Block number of entries: %d\n", block_header.getNbEntries());
 			System.out.printf("Block offset: %08x\n", block_header.getOffset());
 
 			try {
-				createData(program, program.getListing(), block_address,
-						block_header.toDataType());
+				createData(program, program.getListing(), block_address, block_header.toDataType());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
