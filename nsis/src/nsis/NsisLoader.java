@@ -90,42 +90,40 @@ public class NsisLoader extends PeLoader {
 	protected void load(ByteProvider provider, LoadSpec loadSpec,
 			List<Option> options, Program program, TaskMonitor monitor,
 			MessageLog log) throws CancelledException, IOException {
-
 		try {
 			GenericFactory factory = MessageLogContinuesFactory.create(log);
 			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
 					provider, SectionLayout.FILE);
-
 			long scriptHeaderOffset = ne.getHeaderOffset();
-			
-			
-			
 			BinaryReader binary_reader = new BinaryReader(provider,
 					/* isLittleEndian= */ true);
 			binary_reader.setPointerIndex(scriptHeaderOffset);
-
 			Address scriptHeaderAddress = program.getAddressFactory()
 					.getDefaultAddressSpace().getAddress(scriptHeaderOffset);
-			
-			
-			FileBytes fileBytesHeader = MemoryBlockUtils.createFileBytes(program,
-					provider, scriptHeaderOffset, NsisScriptHeader.getHeaderSize(), monitor);
+
+			FileBytes fileBytesHeader = MemoryBlockUtils.createFileBytes(
+					program, provider, scriptHeaderOffset,
+					NsisScriptHeader.getHeaderSize(), monitor);
 			initScriptHeader(fileBytesHeader, scriptHeaderAddress,
 					fileBytesHeader.getSize(), program, ne.getHeaderDataType());
-			
+
 			FileBytes fileBytesBody;
 			byte[] decompressedBytes = ne.getDecompressedBytes();
-			if(decompressedBytes != null) {
-				ByteArrayProvider uncompressedBytes = new ByteArrayProvider(decompressedBytes);
-				fileBytesBody = MemoryBlockUtils.createFileBytes(program, uncompressedBytes, 0, uncompressedBytes.length(), monitor);
+			if (decompressedBytes != null) { // if binary was compressed
+				ByteArrayProvider uncompressedBytes = new ByteArrayProvider(
+						decompressedBytes);
+				fileBytesBody = MemoryBlockUtils.createFileBytes(program,
+						uncompressedBytes, 0, uncompressedBytes.length(),
+						monitor);
 			} else {
 				fileBytesBody = MemoryBlockUtils.createFileBytes(program,
-						provider, scriptHeaderOffset + NsisScriptHeader.getHeaderSize(), ne.getArchiveSize(), monitor);
+						provider,
+						scriptHeaderOffset + NsisScriptHeader.getHeaderSize(),
+						ne.getArchiveSize(), monitor);
 			}
-			
-			
-			initBlockHeaders(program, binary_reader, scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()), fileBytesBody);
-
+			initBlockHeaders(program, binary_reader,
+					scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()),
+					fileBytesBody);
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
@@ -155,7 +153,7 @@ public class NsisLoader extends PeLoader {
 		Memory memory = program.getMemory();
 		MemoryBlock new_block = memory.createInitializedBlock(".script_header",
 				scriptHeaderAddress, fileBytes, 0, size, false);
-		
+
 		new_block.setRead(true);
 		new_block.setWrite(false);
 		new_block.setExecute(false);
@@ -196,24 +194,25 @@ public class NsisLoader extends PeLoader {
 	 * @param reader
 	 * @param startingAddr, the Address where the nsis script header starts
 	 * @throws IOException
-	 * @throws AddressOverflowException 
-	 * @throws MemoryConflictException 
-	 * @throws DuplicateNameException 
-	 * @throws LockException 
+	 * @throws AddressOverflowException
+	 * @throws MemoryConflictException
+	 * @throws DuplicateNameException
+	 * @throws LockException
 	 */
 	private void initBlockHeaders(Program program, BinaryReader reader,
-			Address startingAddr, FileBytes fileBytes) throws IOException, LockException, DuplicateNameException, MemoryConflictException, AddressOverflowException {
+			Address startingAddr, FileBytes fileBytes)
+			throws IOException, LockException, DuplicateNameException,
+			MemoryConflictException, AddressOverflowException {
 		int block_header_offset = 0;
-		
+
 		Memory memory = program.getMemory();
 		MemoryBlock new_block = memory.createInitializedBlock(".block_headers",
 				startingAddr, fileBytes, 0, fileBytes.getSize(), false);
-		
+
 		new_block.setRead(true);
 		new_block.setWrite(false);
 		new_block.setExecute(false);
 
-		
 		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
 			System.out.printf("Processing block at offset %08x\n",
 					block_header_offset + startingAddr.getOffset());
