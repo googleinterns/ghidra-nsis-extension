@@ -159,8 +159,8 @@ public class NsisExecutable {
 		return this.headerOffset;
 	}
 
-	public int getHeaderSize() {
-		return this.scriptHeader.headerSize;
+	public int getInflatedHeaderSize() {
+		return this.scriptHeader.inflatedHeaderSize;
 	}
 
 	public int getArchiveSize() {

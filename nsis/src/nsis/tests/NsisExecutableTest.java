@@ -36,7 +36,7 @@ public class NsisExecutableTest {
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(2046, ne.getArchiveSize());
 			assertEquals(0x000007da, ne.getCompressedHeaderSize());
-			assertEquals(2010, ne.getHeaderSize());
+			assertEquals(2010, ne.getInflatedHeaderSize());
 		}
 	}
 
@@ -54,7 +54,7 @@ public class NsisExecutableTest {
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(399, ne.getArchiveSize());
 			assertEquals(0x8000016b, ne.getCompressedHeaderSize());
-			assertEquals(2010, ne.getHeaderSize());
+			assertEquals(2010, ne.getInflatedHeaderSize());
 		}
 	}
 
@@ -72,7 +72,7 @@ public class NsisExecutableTest {
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(419, ne.getArchiveSize());
 			assertEquals(0x8000017f, ne.getCompressedHeaderSize());
-			assertEquals(2010, ne.getHeaderSize());
+			assertEquals(2010, ne.getInflatedHeaderSize());
 		}
 	}
 
@@ -90,7 +90,7 @@ public class NsisExecutableTest {
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(463, ne.getArchiveSize());
 			assertEquals(0x800001ab, ne.getCompressedHeaderSize());
-			assertEquals(2010, ne.getHeaderSize());
+			assertEquals(2010, ne.getInflatedHeaderSize());
 		}
 	}
 
