@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.python.bouncycastle.util.encoders.Hex;
 import org.tukaani.xz.LZMAInputStream;
 
 import com.google.common.primitives.Bytes;
@@ -31,6 +30,7 @@ public class NsisExecutable {
 	private BinaryReader reader;
 	private NsisScriptHeader scriptHeader;
 	private long headerOffset;
+	private byte[] decompressedBytes;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
@@ -94,7 +94,7 @@ public class NsisExecutable {
 		this.reader.setPointerIndex(this.headerOffset);
 		this.scriptHeader = new NsisScriptHeader(this.reader);
 	}
-
+	
 	private void decompressData() throws IOException {
 		byte compressionByte = this.reader.readNextByte();
 		long compressedDataOffset;
@@ -127,9 +127,13 @@ public class NsisExecutable {
 	private void decompressLZMA(byte[] compressedData, byte propByte, int dictionarySize) throws IOException {
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
 		LZMAInputStream lzmaInputStream = new LZMAInputStream(byteArrayInputStream, -1, propByte, dictionarySize);
-		System.out.println("Uncompressed data: " + Hex.toHexString(lzmaInputStream.readAllBytes()));
+		this.decompressedBytes = lzmaInputStream.readAllBytes();
 		lzmaInputStream.close();
 		return;
+	}
+	
+	public byte[] getDecompressedBytes() {
+		return this.decompressedBytes;
 	}
 
 	public long getHeaderOffset() {

@@ -25,6 +25,7 @@ import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
+import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.app.util.importer.MessageLog;
@@ -96,19 +97,34 @@ public class NsisLoader extends PeLoader {
 					provider, SectionLayout.FILE);
 
 			long scriptHeaderOffset = ne.getHeaderOffset();
-
+			
+			
+			
 			BinaryReader binary_reader = new BinaryReader(provider,
 					/* isLittleEndian= */ true);
 			binary_reader.setPointerIndex(scriptHeaderOffset);
 
 			Address scriptHeaderAddress = program.getAddressFactory()
 					.getDefaultAddressSpace().getAddress(scriptHeaderOffset);
-			FileBytes fileBytes = MemoryBlockUtils.createFileBytes(program,
-					provider, scriptHeaderOffset, ne.getArchiveSize(), monitor);
-
-			initScriptHeader(fileBytes, scriptHeaderAddress,
-					fileBytes.getSize(), program, ne.getHeaderDataType());
-			initBlockHeaders(program, binary_reader, scriptHeaderAddress);
+			
+			
+			FileBytes fileBytesHeader = MemoryBlockUtils.createFileBytes(program,
+					provider, scriptHeaderOffset, NsisScriptHeader.getHeaderSize(), monitor);
+			initScriptHeader(fileBytesHeader, scriptHeaderAddress,
+					fileBytesHeader.getSize(), program, ne.getHeaderDataType());
+			
+			FileBytes fileBytesBody;
+			byte[] decompressedBytes = ne.getDecompressedBytes();
+			if(decompressedBytes != null) {
+				ByteArrayProvider uncompressedBytes = new ByteArrayProvider(decompressedBytes);
+				fileBytesBody = MemoryBlockUtils.createFileBytes(program, uncompressedBytes, 0, uncompressedBytes.length(), monitor);
+			} else {
+				fileBytesBody = MemoryBlockUtils.createFileBytes(program,
+						provider, scriptHeaderOffset + NsisScriptHeader.getHeaderSize(), ne.getArchiveSize(), monitor);
+			}
+			
+			
+			initBlockHeaders(program, binary_reader, scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()), fileBytesBody);
 
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
@@ -139,6 +155,7 @@ public class NsisLoader extends PeLoader {
 		Memory memory = program.getMemory();
 		MemoryBlock new_block = memory.createInitializedBlock(".script_header",
 				scriptHeaderAddress, fileBytes, 0, size, false);
+		
 		new_block.setRead(true);
 		new_block.setWrite(false);
 		new_block.setExecute(false);
@@ -179,10 +196,24 @@ public class NsisLoader extends PeLoader {
 	 * @param reader
 	 * @param startingAddr, the Address where the nsis script header starts
 	 * @throws IOException
+	 * @throws AddressOverflowException 
+	 * @throws MemoryConflictException 
+	 * @throws DuplicateNameException 
+	 * @throws LockException 
 	 */
 	private void initBlockHeaders(Program program, BinaryReader reader,
-			Address startingAddr) throws IOException {
-		int block_header_offset = NsisScriptHeader.getHeaderSize();
+			Address startingAddr, FileBytes fileBytes) throws IOException, LockException, DuplicateNameException, MemoryConflictException, AddressOverflowException {
+		int block_header_offset = 0;
+		
+		Memory memory = program.getMemory();
+		MemoryBlock new_block = memory.createInitializedBlock(".block_headers",
+				startingAddr, fileBytes, 0, fileBytes.getSize(), false);
+		
+		new_block.setRead(true);
+		new_block.setWrite(false);
+		new_block.setExecute(false);
+
+		
 		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
 			System.out.printf("Processing block at offset %08x\n",
 					block_header_offset + startingAddr.getOffset());
