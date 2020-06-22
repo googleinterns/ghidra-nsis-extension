@@ -154,7 +154,7 @@ public class NsisLoader extends PeLoader {
 		new_block.setWrite(false);
 		new_block.setExecute(false);
 
-		createData(program, program.getListing(), scriptHeaderAddress, dataType);
+		createData(program, scriptHeaderAddress, dataType);
 	}
 
 	/**
@@ -166,8 +166,9 @@ public class NsisLoader extends PeLoader {
 	 * @param dataType to apply to the bytes
 	 * @return
 	 */
-	private Data createData(Program program, Listing listing, Address address, DataType dt) {
+	private Data createData(Program program, Address address, DataType dt) {
 		try {
+			Listing listing = program.getListing();
 			Data d = listing.getDataAt(address);
 			if (d == null || !dt.isEquivalent(d.getDataType())) {
 				d = DataUtilities.createData(program, address, dt, -1, false,
@@ -175,7 +176,7 @@ public class NsisLoader extends PeLoader {
 			}
 			return d;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(); //TODO use Ghidra logging system to manage exceptions
 		}
 		return null;
 	}
@@ -219,7 +220,7 @@ public class NsisLoader extends PeLoader {
 			System.out.printf("Block offset: %08x\n", block_header.getOffset());
 
 			try {
-				createData(program, program.getListing(), block_address, block_header.toDataType());
+				createData(program, block_address, block_header.toDataType());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
