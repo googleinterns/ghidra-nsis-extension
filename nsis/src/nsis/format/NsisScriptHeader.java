@@ -26,11 +26,11 @@ public class NsisScriptHeader implements StructConverter {
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "nsinst",
 				"NSIS magic (FH_INT1, FH_INT2, FH_INT3)");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "header_size",
-				"points to the header+sections+entries+stringtable in the datablock");
+				"Points to the header+sections+entries+stringtable in the datablock");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "length_of_following_data",
 				"Length of all the data (including the firstheader and the CRC)");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size",
-				"If MSB is set following data is compressed");
+				"If the most significant bit is set, the following data is compressed");
 	}
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException, InvalidFormatException {
@@ -39,7 +39,9 @@ public class NsisScriptHeader implements StructConverter {
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
 		if (!Arrays.equals(NsisConstants.NSIS_MAGIC, this.magic)
 				|| !Arrays.equals(NsisConstants.NSIS_SIGINFO, this.siginfo)) {
-			throw new InvalidFormatException("Invalid format. Could not find magic bytes.");
+			throw new InvalidFormatException("NSIS magic does not match expected value. Got "
+					+ this.siginfo + this.magic + ", expected " + NsisConstants.NSIS_SIGINFO
+					+ NsisConstants.NSIS_MAGIC);
 		}
 
 		this.inflatedHeaderSize = reader.readNextInt();

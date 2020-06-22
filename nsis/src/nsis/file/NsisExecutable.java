@@ -61,11 +61,7 @@ public class NsisExecutable {
 		this.reader = new FactoryBundledWithBinaryReader(factory, bp, /* isLittleEndian= */ true);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		if ((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) { // Check
-																			// if
-																			// MSB
-																			// is
-																			// set
+		if ((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) { // Check if MSB is set
 			decompressData();
 		}
 	}
@@ -77,10 +73,7 @@ public class NsisExecutable {
 					NsisConstants.NSIS_SIGINFO.length + NsisConstants.NSIS_MAGIC.length);
 			if (Arrays.equals(Bytes.concat(NsisConstants.NSIS_SIGINFO, NsisConstants.NSIS_MAGIC),
 					content)) {
-				return headerOffset - StructConverter.DWORD.getLength(); // Include
-																			// flags
-																			// in
-																			// header
+				return headerOffset - StructConverter.DWORD.getLength(); // Include flag in header
 			}
 		}
 		throw new InvalidFormatException("Nsis magic not found.");
@@ -106,13 +99,12 @@ public class NsisExecutable {
 			int dictionarySize = this.reader.readNextInt();
 			compressedDataOffset = this.headerOffset + NsisScriptHeader.getHeaderSize()
 					+ NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
+			// Flip the MSB to get the length
 			compressedDataLength = (this.scriptHeader.compressedHeaderSize & 0x7fffffff)
-					- NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH; // Flip the
-																	// MSB to
-																	// get the
-																	// length
+					- NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
 			compressedData = this.reader.readByteArray(compressedDataOffset, compressedDataLength);
-			decompressLZMA(compressedData, compressionByte, dictionarySize);
+			this.decompressedBytes = decompressLZMA(compressedData, compressionByte,
+					dictionarySize);
 		} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
 			// TODO Bzip2 decompress
 			System.out.println("Decompress Bzip");
@@ -120,7 +112,6 @@ public class NsisExecutable {
 			// TODO Zlib decompress
 			System.out.println("Decompress Zlib");
 		}
-		return;
 	}
 
 	/**
@@ -133,14 +124,14 @@ public class NsisExecutable {
 	 * @param dictionarySize the size of the dictionary to use for decompression
 	 * @throws IOException
 	 */
-	private void decompressLZMA(byte[] compressedData, byte propByte, int dictionarySize)
+	private byte[] decompressLZMA(byte[] compressedData, byte propByte, int dictionarySize)
 			throws IOException {
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
 		LZMAInputStream lzmaInputStream = new LZMAInputStream(byteArrayInputStream, -1, propByte,
 				dictionarySize);
-		this.decompressedBytes = lzmaInputStream.readAllBytes();
+		byte[] decompressedBytes = lzmaInputStream.readAllBytes();
 		lzmaInputStream.close();
-		return;
+		return decompressedBytes;
 	}
 
 	public byte[] getDecompressedBytes() {

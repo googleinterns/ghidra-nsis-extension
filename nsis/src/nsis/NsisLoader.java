@@ -65,16 +65,7 @@ public class NsisLoader extends PeLoader {
 	}
 
 	@Override
-	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException { // TODO
-																									// call
-																									// super
-																									// to
-																									// handle
-																									// PE
-																									// portion
-																									// of
-																									// the
-																									// file
+	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 		NsisExecutable ne;
 		try {
@@ -176,7 +167,7 @@ public class NsisLoader extends PeLoader {
 			}
 			return d;
 		} catch (Exception e) {
-			e.printStackTrace(); //TODO use Ghidra logging system to manage exceptions
+			e.printStackTrace(); // TODO use Ghidra logging system to manage exceptions
 		}
 		return null;
 	}
@@ -216,7 +207,7 @@ public class NsisLoader extends PeLoader {
 
 			NsisBlockHeader block_header = new NsisBlockHeader(reader);
 			System.out.printf("Block index: %d\n", i);
-			System.out.printf("Block number of entries: %d\n", block_header.getNbEntries());
+			System.out.printf("Block number of entries: %d\n", block_header.getNumEntries());
 			System.out.printf("Block offset: %08x\n", block_header.getOffset());
 
 			try {
