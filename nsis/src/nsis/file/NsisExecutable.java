@@ -92,10 +92,10 @@ public class NsisExecutable {
 	 */
 	private void decompressData() throws IOException {
 		byte compressionByte = this.reader.readNextByte();
-		long compressedDataOffset;
-		int compressedDataLength;
-		byte[] compressedData;
 		if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
+			long compressedDataOffset;
+			int compressedDataLength;
+			byte[] compressedData;
 			int dictionarySize = this.reader.readNextInt();
 			compressedDataOffset = this.headerOffset + NsisScriptHeader.getHeaderSize()
 					+ NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
@@ -108,7 +108,7 @@ public class NsisExecutable {
 		} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
 			// TODO Bzip2 decompress
 			System.out.println("Decompress Bzip");
-		} else {
+		} else {// TODO find a was to identify Zlib compressed
 			// TODO Zlib decompress
 			System.out.println("Decompress Zlib");
 		}

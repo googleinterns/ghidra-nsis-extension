@@ -34,6 +34,7 @@ public class NsisScriptHeader implements StructConverter {
 	}
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException, InvalidFormatException {
+		// Values are named after the NSIS implementation of the first header: https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l234
 		this.flags = reader.readNextInt();
 		this.siginfo = reader.readNextByteArray(NsisConstants.NSIS_SIGINFO.length);
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);

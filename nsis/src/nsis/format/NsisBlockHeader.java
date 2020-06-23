@@ -15,6 +15,7 @@ public class NsisBlockHeader implements StructConverter {
 	private final static Structure STRUCTURE;
 
 	static {
+		// Values are named after the NSIS implementation of a block header: https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l265
 		STRUCTURE = new StructureDataType("block_header", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "offset",
 				"Offset at which the block header starts");
