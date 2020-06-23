@@ -199,11 +199,10 @@ public class NsisLoader extends PeLoader {
 		new_block.setExecute(false);
 
 		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
-			System.out.printf("Processing block at offset %08x\n",
-					block_header_offset + startingAddr.getOffset());
 			Address block_address = startingAddr.add(block_header_offset);
+			System.out.printf("Processing block at offset %08x\n", block_address.getOffset());
 
-			reader.setPointerIndex(startingAddr.getOffset() + block_header_offset);
+			reader.setPointerIndex(block_address.getOffset());
 
 			NsisBlockHeader block_header = new NsisBlockHeader(reader);
 			System.out.printf("Block index: %d\n", i);
