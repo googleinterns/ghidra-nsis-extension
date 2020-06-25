@@ -101,16 +101,10 @@ public class NsisLoader extends PeLoader {
 					program, ne.getHeaderDataType());
 
 			FileBytes fileBytesBody;
-			byte[] decompressedBytes = ne.getDecompressedBytes();
-			if (decompressedBytes != null) { // if binary was compressed
-				ByteArrayProvider uncompressedBytes = new ByteArrayProvider(decompressedBytes);
-				fileBytesBody = MemoryBlockUtils.createFileBytes(program, uncompressedBytes, 0,
-						uncompressedBytes.length(), monitor);
-			} else {
-				fileBytesBody = MemoryBlockUtils.createFileBytes(program, provider,
-						scriptHeaderOffset + NsisScriptHeader.getHeaderSize(), ne.getArchiveSize(),
-						monitor);
-			}
+			byte[] decompressedBytes = ne.getBodyData();
+			ByteArrayProvider uncompressedBytes = new ByteArrayProvider(decompressedBytes);
+			fileBytesBody = MemoryBlockUtils.createFileBytes(program, uncompressedBytes, 0,
+					uncompressedBytes.length(), monitor);
 			initBlockHeaders(program, binary_reader,
 					scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()), fileBytesBody);
 		} catch (Exception e) {

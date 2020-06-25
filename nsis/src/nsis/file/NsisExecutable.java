@@ -31,7 +31,7 @@ public class NsisExecutable {
 	private BinaryReader reader;
 	private NsisScriptHeader scriptHeader;
 	private long headerOffset;
-	private byte[] decompressedBytes;
+	private byte[] bodyData;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
@@ -62,8 +62,11 @@ public class NsisExecutable {
 		this.reader = new FactoryBundledWithBinaryReader(factory, bp, /* isLittleEndian= */ true);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is set
-			decompressData();
+		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is
+																					// set
+			this.bodyData = decompressData();
+		} else {
+			this.bodyData = this.reader.readNextByteArray(this.scriptHeader.inflatedHeaderSize);
 		}
 	}
 
@@ -91,7 +94,7 @@ public class NsisExecutable {
 	 * 
 	 * @throws IOException
 	 */
-	private void decompressData() throws IOException {
+	private byte[] decompressData() throws IOException {
 		byte compressionByte = this.reader.readNextByte();
 		if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
 			long compressedDataOffset;
@@ -104,14 +107,15 @@ public class NsisExecutable {
 			compressedDataLength = (this.scriptHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED)
 					- NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
 			compressedData = this.reader.readByteArray(compressedDataOffset, compressedDataLength);
-			this.decompressedBytes = decompressLZMA(compressedData, compressionByte,
-					dictionarySize);
+			return decompressLZMA(compressedData, compressionByte, dictionarySize);
 		} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
 			// TODO Bzip2 decompress
 			System.out.println("Decompress Bzip");
+			return new byte[0];
 		} else {// TODO find a was to identify Zlib compressed
 			// TODO Zlib decompress
 			System.out.println("Decompress Zlib");
+			return new byte[0];
 		}
 	}
 
@@ -135,8 +139,8 @@ public class NsisExecutable {
 		return decompressedBytes;
 	}
 
-	public byte[] getDecompressedBytes() {
-		return this.decompressedBytes;
+	public byte[] getBodyData() {
+		return this.bodyData;
 	}
 
 	public long getHeaderOffset() {
