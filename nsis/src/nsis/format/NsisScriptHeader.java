@@ -44,6 +44,7 @@ public class NsisScriptHeader implements StructConverter {
 			throw new InvalidFormatException("NSIS magic does not match expected value. Got "
 					+ this.siginfo + this.magic + ", expected " + NsisConstants.NSIS_SIGINFO
 					+ NsisConstants.NSIS_MAGIC);
+
 		}
 
 		this.inflatedHeaderSize = reader.readNextInt();

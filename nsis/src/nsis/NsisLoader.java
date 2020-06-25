@@ -140,7 +140,6 @@ public class NsisLoader extends PeLoader {
 		Memory memory = program.getMemory();
 		MemoryBlock new_block = memory.createInitializedBlock(".script_header", scriptHeaderAddress,
 				fileBytes, 0, size, false);
-
 		new_block.setRead(true);
 		new_block.setWrite(false);
 		new_block.setExecute(false);
