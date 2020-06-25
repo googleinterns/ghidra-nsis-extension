@@ -26,6 +26,7 @@ import nsis.format.NsisScriptHeader;
 public class NsisExecutable {
 
 	public static final String NAME = "NULLSOFT_SCRIPTABLE_INSTALLER_SYSTEM";
+	public static final int FLAG_IS_COMPRESSED = 0x80000000;
 
 	private BinaryReader reader;
 	private NsisScriptHeader scriptHeader;
@@ -61,7 +62,7 @@ public class NsisExecutable {
 		this.reader = new FactoryBundledWithBinaryReader(factory, bp, /* isLittleEndian= */ true);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		if ((this.scriptHeader.compressedHeaderSize & 0x80000000) != 0) { // Check if MSB is set
+		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is set
 			decompressData();
 		}
 	}
@@ -100,7 +101,7 @@ public class NsisExecutable {
 			compressedDataOffset = this.headerOffset + NsisScriptHeader.getHeaderSize()
 					+ NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
 			// Flip the MSB to get the length
-			compressedDataLength = (this.scriptHeader.compressedHeaderSize & 0x7fffffff)
+			compressedDataLength = (this.scriptHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED)
 					- NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
 			compressedData = this.reader.readByteArray(compressedDataOffset, compressedDataLength);
 			this.decompressedBytes = decompressLZMA(compressedData, compressionByte,
