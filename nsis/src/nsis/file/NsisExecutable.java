@@ -83,6 +83,12 @@ public class NsisExecutable {
 		throw new InvalidFormatException("Nsis magic not found.");
 	}
 
+	/**
+	 * Initializes the script header.
+	 * 
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
 	private void initScriptHeader() throws IOException, InvalidFormatException {
 		this.reader.setPointerIndex(this.headerOffset);
 		this.scriptHeader = new NsisScriptHeader(this.reader);
@@ -95,6 +101,7 @@ public class NsisExecutable {
 	 * @throws IOException
 	 */
 	private byte[] decompressData() throws IOException {
+		this.reader.setPointerIndex(this.headerOffset + NsisScriptHeader.getHeaderSize());
 		byte compressionByte = this.reader.readNextByte();
 		if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
 			long compressedDataOffset;
