@@ -46,6 +46,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.mem.MemoryConflictException;
+import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
@@ -127,10 +128,11 @@ public class NsisLoader extends PeLoader {
 	 * @throws CancelledException
 	 * @throws DuplicateNameException
 	 * @throws LockException
+	 * @throws CodeUnitInsertionException 
 	 */
 	private void initScriptHeader(FileBytes fileBytes, Address scriptHeaderAddress, long size,
 			Program program, DataType dataType) throws MemoryConflictException,
-			AddressOverflowException, CancelledException, DuplicateNameException, LockException {
+			AddressOverflowException, CancelledException, DuplicateNameException, LockException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
 		MemoryBlock new_block = memory.createInitializedBlock(".script_header", scriptHeaderAddress,
 				fileBytes, 0, size, false);
@@ -149,20 +151,16 @@ public class NsisLoader extends PeLoader {
 	 * @param address  at which to apply the data structure
 	 * @param dataType to apply to the bytes
 	 * @return
+	 * @throws CodeUnitInsertionException 
 	 */
-	private Data createData(Program program, Address address, DataType dt) {
-		try {
-			Listing listing = program.getListing();
-			Data d = listing.getDataAt(address);
-			if (d == null || !dt.isEquivalent(d.getDataType())) {
-				d = DataUtilities.createData(program, address, dt, -1, false,
-						ClearDataMode.CLEAR_ALL_UNDEFINED_CONFLICT_DATA);
-			}
-			return d;
-		} catch (Exception e) {
-			e.printStackTrace(); // TODO use Ghidra logging system to manage exceptions
+	private Data createData(Program program, Address address, DataType dt) throws CodeUnitInsertionException {
+		Listing listing = program.getListing();
+		Data d = listing.getDataAt(address);
+		if (d == null || !dt.isEquivalent(d.getDataType())) {
+			d = DataUtilities.createData(program, address, dt, -1, false,
+					ClearDataMode.CLEAR_ALL_UNDEFINED_CONFLICT_DATA);
 		}
-		return null;
+		return d;
 	}
 
 	/**
