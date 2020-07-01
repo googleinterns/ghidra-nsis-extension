@@ -10,5 +10,4 @@ public class NsisConstants {
 	public static final byte COMPRESSION_LZMA = 0x5d;
 	public static final byte COMPRESSION_BZIP2 = 0x31;
 	public static final int COMPRESSION_LZMA_HEADER_LENGTH = 5;
-
 }

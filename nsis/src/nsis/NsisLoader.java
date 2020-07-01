@@ -87,6 +87,7 @@ public class NsisLoader extends PeLoader {
 			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory, provider,
 					SectionLayout.FILE);
 			long scriptHeaderOffset = ne.getHeaderOffset();
+
 			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
 					.getAddress(scriptHeaderOffset);
 
@@ -195,6 +196,5 @@ public class NsisLoader extends PeLoader {
 
 		createData(program, currentBlockAddress, dataType);
 		blockHeaderOffset += NsisBlockHeader.getHeaderSize();
-
 	}
 }

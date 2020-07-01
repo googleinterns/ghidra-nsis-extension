@@ -1,8 +1,11 @@
 package nsis.file;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import org.tukaani.xz.LZMAInputStream;
 
 import com.google.common.primitives.Bytes;
 
@@ -35,6 +38,7 @@ public class NsisExecutable {
 	private NsisScriptHeader scriptHeader;
 	private NsisBlockHeader blockHeader;
 	private long headerOffset;
+	private byte[] bodyData;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
