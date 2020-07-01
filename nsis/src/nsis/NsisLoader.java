@@ -23,20 +23,14 @@ import java.util.List;
 
 import generic.continues.GenericFactory;
 import generic.continues.RethrowContinuesFactory;
-import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
-import ghidra.app.util.bin.BinaryReader;
-import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.InputStreamByteProvider;
-import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.importer.MessageLogContinuesFactory;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.PeLoader;
 import ghidra.framework.store.LockException;
-import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.data.DataType;
@@ -53,7 +47,6 @@ import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
-import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
@@ -97,24 +90,19 @@ public class NsisLoader extends PeLoader {
 			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
 					.getAddress(scriptHeaderOffset);
 
-
-			BinaryReader headerBinaryReader = new FactoryBundledWithBinaryReader(factory, provider, /* isLittleEndian= */ true);
-			InputStream headerInputStream = headerBinaryReader.getByteProvider().getInputStream(scriptHeaderOffset);
-			initScriptHeader(headerInputStream, scriptHeaderAddress, program, ne.getHeaderDataType(), monitor, ne.getHeaderDataType().getLength());
+			InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset);
+			initScriptHeader(headerInputStream, scriptHeaderAddress, program,
+					ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
 			headerInputStream.close();
-			
-			BinaryReader bodyDataReader = ne.getBinaryReader();
-			ByteProvider bp = bodyDataReader.getByteProvider();
-			InputStream bodyInputStream;
-			if(bp.getClass() == InputStreamByteProvider.class) {
-				bodyInputStream = ((InputStreamByteProvider) bodyDataReader.getByteProvider()).getUnderlyingInputStream();
-			}else {
-				bodyInputStream = bodyDataReader.getByteProvider().getInputStream(0);
-			}
-			
-			
-			Address blockHeadersStartingAddress = scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize());
-			initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program, ne.getBlockHeaderDataType(), monitor, ne.getBlockHeaderDataType().getLength());
+
+			InputStream bodyInputStream = ne.getInputStreamByteProvider()
+					.getUnderlyingInputStream();
+			Address blockHeadersStartingAddress = scriptHeaderAddress
+					.add(NsisScriptHeader.getHeaderSize());
+			initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
+					ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
+			bodyInputStream.close();
+
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
@@ -137,12 +125,13 @@ public class NsisLoader extends PeLoader {
 	 * @throws LockException
 	 * @throws CodeUnitInsertionException
 	 */
-	private void initScriptHeader(InputStream is, Address scriptHeaderAddress, Program program, DataType dataType, TaskMonitor monitor, int size)
+	private void initScriptHeader(InputStream is, Address scriptHeaderAddress, Program program,
+			DataType dataType, TaskMonitor monitor, int size)
 			throws MemoryConflictException, AddressOverflowException, CancelledException,
 			DuplicateNameException, LockException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock scriptHeaderBlock = memory.createInitializedBlock(".script_header", scriptHeaderAddress,
-				is, size, monitor, false);
+		MemoryBlock scriptHeaderBlock = memory.createInitializedBlock(".script_header",
+				scriptHeaderAddress, is, size, monitor, false);
 		scriptHeaderBlock.setRead(true);
 		scriptHeaderBlock.setWrite(false);
 		scriptHeaderBlock.setExecute(false);
@@ -183,36 +172,29 @@ public class NsisLoader extends PeLoader {
 	 * @throws MemoryConflictException
 	 * @throws DuplicateNameException
 	 * @throws LockException
-	 * @throws CancelledException 
-	 * @throws CodeUnitInsertionException 
+	 * @throws CancelledException
+	 * @throws CodeUnitInsertionException
 	 */
-	private void initBlockHeaders(InputStream is, Address startingAddr, Program program, DataType dataType, TaskMonitor monitor, int size) throws IOException, LockException, DuplicateNameException,
-			MemoryConflictException, AddressOverflowException, CancelledException, CodeUnitInsertionException {
-		int block_header_offset = 0;
-
+	private void initBlockHeaders(InputStream is, Address startingAddr, Program program,
+			DataType dataType, TaskMonitor monitor, int size)
+			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
+			AddressOverflowException, CancelledException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".block_headers", startingAddr,
-				is, size, monitor, false);
+		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".block_headers",
+				startingAddr, is, size, monitor, false);
 
 		blockHeadersBlock.setRead(true);
 		blockHeadersBlock.setWrite(false);
 		blockHeadersBlock.setExecute(false);
 
-		//for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
-			Address block_address = startingAddr.add(block_header_offset);
-			System.out.printf("Processing block at offset %08x\n", block_address.getOffset());
+		int blockHeaderOffset = 0;
+		// TODO add for loop for each header block in the header block list of nsis
+		// executable
+		Address currentBlockAddress = startingAddr.add(blockHeaderOffset);
+		System.out.printf("Processing block at offset %08x\n", currentBlockAddress.getOffset());
 
-			//reader.setPointerIndex(block_address.getOffset());
+		createData(program, currentBlockAddress, dataType);
+		blockHeaderOffset += NsisBlockHeader.getHeaderSize();
 
-			/*
-			NsisBlockHeader block_header = new NsisBlockHeader();
-			System.out.printf("Block index: %d\n", i);
-			System.out.printf("Block number of entries: %d\n", block_header.getNumEntries());
-			System.out.printf("Block offset: %08x\n", block_header.getOffset());
-			 */
-
-			createData(program, block_address, dataType);
-			block_header_offset += NsisBlockHeader.getHeaderSize();
-		//}
 	}
 }

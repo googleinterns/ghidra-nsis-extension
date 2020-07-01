@@ -1,23 +1,22 @@
 package nsis.file;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
-import org.tukaani.xz.LZMAInputStream;
 
 import com.google.common.primitives.Bytes;
 
 import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.bin.ByteProviderWrapper;
 import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.program.model.data.DataType;
+import nsis.compression.NsisDecompressionProvider;
+import nsis.compression.NsisLZMAProvider;
+import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisScriptHeader;
@@ -63,13 +62,16 @@ public class NsisExecutable {
 
 	private void initNsisExecutable(GenericFactory factory, ByteProvider bp, SectionLayout layout)
 			throws IOException, InvalidFormatException {
-		this.reader = new FactoryBundledWithBinaryReader(factory, bp, /* isLittleEndian= */ true);
+		this.reader = new FactoryBundledWithBinaryReader(factory, bp,
+				NsisConstants.IS_LITTLE_ENDIAN);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is
-																					// set
-			this.reader = new FactoryBundledWithBinaryReader(factory, decompressData(), true);
-		}
+		NsisDecompressionProvider decompressionProvider = decompressData(
+				this.headerOffset + NsisScriptHeader.getHeaderSize());
+		InputStreamByteProvider inputStreamByteProvider = new InputStreamByteProvider(
+				decompressionProvider.getDecompressedStream(), this.getInflatedHeaderSize());
+		this.reader = new FactoryBundledWithBinaryReader(factory, inputStreamByteProvider,
+				NsisConstants.IS_LITTLE_ENDIAN);
 		this.blockHeader = new NsisBlockHeader(this.reader);
 	}
 
@@ -101,55 +103,32 @@ public class NsisExecutable {
 	 * Attempt to decompress the data from the reader. Supports LZMA algorithm. Will
 	 * eventually support Bzip2 and Zlib.
 	 * 
+	 * @param offset, the offset at which the compressed data can be found
 	 * @throws IOException
 	 */
-	private ByteProvider decompressData() throws IOException {
-		this.reader.setPointerIndex(this.headerOffset + NsisScriptHeader.getHeaderSize());
-		byte compressionByte = this.reader.readNextByte();
-		if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
-			int dictionarySize = this.reader.readNextInt();
-			long compressedDataOffset = this.headerOffset + NsisScriptHeader.getHeaderSize()
-					+ NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
-			// Flip the MSB to get the length
-			int compressedDataLength = (this.scriptHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED)
-					- NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
-			byte[] compressedData = this.reader.readByteArray(compressedDataOffset, compressedDataLength);
-			LZMAInputStream lzmaInputStream = decompressLZMA(compressedData, compressionByte, dictionarySize);
-			
-			ByteProvider decompressedByteProvider = new InputStreamByteProvider(lzmaInputStream, 0);
-			
-			//return new ByteProviderWrapper(decompressedByteProvider, 0, this.scriptHeader.inflatedHeaderSize);
-			return decompressedByteProvider;
-		} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
-			// TODO Bzip2 decompress
-			System.out.println("Decompress Bzip");
-			return null;
-		} else {// TODO find a was to identify Zlib compressed
-			// TODO Zlib decompress
-			System.out.println("Decompress Zlib");
-			return null;
+	private NsisDecompressionProvider decompressData(long offset) throws IOException {
+		InputStream compressedInputStream = this.reader.getByteProvider().getInputStream(offset);
+		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is
+			// set
+			this.reader.setPointerIndex(offset);
+			byte compressionByte = this.reader.readNextByte();
+			if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
+				int dictionarySize = this.reader.readNextInt();
+				compressedInputStream.skip(NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH);
+				NsisDecompressionProvider decompressionProvider = new NsisLZMAProvider(
+						compressedInputStream, compressionByte, dictionarySize);
+				return decompressionProvider;
+			} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
+				// TODO Bzip2 decompress
+				System.out.println("Decompress Bzip");
+				return null;
+			} else {// TODO find a was to identify Zlib compressed
+				// TODO Zlib decompress
+				System.out.println("Decompress Zlib");
+				return null;
+			}
 		}
-	}
-
-	/**
-	 * Decompressed LZMA bytes using a known properties byte and dictionary size.
-	 * The properties byte is the first byte in the LZMA header and the dictionary
-	 * size corresponds to the 4 following bytes.
-	 * 
-	 * @param compressedData
-	 * @param propByte       the byte indicating LZMA properties
-	 * @param dictionarySize the size of the dictionary to use for decompression
-	 * @throws IOException
-	 */
-	private LZMAInputStream decompressLZMA(byte[] compressedData, byte propByte, int dictionarySize)
-			throws IOException {
-		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
-		LZMAInputStream lzmaInputStream = new LZMAInputStream(byteArrayInputStream, -1, propByte,
-				dictionarySize);
-		if(lzmaInputStream == InputStream.nullInputStream()) {
-			//throw exception
-		}
-		return lzmaInputStream;
+		return new NsisUncompressedProvider(compressedInputStream);
 	}
 
 	public long getHeaderOffset() {
@@ -180,12 +159,12 @@ public class NsisExecutable {
 	public DataType getHeaderDataType() {
 		return this.scriptHeader.toDataType();
 	}
-	
+
 	public DataType getBlockHeaderDataType() {
 		return this.blockHeader.toDataType();
 	}
-	
-	public BinaryReader getBinaryReader() {
-		return this.reader;
+
+	public InputStreamByteProvider getInputStreamByteProvider() {
+		return (InputStreamByteProvider) this.reader.getByteProvider();
 	}
 }

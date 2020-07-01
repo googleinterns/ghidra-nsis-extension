@@ -1,6 +1,7 @@
 package nsis.file;
 
 public class NsisConstants {
+	public static final boolean IS_LITTLE_ENDIAN = true;
 	public static final byte[] NSIS_SIGINFO = { (byte) 0xef, (byte) 0xbe, (byte) 0xad,
 			(byte) 0xde };
 	public static final byte[] NSIS_MAGIC = { 'N', 'u', 'l', 'l', 's', 'o', 'f', 't', 'I', 'n', 's',
