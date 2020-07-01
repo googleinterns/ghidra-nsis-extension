@@ -29,7 +29,7 @@ public class NsisBlockHeader implements StructConverter {
 	}
 
 	@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
+	public DataType toDataType() {
 		return STRUCTURE;
 	}
 

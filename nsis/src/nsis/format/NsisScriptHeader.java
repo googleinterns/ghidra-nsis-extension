@@ -18,8 +18,11 @@ public class NsisScriptHeader implements StructConverter {
 	public final int archiveSize;
 	public final int compressedHeaderSize;
 	private final static Structure STRUCTURE;
+	
 
 	static {
+		// Values are named after the NSIS implementation of the first header:
+		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l234
 		STRUCTURE = new StructureDataType("script_header", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", "First header flags (FH_FLAGS_*)");
 		STRUCTURE.add(STRING, NsisConstants.NSIS_SIGINFO.length, "siginfo", "0xdeadbeef (FH_SIG)");
@@ -34,8 +37,6 @@ public class NsisScriptHeader implements StructConverter {
 	}
 
 	public NsisScriptHeader(BinaryReader reader) throws IOException, InvalidFormatException {
-		// Values are named after the NSIS implementation of the first header:
-		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l234
 		this.flags = reader.readNextInt();
 		this.siginfo = reader.readNextByteArray(NsisConstants.NSIS_SIGINFO.length);
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
@@ -44,7 +45,6 @@ public class NsisScriptHeader implements StructConverter {
 			throw new InvalidFormatException("NSIS magic does not match expected value. Got "
 					+ this.siginfo + this.magic + ", expected " + NsisConstants.NSIS_SIGINFO
 					+ NsisConstants.NSIS_MAGIC);
-
 		}
 
 		this.inflatedHeaderSize = reader.readNextInt();
