@@ -30,10 +30,9 @@ public class NsisLZMAProvider implements NsisDecompressionProvider {
 	 * @param dictionarySize the size of the dictionary to use for decompression
 	 * @throws IOException
 	 */
-	private LZMAInputStream decompressLZMA(InputStream compressedData, byte propByte,
-			int dictionarySize) throws IOException {
-		LZMAInputStream lzmaInputStream = new LZMAInputStream(compressedData, -1, propByte,
-				dictionarySize);
+	private LZMAInputStream decompressLZMA(InputStream compressedData) throws IOException {
+		LZMAInputStream lzmaInputStream = new LZMAInputStream(compressedData, -1, this.propsByte,
+				this.dictionarySize);
 		if (lzmaInputStream == InputStream.nullInputStream()) {
 			throw new IOException("Unable to decompress LZMA compressed data.");
 		}
@@ -43,8 +42,7 @@ public class NsisLZMAProvider implements NsisDecompressionProvider {
 	@Override
 	public InputStream getDecompressedStream() throws IOException {
 		InputStream compressedInputStream = byteProvider.getInputStream(0);
-		LZMAInputStream decompressedStream = decompressLZMA(compressedInputStream, this.propsByte,
-				this.dictionarySize);
+		LZMAInputStream decompressedStream = decompressLZMA(compressedInputStream);
 		return decompressedStream;
 	}
 
