@@ -91,19 +91,19 @@ public class NsisLoader extends PeLoader {
 			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
 					.getAddress(scriptHeaderOffset);
 
-			InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset);
-			initScriptHeader(headerInputStream, scriptHeaderAddress, program,
-					ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
-			headerInputStream.close();
+			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
+				initScriptHeader(headerInputStream, scriptHeaderAddress, program,
+						ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
+			}
 
-			InputStream bodyInputStream = ne.getInputStreamByteProvider()
-					.getUnderlyingInputStream();
-			Address blockHeadersStartingAddress = scriptHeaderAddress
-					.add(NsisScriptHeader.getHeaderSize());
-			initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
-					ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
-			bodyInputStream.close();
-
+			try (InputStream bodyInputStream = ne.getInputStreamByteProvider()
+					.getUnderlyingInputStream()) {
+				Address blockHeadersStartingAddress = scriptHeaderAddress
+						.add(NsisScriptHeader.getHeaderSize());
+				initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
+						ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
+			}
+			
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
