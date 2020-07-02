@@ -9,6 +9,7 @@ import com.google.common.primitives.Bytes;
 import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
+import ghidra.app.util.bin.ByteProviderWrapper;
 import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
@@ -66,8 +67,7 @@ public class NsisExecutable {
 				NsisConstants.IS_LITTLE_ENDIAN);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		NsisDecompressionProvider decompressionProvider = decompressData(
-				this.headerOffset + NsisScriptHeader.getHeaderSize());
+		NsisDecompressionProvider decompressionProvider = getDecompressionProvider();
 		InputStreamByteProvider inputStreamByteProvider = new InputStreamByteProvider(
 				decompressionProvider.getDecompressedStream(), this.getInflatedHeaderSize());
 		this.reader = new FactoryBundledWithBinaryReader(factory, inputStreamByteProvider,
@@ -101,34 +101,40 @@ public class NsisExecutable {
 
 	/**
 	 * Attempt to decompress the data from the reader. Supports LZMA algorithm. Will
-	 * eventually support Bzip2 and Zlib.
+	 * eventually support Bzip2 and Zlib. The reader offset has to be set at the
+	 * beginning of the compressed data before calling this function.
 	 * 
 	 * @param offset, the offset at which the compressed data can be found
 	 * @throws IOException
 	 */
-	private NsisDecompressionProvider decompressData(long offset) throws IOException {
-		InputStream compressedInputStream = this.reader.getByteProvider().getInputStream(offset);
+	private NsisDecompressionProvider getDecompressionProvider() throws IOException {
 		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is
 			// set
-			this.reader.setPointerIndex(offset);
-			byte compressionByte = this.reader.readNextByte();
+			byte compressionByte = this.reader.peekNextByte();
 			if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
+				this.reader.readNextByte();
 				int dictionarySize = this.reader.readNextInt();
-				compressedInputStream.skip(NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH);
+				long compressedDataLength = (this.scriptHeader.compressedHeaderSize
+						& ~FLAG_IS_COMPRESSED) - NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
+				ByteProvider compressedBytesProvider = new ByteProviderWrapper(
+						this.reader.getByteProvider(), this.reader.getPointerIndex(),
+						compressedDataLength);
 				NsisDecompressionProvider decompressionProvider = new NsisLZMAProvider(
-						compressedInputStream, compressionByte, dictionarySize);
+						compressedBytesProvider, compressionByte, dictionarySize);
 				return decompressionProvider;
 			} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
 				// TODO Bzip2 decompress
 				System.out.println("Decompress Bzip");
-				return new NsisUncompressedProvider(compressedInputStream);
+				return null;
 			} else {// TODO find a was to identify Zlib compressed
 				// TODO Zlib decompress
 				System.out.println("Decompress Zlib");
-				return new NsisUncompressedProvider(compressedInputStream);
+				return null;
 			}
 		}
-		return new NsisUncompressedProvider(compressedInputStream);
+		ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
+				this.reader.getPointerIndex(), this.scriptHeader.compressedHeaderSize);
+		return new NsisUncompressedProvider(uncompressedBytes);
 	}
 
 	public long getHeaderOffset() {

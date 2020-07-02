@@ -5,12 +5,15 @@ import java.io.InputStream;
 
 import org.tukaani.xz.LZMAInputStream;
 
+import ghidra.app.util.bin.ByteProvider;
+
 public class NsisLZMAProvider implements NsisDecompressionProvider {
 
 	private LZMAInputStream decompressedStream;
 
-	public NsisLZMAProvider(InputStream compressedInputStream, byte propertiesByte,
+	public NsisLZMAProvider(ByteProvider compressedBytesProvider, byte propertiesByte,
 			int dictionarySize) throws IOException {
+		InputStream compressedInputStream = compressedBytesProvider.getInputStream(0);
 		this.decompressedStream = decompressLZMA(compressedInputStream, propertiesByte,
 				dictionarySize);
 	}
