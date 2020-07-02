@@ -9,13 +9,15 @@ import ghidra.app.util.bin.ByteProvider;
 
 public class NsisLZMAProvider implements NsisDecompressionProvider {
 
-	private LZMAInputStream decompressedStream;
+	private ByteProvider byteProvider;
+	private byte propsByte;
+	private int dictionarySize;
 
-	public NsisLZMAProvider(ByteProvider compressedBytesProvider, byte propertiesByte,
-			int dictionarySize) throws IOException {
-		InputStream compressedInputStream = compressedBytesProvider.getInputStream(0);
-		this.decompressedStream = decompressLZMA(compressedInputStream, propertiesByte,
-				dictionarySize);
+	public NsisLZMAProvider(ByteProvider byteProvider, byte propertiesByte, int dictionarySize)
+			throws IOException {
+		this.byteProvider = byteProvider;
+		this.propsByte = propertiesByte;
+		this.dictionarySize = dictionarySize;
 	}
 
 	/**
@@ -33,14 +35,17 @@ public class NsisLZMAProvider implements NsisDecompressionProvider {
 		LZMAInputStream lzmaInputStream = new LZMAInputStream(compressedData, -1, propByte,
 				dictionarySize);
 		if (lzmaInputStream == InputStream.nullInputStream()) {
-			// TODO throw exception
+			throw new IOException("Unable to decompress LZMA compressed data.");
 		}
 		return lzmaInputStream;
 	}
 
 	@Override
-	public InputStream getDecompressedStream() {
-		return this.decompressedStream;
+	public InputStream getDecompressedStream() throws IOException {
+		InputStream compressedInputStream = byteProvider.getInputStream(0);
+		LZMAInputStream decompressedStream = decompressLZMA(compressedInputStream, this.propsByte,
+				this.dictionarySize);
+		return decompressedStream;
 	}
 
 }

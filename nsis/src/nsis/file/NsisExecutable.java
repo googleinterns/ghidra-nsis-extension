@@ -125,11 +125,17 @@ public class NsisExecutable {
 			} else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
 				// TODO Bzip2 decompress
 				System.out.println("Decompress Bzip");
-				return null;
+				ByteProvider uncompressedBytes = new ByteProviderWrapper(
+						this.reader.getByteProvider(), this.reader.getPointerIndex(),
+						this.scriptHeader.compressedHeaderSize);
+				return new NsisUncompressedProvider(uncompressedBytes);
 			} else {// TODO find a was to identify Zlib compressed
 				// TODO Zlib decompress
 				System.out.println("Decompress Zlib");
-				return null;
+				ByteProvider uncompressedBytes = new ByteProviderWrapper(
+						this.reader.getByteProvider(), this.reader.getPointerIndex(),
+						this.scriptHeader.compressedHeaderSize);
+				return new NsisUncompressedProvider(uncompressedBytes);
 			}
 		}
 		ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
