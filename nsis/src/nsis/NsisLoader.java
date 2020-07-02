@@ -96,14 +96,13 @@ public class NsisLoader extends PeLoader {
 						ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
 			}
 
-			try (InputStream bodyInputStream = ne.getInputStreamByteProvider()
-					.getUnderlyingInputStream()) {
+			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
 				Address blockHeadersStartingAddress = scriptHeaderAddress
 						.add(NsisScriptHeader.getHeaderSize());
 				initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
 						ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
 			}
-			
+
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}

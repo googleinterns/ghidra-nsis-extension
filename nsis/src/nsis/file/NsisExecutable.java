@@ -10,7 +10,6 @@ import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.ByteProviderWrapper;
-import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
@@ -33,6 +32,7 @@ public class NsisExecutable {
 	public static final int FLAG_IS_COMPRESSED = 0x80000000;
 
 	private BinaryReader reader;
+	private NsisDecompressionProvider decompressionProvider;
 	private NsisScriptHeader scriptHeader;
 	private NsisBlockHeader blockHeader;
 	private long headerOffset;
@@ -67,11 +67,7 @@ public class NsisExecutable {
 				NsisConstants.IS_LITTLE_ENDIAN);
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
-		NsisDecompressionProvider decompressionProvider = getDecompressionProvider();
-		InputStreamByteProvider inputStreamByteProvider = new InputStreamByteProvider(
-				decompressionProvider.getDecompressedStream(), this.getInflatedHeaderSize());
-		this.reader = new FactoryBundledWithBinaryReader(factory, inputStreamByteProvider,
-				NsisConstants.IS_LITTLE_ENDIAN);
+		this.decompressionProvider = getDecompressionProvider();
 		this.blockHeader = new NsisBlockHeader(this.reader);
 	}
 
@@ -176,7 +172,7 @@ public class NsisExecutable {
 		return this.blockHeader.toDataType();
 	}
 
-	public InputStreamByteProvider getInputStreamByteProvider() {
-		return (InputStreamByteProvider) this.reader.getByteProvider();
+	public InputStream getDecompressedInputStream() throws IOException {
+		return this.decompressionProvider.getDecompressedStream();
 	}
 }
