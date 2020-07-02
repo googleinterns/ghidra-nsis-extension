@@ -10,13 +10,13 @@ import ghidra.app.util.bin.ByteProvider;
 public class NsisLZMAProvider implements NsisDecompressionProvider {
 
 	private ByteProvider byteProvider;
-	private byte propsByte;
+	private byte propertiesByte;
 	private int dictionarySize;
 
 	public NsisLZMAProvider(ByteProvider byteProvider, byte propertiesByte, int dictionarySize)
 			throws IOException {
 		this.byteProvider = byteProvider;
-		this.propsByte = propertiesByte;
+		this.propertiesByte = propertiesByte;
 		this.dictionarySize = dictionarySize;
 	}
 
@@ -31,7 +31,7 @@ public class NsisLZMAProvider implements NsisDecompressionProvider {
 	 * @throws IOException
 	 */
 	private LZMAInputStream decompressLZMA(InputStream compressedData) throws IOException {
-		LZMAInputStream lzmaInputStream = new LZMAInputStream(compressedData, -1, this.propsByte,
+		LZMAInputStream lzmaInputStream = new LZMAInputStream(compressedData, -1, this.propertiesByte,
 				this.dictionarySize);
 		if (lzmaInputStream == InputStream.nullInputStream()) {
 			throw new IOException("Unable to decompress LZMA compressed data.");

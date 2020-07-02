@@ -104,8 +104,7 @@ public class NsisExecutable {
 	 * @throws IOException
 	 */
 	private NsisDecompressionProvider getDecompressionProvider() throws IOException {
-		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) { // Check if MSB is
-			// set
+		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) {
 			byte compressionByte = this.reader.peekNextByte();
 			if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
 				this.reader.readNextByte();
