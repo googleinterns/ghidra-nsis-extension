@@ -42,6 +42,20 @@ public class NsisExecutable {
 	 */
 	public NsisExecutable() {
 	}
+	
+	/**
+	 * Checks if a ByteProvider contains the NSIS magic bytes. If it does not, it throws a InvalidFormatException.
+	 * @param factory
+	 * @param bp
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
+	public static void isNsisExecutable(GenericFactory factory, ByteProvider bp) throws IOException, InvalidFormatException {
+		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
+		nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
+				NsisConstants.IS_LITTLE_ENDIAN);
+		nsisExecutable.findHeaderOffset();
+	}
 
 	/**
 	 * Creates and initializes a Nsis Executable object

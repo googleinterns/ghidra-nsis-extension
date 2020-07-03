@@ -64,10 +64,8 @@ public class NsisLoader extends PeLoader {
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
-		NsisExecutable ne;
 		try {
-			ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider,
-					SectionLayout.FILE);
+			NsisExecutable.isNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
 			loadSpecs.add(my_spec);
