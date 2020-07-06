@@ -10,6 +10,7 @@ import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.ByteProviderWrapper;
+import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
@@ -68,7 +69,11 @@ public class NsisExecutable {
 		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
 		this.decompressionProvider = getDecompressionProvider();
-		this.blockHeader = new NsisBlockHeader(this.reader);
+		try(InputStream decompressesdStream = this.getDecompressedInputStream()){
+			ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream, this.scriptHeader.inflatedHeaderSize);
+			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
+			this.blockHeader = new NsisBlockHeader(blockReader);
+		}
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
