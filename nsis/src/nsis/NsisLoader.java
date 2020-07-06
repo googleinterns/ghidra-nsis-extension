@@ -16,16 +16,14 @@
 package nsis;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import generic.continues.GenericFactory;
 import generic.continues.RethrowContinuesFactory;
-import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
-import ghidra.app.util.bin.BinaryReader;
-import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.app.util.importer.MessageLog;
@@ -33,7 +31,6 @@ import ghidra.app.util.importer.MessageLogContinuesFactory;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.app.util.opinion.PeLoader;
 import ghidra.framework.store.LockException;
-import ghidra.program.database.mem.FileBytes;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOverflowException;
 import ghidra.program.model.data.DataType;
@@ -50,7 +47,6 @@ import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
-import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
@@ -91,23 +87,22 @@ public class NsisLoader extends PeLoader {
 			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory, provider,
 					SectionLayout.FILE);
 			long scriptHeaderOffset = ne.getHeaderOffset();
-			BinaryReader binary_reader = new BinaryReader(provider, /* isLittleEndian= */ true);
-			binary_reader.setPointerIndex(scriptHeaderOffset);
+
 			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
 					.getAddress(scriptHeaderOffset);
 
-			FileBytes fileBytesHeader = MemoryBlockUtils.createFileBytes(program, provider,
-					scriptHeaderOffset, NsisScriptHeader.getHeaderSize(), monitor);
-			initScriptHeader(fileBytesHeader, scriptHeaderAddress, fileBytesHeader.getSize(),
-					program, ne.getHeaderDataType());
+			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
+				initScriptHeader(headerInputStream, scriptHeaderAddress, program,
+						ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
+			}
 
-			FileBytes fileBytesBody;
-			byte[] decompressedBytes = ne.getBodyData();
-			ByteArrayProvider uncompressedBytes = new ByteArrayProvider(decompressedBytes);
-			fileBytesBody = MemoryBlockUtils.createFileBytes(program, uncompressedBytes, 0,
-					uncompressedBytes.length(), monitor);
-			initBlockHeaders(program, binary_reader,
-					scriptHeaderAddress.add(NsisScriptHeader.getHeaderSize()), fileBytesBody);
+			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
+				Address blockHeadersStartingAddress = scriptHeaderAddress
+						.add(NsisScriptHeader.getHeaderSize());
+				initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
+						ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
+			}
+
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
@@ -128,17 +123,18 @@ public class NsisLoader extends PeLoader {
 	 * @throws CancelledException
 	 * @throws DuplicateNameException
 	 * @throws LockException
-	 * @throws CodeUnitInsertionException 
+	 * @throws CodeUnitInsertionException
 	 */
-	private void initScriptHeader(FileBytes fileBytes, Address scriptHeaderAddress, long size,
-			Program program, DataType dataType) throws MemoryConflictException,
-			AddressOverflowException, CancelledException, DuplicateNameException, LockException, CodeUnitInsertionException {
+	private void initScriptHeader(InputStream is, Address scriptHeaderAddress, Program program,
+			DataType dataType, TaskMonitor monitor, int size)
+			throws MemoryConflictException, AddressOverflowException, CancelledException,
+			DuplicateNameException, LockException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock new_block = memory.createInitializedBlock(".script_header", scriptHeaderAddress,
-				fileBytes, 0, size, false);
-		new_block.setRead(true);
-		new_block.setWrite(false);
-		new_block.setExecute(false);
+		MemoryBlock scriptHeaderBlock = memory.createInitializedBlock(".script_header",
+				scriptHeaderAddress, is, size, monitor, false);
+		scriptHeaderBlock.setRead(true);
+		scriptHeaderBlock.setWrite(false);
+		scriptHeaderBlock.setExecute(false);
 
 		createData(program, scriptHeaderAddress, dataType);
 	}
@@ -151,9 +147,10 @@ public class NsisLoader extends PeLoader {
 	 * @param address  at which to apply the data structure
 	 * @param dataType to apply to the bytes
 	 * @return
-	 * @throws CodeUnitInsertionException 
+	 * @throws CodeUnitInsertionException
 	 */
-	private Data createData(Program program, Address address, DataType dt) throws CodeUnitInsertionException {
+	private Data createData(Program program, Address address, DataType dt)
+			throws CodeUnitInsertionException {
 		Listing listing = program.getListing();
 		Data d = listing.getDataAt(address);
 		if (d == null || !dt.isEquivalent(d.getDataType())) {
@@ -175,37 +172,28 @@ public class NsisLoader extends PeLoader {
 	 * @throws MemoryConflictException
 	 * @throws DuplicateNameException
 	 * @throws LockException
+	 * @throws CancelledException
+	 * @throws CodeUnitInsertionException
 	 */
-	private void initBlockHeaders(Program program, BinaryReader reader, Address startingAddr,
-			FileBytes fileBytes) throws IOException, LockException, DuplicateNameException,
-			MemoryConflictException, AddressOverflowException {
-		int block_header_offset = 0;
-
+	private void initBlockHeaders(InputStream is, Address startingAddr, Program program,
+			DataType dataType, TaskMonitor monitor, int size)
+			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
+			AddressOverflowException, CancelledException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock new_block = memory.createInitializedBlock(".block_headers", startingAddr,
-				fileBytes, 0, fileBytes.getSize(), false);
+		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".block_headers",
+				startingAddr, is, size, monitor, false);
 
-		new_block.setRead(true);
-		new_block.setWrite(false);
-		new_block.setExecute(false);
+		blockHeadersBlock.setRead(true);
+		blockHeadersBlock.setWrite(false);
+		blockHeadersBlock.setExecute(false);
 
-		for (int i = 0; i < NsisConstants.NB_NSIS_BLOCKS; i++) {
-			Address block_address = startingAddr.add(block_header_offset);
-			System.out.printf("Processing block at offset %08x\n", block_address.getOffset());
+		int blockHeaderOffset = 0;
+		// TODO add for loop for each header block in the header block list of nsis
+		// executable
+		Address currentBlockAddress = startingAddr.add(blockHeaderOffset);
+		System.out.printf("Processing block at offset %08x\n", currentBlockAddress.getOffset());
 
-			reader.setPointerIndex(block_address.getOffset());
-
-			NsisBlockHeader block_header = new NsisBlockHeader(reader);
-			System.out.printf("Block index: %d\n", i);
-			System.out.printf("Block number of entries: %d\n", block_header.getNumEntries());
-			System.out.printf("Block offset: %08x\n", block_header.getOffset());
-
-			try {
-				createData(program, block_address, block_header.toDataType());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			block_header_offset += NsisBlockHeader.getHeaderSize();
-		}
+		createData(program, currentBlockAddress, dataType);
+		blockHeaderOffset += NsisBlockHeader.getHeaderSize();
 	}
 }
