@@ -21,29 +21,18 @@ public class NsisLZMAProvider implements NsisDecompressionProvider {
 	}
 
 	/**
-	 * Decompressed LZMA bytes using a known properties byte and dictionary size.
+	 * Decompresse LZMA bytes using a known properties byte and dictionary size.
 	 * The properties byte is the first byte in the LZMA header and the dictionary
 	 * size corresponds to the 4 following bytes.
-	 * 
-	 * @param compressedData
-	 * @param propByte       the byte indicating LZMA properties
-	 * @param dictionarySize the size of the dictionary to use for decompression
-	 * @throws IOException
 	 */
-	private LZMAInputStream decompressLZMA(InputStream compressedData) throws IOException {
-		LZMAInputStream lzmaInputStream = new LZMAInputStream(compressedData, -1, this.propertiesByte,
+	@Override
+	public InputStream getDecompressedStream() throws IOException {
+		LZMAInputStream lzmaInputStream = new LZMAInputStream(this.byteProvider.getInputStream(0), -1, this.propertiesByte,
 				this.dictionarySize);
 		if (lzmaInputStream == InputStream.nullInputStream()) {
 			throw new IOException("Unable to decompress LZMA compressed data.");
 		}
 		return lzmaInputStream;
-	}
-
-	@Override
-	public InputStream getDecompressedStream() throws IOException {
-		InputStream compressedInputStream = byteProvider.getInputStream(0);
-		LZMAInputStream decompressedStream = decompressLZMA(compressedInputStream);
-		return decompressedStream;
 	}
 
 }
