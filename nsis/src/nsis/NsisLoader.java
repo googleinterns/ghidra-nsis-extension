@@ -63,11 +63,8 @@ public class NsisLoader extends PeLoader {
 			throws IOException { // TODO call super to handle PE portion of the
 									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
-		NsisExecutable ne;
 		try {
-			ne = NsisExecutable.createNsisExecutable(
-					RethrowContinuesFactory.INSTANCE, provider,
-					SectionLayout.FILE);
+			NsisExecutable.isNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default",
 							"default"),

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import generic.continues.GenericFactory;
+import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
@@ -107,5 +108,19 @@ public class NsisExecutable {
 	 */
 	public DataType getHeaderDataType() {
 		return this.scriptHeader.toDataType();
+	}
+
+	/**
+	 * Checks if a ByteProvider contains the NSIS magic bytes. If it does not, it throws a InvalidFormatException.
+	 * @param factory
+	 * @param bp
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
+	public static void isNsisExecutable(GenericFactory factory, ByteProvider bp) throws IOException, InvalidFormatException {
+		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
+		nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
+				NsisConstants.IS_LITTLE_ENDIAN);
+		nsisExecutable.findHeaderOffset();
 	}
 }
