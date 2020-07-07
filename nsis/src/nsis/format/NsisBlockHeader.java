@@ -7,50 +7,40 @@ import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
-import ghidra.util.exception.DuplicateNameException;
 
 public class NsisBlockHeader implements StructConverter {
 	private int offset;
-	private int num;
+	private int numEntries;
+	private final static Structure STRUCTURE;
 
-	public NsisBlockHeader(BinaryReader reader) {
-		setOffset(0);
-		setNum(0);
+	static {
+		// Values are named after the NSIS implementation of a block header:
+		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l265
+		STRUCTURE = new StructureDataType("block_header", 0);
+		STRUCTURE.add(DWORD, DWORD.getLength(), "offset",
+				"Offset at which the block header starts");
+		STRUCTURE.add(DWORD, DWORD.getLength(), "num", "Number of entries in the block header");
+	}
 
-		try {
-			setOffset(reader.readNextInt());
-			setNum(reader.readNextInt());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+	public NsisBlockHeader(BinaryReader reader) throws IOException {
+		this.offset = reader.readNextInt();
+		this.numEntries = reader.readNextInt();
 	}
 
 	@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
-		Structure structure = new StructureDataType("block_header", 0);
-		structure.add(DWORD, 4, "offset", null);
-		structure.add(DWORD, 4, "nb_entries", null);
-		return structure;
+	public DataType toDataType() {
+		return STRUCTURE;
 	}
 
 	public int getOffset() {
-		return offset;
+		return this.offset;
 	}
 
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
-
-	public int getNum() {
-		return num;
-	}
-
-	public void setNum(int num) {
-		this.num = num;
+	public int getNumEntries() {
+		return numEntries;
 	}
 
 	public static int getHeaderSize() {
-		return 4 + 4;
+		return STRUCTURE.getLength();
 	}
 }

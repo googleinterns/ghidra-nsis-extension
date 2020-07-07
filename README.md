@@ -23,6 +23,7 @@
   * If there is Java conflict probably best to keep the current Java by pressing
     `Cancel`
   * Build errors should be resolved
+* Add the nsis/src/nsis/lib/xz.jar file to the build path in Eclipse to import those dependencies
 * You can test that everything is working in your project by selecting the `Run`menu, then `Run As` and `Ghidra`.
 * A new instance of Ghidra should be loaded, if you import an NSIS executable file, should see the 'Nsis' Format suggestion in the first entry of the import dialog.
 
