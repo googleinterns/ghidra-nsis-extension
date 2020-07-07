@@ -29,7 +29,7 @@ public class NsisExecutableTest {
 				new File(pathWithoutCompression))) {
 			ByteArrayProvider bp = new ByteArrayProvider(
 					binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008e04, ne.getHeaderOffset());
@@ -47,7 +47,7 @@ public class NsisExecutableTest {
 				new File(pathWithLZMA))) {
 			ByteArrayProvider bp = new ByteArrayProvider(
 					binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008804, ne.getHeaderOffset());
@@ -65,7 +65,7 @@ public class NsisExecutableTest {
 				new File(pathWithZlib))) {
 			ByteArrayProvider bp = new ByteArrayProvider(
 					binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008e04, ne.getHeaderOffset());
@@ -83,7 +83,7 @@ public class NsisExecutableTest {
 				new File(pathWithBzip))) {
 			ByteArrayProvider bp = new ByteArrayProvider(
 					binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008a04, ne.getHeaderOffset());

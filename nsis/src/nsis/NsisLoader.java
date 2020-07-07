@@ -64,7 +64,7 @@ public class NsisLoader extends PeLoader {
 									// file
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 		try {
-			NsisExecutable.isNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
+			NsisExecutable ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default",
 							"default"),
@@ -84,7 +84,7 @@ public class NsisLoader extends PeLoader {
 
 		try {
 			GenericFactory factory = MessageLogContinuesFactory.create(log);
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(factory,
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(factory,
 					provider, SectionLayout.FILE);
 
 			long nsis_header_offset = ne.getHeaderOffset();

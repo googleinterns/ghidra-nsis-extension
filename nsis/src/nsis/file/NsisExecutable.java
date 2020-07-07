@@ -44,21 +44,27 @@ public class NsisExecutable {
 	 * @throws IOException
 	 * @throws InvalidFormatException
 	 */
-	public static NsisExecutable createNsisExecutable(GenericFactory factory,
+	public static NsisExecutable createInitializeNsisExecutable(GenericFactory factory,
 			ByteProvider bp, SectionLayout layout)
 			throws IOException, InvalidFormatException {
-		NsisExecutable nsisExecutable = (NsisExecutable) factory
-				.create(NsisExecutable.class);
-		nsisExecutable.initNsisExecutable(factory, bp, layout);
+		NsisExecutable nsisExecutable = NsisExecutable.createNsisExecutable(factory, bp);
+		nsisExecutable.initScriptHeader(bp);
 		return nsisExecutable;
 	}
-
-	private void initNsisExecutable(GenericFactory factory, ByteProvider bp,
-			SectionLayout layout) throws IOException, InvalidFormatException {
-		this.reader = new FactoryBundledWithBinaryReader(factory, bp,
-				/* isLittleEndian= */ true);
-		this.headerOffset = findHeaderOffset();
-		initScriptHeader(bp);
+	
+	/**
+	 * Creates a Nsis Executable object, sets the reader and the offset parameter. To create and initialize a Nsis Executable object, use createInitializeNsisExecutable.
+	 * @param factory
+	 * @param bp
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
+	public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp) throws IOException, InvalidFormatException {
+		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
+		nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
+				NsisConstants.IS_LITTLE_ENDIAN);
+		nsisExecutable.headerOffset = nsisExecutable.findHeaderOffset();
+		return nsisExecutable;
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -110,17 +116,4 @@ public class NsisExecutable {
 		return this.scriptHeader.toDataType();
 	}
 
-	/**
-	 * Checks if a ByteProvider contains the NSIS magic bytes. If it does not, it throws a InvalidFormatException.
-	 * @param factory
-	 * @param bp
-	 * @throws IOException
-	 * @throws InvalidFormatException
-	 */
-	public static void isNsisExecutable(GenericFactory factory, ByteProvider bp) throws IOException, InvalidFormatException {
-		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
-		nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
-				NsisConstants.IS_LITTLE_ENDIAN);
-		nsisExecutable.findHeaderOffset();
-	}
 }
