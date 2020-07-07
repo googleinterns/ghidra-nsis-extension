@@ -28,8 +28,8 @@ import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.importer.MessageLogContinuesFactory;
+import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
 import ghidra.app.util.opinion.LoadSpec;
-import ghidra.app.util.opinion.PeLoader;
 import ghidra.framework.store.LockException;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOverflowException;
@@ -52,9 +52,9 @@ import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisScriptHeader;
 
-public class NsisLoader extends PeLoader {
+public class NsisLoader extends AbstractLibrarySupportLoader {
 
-	public final static String NE_NAME = "NSIS Executable (PE + NSIS)";
+	public final static String NE_NAME = "NSIS Executable (Nullsoft Scriptable Install System)";
 
 	@Override
 	public String getName() {
