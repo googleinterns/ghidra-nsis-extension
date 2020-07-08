@@ -26,9 +26,10 @@ public class NsisExecutableTest {
 	public void testNsisCreationNotCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(
 				new File(pathWithoutCompression))) {
+
 			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable
-					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
+					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008e00, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
@@ -42,8 +43,8 @@ public class NsisExecutableTest {
 	public void testNsisCreationLZMACompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithLZMA))) {
 			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable
-					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
+					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008800, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
@@ -57,8 +58,8 @@ public class NsisExecutableTest {
 	public void testNsisCreationZlibCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithZlib))) {
 			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable
-					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
+					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008e00, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
@@ -72,8 +73,8 @@ public class NsisExecutableTest {
 	public void testNsisCreationBzipCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithBzip))) {
 			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
-			NsisExecutable ne = NsisExecutable
-					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
+					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
 			assertEquals(0x00008a00, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());

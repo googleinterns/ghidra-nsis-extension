@@ -7,6 +7,7 @@ import java.util.Arrays;
 import com.google.common.primitives.Bytes;
 
 import generic.continues.GenericFactory;
+import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.ByteProviderWrapper;
@@ -55,18 +56,31 @@ public class NsisExecutable {
 	 * @throws IOException
 	 * @throws InvalidFormatException
 	 */
-	public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp,
-			SectionLayout layout) throws IOException, InvalidFormatException {
+	public static NsisExecutable createInitializeNsisExecutable(GenericFactory factory,
+			ByteProvider bp, SectionLayout layout)
+			throws IOException, InvalidFormatException {
+		NsisExecutable nsisExecutable = NsisExecutable.createNsisExecutable(factory, bp);
+		nsisExecutable.initNsisExecutable(factory);
+		return nsisExecutable;
+	}
+	
+	/**
+	 * Creates a Nsis Executable object, sets the reader and the offset parameter. To create and initialize a Nsis Executable object, use createInitializeNsisExecutable.
+	 * @param factory
+	 * @param bp
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
+	public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp) throws IOException, InvalidFormatException {
 		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
-		nsisExecutable.initNsisExecutable(factory, bp, layout);
+		nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
+				NsisConstants.IS_LITTLE_ENDIAN);
+		nsisExecutable.headerOffset = nsisExecutable.findHeaderOffset();
 		return nsisExecutable;
 	}
 
-	private void initNsisExecutable(GenericFactory factory, ByteProvider bp, SectionLayout layout)
+	private void initNsisExecutable(GenericFactory factory)
 			throws IOException, InvalidFormatException {
-		this.reader = new FactoryBundledWithBinaryReader(factory, bp,
-				NsisConstants.IS_LITTLE_ENDIAN);
-		this.headerOffset = findHeaderOffset();
 		initScriptHeader();
 		this.decompressionProvider = getDecompressionProvider();
 		try(InputStream decompressesdStream = this.getDecompressedInputStream()){
@@ -171,7 +185,7 @@ public class NsisExecutable {
 	public DataType getHeaderDataType() {
 		return this.scriptHeader.toDataType();
 	}
-
+  
 	public DataType getBlockHeaderDataType() {
 		return this.blockHeader.toDataType();
 	}
@@ -179,4 +193,5 @@ public class NsisExecutable {
 	public InputStream getDecompressedInputStream() throws IOException {
 		return this.decompressionProvider.getDecompressedStream();
 	}
+
 }
