@@ -50,7 +50,7 @@ import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
-import nsis.format.NsisScriptHeader;
+import nsis.format.NsisFirstHeader;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 
@@ -65,7 +65,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
 		List<LoadSpec> loadSpecs = new ArrayList<>();
 		try {
-			NsisExecutable ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
+			NsisExecutable ne = NsisExecutable
+					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
 			loadSpecs.add(my_spec);
@@ -82,8 +83,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			throws CancelledException, IOException {
 		try {
 			GenericFactory factory = MessageLogContinuesFactory.create(log);
-			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(factory,
-					provider, SectionLayout.FILE);
+			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(factory, provider,
+					SectionLayout.FILE);
 			long scriptHeaderOffset = ne.getHeaderOffset();
 
 			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
@@ -91,12 +92,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
 				initScriptHeader(headerInputStream, scriptHeaderAddress, program,
-						ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
+						ne.getHeaderDataType(), monitor, NsisFirstHeader.getHeaderSize());
 			}
 
 			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
 				Address blockHeadersStartingAddress = scriptHeaderAddress
-						.add(NsisScriptHeader.getHeaderSize());
+						.add(NsisFirstHeader.getHeaderSize());
 				initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
 						ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
 			}
