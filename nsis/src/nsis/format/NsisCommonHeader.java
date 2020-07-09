@@ -55,8 +55,18 @@ public class NsisCommonHeader implements StructConverter {
 		return STRUCTURE.getLength();
 	}
 
-	public NsisBlockHeader[] getBlockHeaders() {
-		return this.blockHeaders;
+	/**
+	 * Get the block header at the specified index
+	 * 
+	 * @param index
+	 * @return the NsisBlockHeader at that index
+	 */
+	public NsisBlockHeader getBlockHeader(int index) {
+		return this.blockHeaders[index];
+	}
+	
+	public int getFlags() {
+		return this.flags;
 	}
 
 }

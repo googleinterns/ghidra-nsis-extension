@@ -19,6 +19,7 @@ import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
+import nsis.format.NsisBlockHeader;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisCommonHeader;
 
@@ -83,7 +84,7 @@ public class NsisExecutable {
 
 	private void initNsisExecutable(GenericFactory factory)
 			throws IOException, InvalidFormatException {
-		initScriptHeader();
+		initFirstHeader();
 		this.decompressionProvider = getDecompressionProvider();
 		try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
 			ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream,
@@ -113,7 +114,7 @@ public class NsisExecutable {
 	 * @throws IOException
 	 * @throws InvalidFormatException
 	 */
-	private void initScriptHeader() throws IOException, InvalidFormatException {
+	private void initFirstHeader() throws IOException, InvalidFormatException {
 		this.reader.setPointerIndex(this.headerOffset);
 		this.firstHeader = new NsisFirstHeader(this.reader);
 	}
@@ -192,6 +193,20 @@ public class NsisExecutable {
 
 	public DataType getCommonHeaderDataType() {
 		return this.commonHeader.toDataType();
+	}
+
+	public int getCommonHeaderFlags() {
+		return this.commonHeader.getFlags();
+	}
+
+	/**
+	 * Get the block header at the specified index
+	 * 
+	 * @param index
+	 * @return the NsisBlockHeader at that index
+	 */
+	public NsisBlockHeader getBlockHeader(int index) {
+		return this.commonHeader.getBlockHeader(index);
 	}
 
 	public InputStream getDecompressedInputStream() throws IOException {

@@ -31,11 +31,17 @@ public class NsisExecutableTest {
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
+			// First header
 			assertEquals(0x00008e00, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(2046, ne.getArchiveSize());
 			assertEquals(0x000007da, ne.getCompressedHeaderSize());
 			assertEquals(2010, ne.getInflatedHeaderSize());
+
+			// Header
+			assertEquals(0x80, ne.getCommonHeaderFlags());
+			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
+			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
 		}
 	}
 
@@ -46,11 +52,17 @@ public class NsisExecutableTest {
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
+			// First header
 			assertEquals(0x00008800, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(399, ne.getArchiveSize());
 			assertEquals(0x8000016b, ne.getCompressedHeaderSize());
 			assertEquals(2010, ne.getInflatedHeaderSize());
+
+			// Header
+			assertEquals(0x80, ne.getCommonHeaderFlags());
+			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
+			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
 		}
 	}
 
@@ -61,6 +73,7 @@ public class NsisExecutableTest {
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
+			// First header
 			assertEquals(0x00008e00, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(419, ne.getArchiveSize());
@@ -76,6 +89,7 @@ public class NsisExecutableTest {
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
+			// First header
 			assertEquals(0x00008a00, ne.getHeaderOffset());
 			assertEquals(0x00000000, ne.getScriptHeaderFlags());
 			assertEquals(463, ne.getArchiveSize());

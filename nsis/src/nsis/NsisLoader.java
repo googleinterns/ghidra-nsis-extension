@@ -88,18 +88,18 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 					SectionLayout.FILE);
 			long scriptHeaderOffset = ne.getHeaderOffset();
 
-			Address scriptHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
+			Address firstHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
 					.getAddress(scriptHeaderOffset);
 
 			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
-				initFirstHeader(headerInputStream, scriptHeaderAddress, program,
+				initFirstHeader(headerInputStream, firstHeaderAddress, program,
 						ne.getHeaderDataType(), monitor, NsisFirstHeader.getHeaderSize());
 			}
 
 			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
-				Address commonHeaderStartingAddress = scriptHeaderAddress
+				Address commonHeaderAddress = firstHeaderAddress
 						.add(NsisFirstHeader.getHeaderSize());
-				initCommonHeader(bodyInputStream, commonHeaderStartingAddress, program,
+				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
 						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
 			}
 
@@ -109,7 +109,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Initializes the script header and adds it to the "Program Trees" view in
+	 * Initializes the first header and adds it to the "Program Trees" view in
 	 * Ghidra.
 	 * 
 	 * @param fileBytes            object that starts at the NSIS magic bytes
@@ -125,18 +125,18 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws LockException
 	 * @throws CodeUnitInsertionException
 	 */
-	private void initFirstHeader(InputStream is, Address scriptHeaderAddress, Program program,
+	private void initFirstHeader(InputStream is, Address startingAddr, Program program,
 			DataType dataType, TaskMonitor monitor, int size)
 			throws MemoryConflictException, AddressOverflowException, CancelledException,
 			DuplicateNameException, LockException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock scriptHeaderBlock = memory.createInitializedBlock(".first_header",
-				scriptHeaderAddress, is, size, monitor, false);
-		scriptHeaderBlock.setRead(true);
-		scriptHeaderBlock.setWrite(false);
-		scriptHeaderBlock.setExecute(false);
+		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(".first_header",
+				startingAddr, is, size, monitor, false);
+		firstHeaderBlock.setRead(true);
+		firstHeaderBlock.setWrite(false);
+		firstHeaderBlock.setExecute(false);
 
-		createData(program, scriptHeaderAddress, dataType);
+		createData(program, startingAddr, dataType);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Initializes the block headers and adds them to the "Program Trees" view in
+	 * Initializes the common header and adds them to the "Program Trees" view in
 	 * Ghidra.
 	 * 
 	 * @param program
