@@ -85,9 +85,11 @@ public class NsisExecutable {
 			throws IOException, InvalidFormatException {
 		initScriptHeader();
 		this.decompressionProvider = getDecompressionProvider();
-		try(InputStream decompressesdStream = this.getDecompressedInputStream()){
-			ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream, this.scriptHeader.inflatedHeaderSize);
-			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
+		try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
+			ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream,
+					this.scriptHeader.inflatedHeaderSize);
+			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
+					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
 		}
 	}
@@ -187,7 +189,7 @@ public class NsisExecutable {
 	public DataType getHeaderDataType() {
 		return this.scriptHeader.toDataType();
 	}
-  
+
 	public DataType getCommonHeaderDataType() {
 		return this.commonHeader.toDataType();
 	}
