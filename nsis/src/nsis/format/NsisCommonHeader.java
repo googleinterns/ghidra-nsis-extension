@@ -64,7 +64,7 @@ public class NsisCommonHeader implements StructConverter {
 	public NsisBlockHeader getBlockHeader(int index) {
 		return this.blockHeaders[index];
 	}
-	
+
 	public int getFlags() {
 		return this.flags;
 	}

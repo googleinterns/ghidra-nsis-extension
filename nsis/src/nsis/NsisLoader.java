@@ -130,8 +130,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			throws MemoryConflictException, AddressOverflowException, CancelledException,
 			DuplicateNameException, LockException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(".first_header",
-				startingAddr, is, size, monitor, false);
+		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(".first_header", startingAddr,
+				is, size, monitor, false);
 		firstHeaderBlock.setRead(true);
 		firstHeaderBlock.setWrite(false);
 		firstHeaderBlock.setExecute(false);
