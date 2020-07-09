@@ -22,7 +22,7 @@ public class NsisScriptHeader implements StructConverter {
 	static {
 		// Values are named after the NSIS implementation of the first header:
 		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l234
-		STRUCTURE = new StructureDataType("script_header", 0);
+		STRUCTURE = new StructureDataType("First Header", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "flags", "First header flags (FH_FLAGS_*)");
 		STRUCTURE.add(STRING, NsisConstants.NSIS_SIGINFO.length, "siginfo", "0xdeadbeef (FH_SIG)");
 		STRUCTURE.add(STRING, NsisConstants.NSIS_MAGIC.length, "nsinst",

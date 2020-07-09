@@ -11,12 +11,12 @@ import ghidra.program.model.data.StructureDataType;
 public class NsisBlockHeader implements StructConverter {
 	private int offset;
 	private int numEntries;
-	private final static Structure STRUCTURE;
+	public final static Structure STRUCTURE;
 
 	static {
 		// Values are named after the NSIS implementation of a block header:
 		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l265
-		STRUCTURE = new StructureDataType("block_header", 0);
+		STRUCTURE = new StructureDataType("Block Header", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "offset",
 				"Offset at which the block header starts");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "num", "Number of entries in the block header");

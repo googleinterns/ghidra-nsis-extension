@@ -50,6 +50,7 @@ import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
+import nsis.format.NsisCommonHeader;
 import nsis.format.NsisScriptHeader;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
@@ -90,15 +91,15 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 					.getAddress(scriptHeaderOffset);
 
 			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
-				initScriptHeader(headerInputStream, scriptHeaderAddress, program,
+				initFirstHeader(headerInputStream, scriptHeaderAddress, program,
 						ne.getHeaderDataType(), monitor, NsisScriptHeader.getHeaderSize());
 			}
 
 			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
-				Address blockHeadersStartingAddress = scriptHeaderAddress
+				Address commonHeaderStartingAddress = scriptHeaderAddress
 						.add(NsisScriptHeader.getHeaderSize());
-				initBlockHeaders(bodyInputStream, blockHeadersStartingAddress, program,
-						ne.getBlockHeaderDataType(), monitor, NsisBlockHeader.getHeaderSize());
+				initCommonHeader(bodyInputStream, commonHeaderStartingAddress, program,
+						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
 			}
 
 		} catch (Exception e) {
@@ -123,12 +124,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws LockException
 	 * @throws CodeUnitInsertionException
 	 */
-	private void initScriptHeader(InputStream is, Address scriptHeaderAddress, Program program,
+	private void initFirstHeader(InputStream is, Address scriptHeaderAddress, Program program,
 			DataType dataType, TaskMonitor monitor, int size)
 			throws MemoryConflictException, AddressOverflowException, CancelledException,
 			DuplicateNameException, LockException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock scriptHeaderBlock = memory.createInitializedBlock(".script_header",
+		MemoryBlock scriptHeaderBlock = memory.createInitializedBlock(".first_header",
 				scriptHeaderAddress, is, size, monitor, false);
 		scriptHeaderBlock.setRead(true);
 		scriptHeaderBlock.setWrite(false);
@@ -173,25 +174,18 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws CancelledException
 	 * @throws CodeUnitInsertionException
 	 */
-	private void initBlockHeaders(InputStream is, Address startingAddr, Program program,
+	private void initCommonHeader(InputStream is, Address startingAddr, Program program,
 			DataType dataType, TaskMonitor monitor, int size)
 			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
 			AddressOverflowException, CancelledException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".block_headers",
+		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".common_header",
 				startingAddr, is, size, monitor, false);
 
 		blockHeadersBlock.setRead(true);
 		blockHeadersBlock.setWrite(false);
 		blockHeadersBlock.setExecute(false);
 
-		int blockHeaderOffset = 0;
-		// TODO add for loop for each header block in the header block list of nsis
-		// executable
-		Address currentBlockAddress = startingAddr.add(blockHeaderOffset);
-		System.out.printf("Processing block at offset %08x\n", currentBlockAddress.getOffset());
-
-		createData(program, currentBlockAddress, dataType);
-		blockHeaderOffset += NsisBlockHeader.getHeaderSize();
+		createData(program, startingAddr, dataType);
 	}
 }

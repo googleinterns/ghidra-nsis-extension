@@ -7,7 +7,6 @@ import java.util.Arrays;
 import com.google.common.primitives.Bytes;
 
 import generic.continues.GenericFactory;
-import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.ByteProviderWrapper;
@@ -20,7 +19,7 @@ import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
-import nsis.format.NsisBlockHeader;
+import nsis.format.NsisCommonHeader;
 import nsis.format.NsisScriptHeader;
 
 /**
@@ -36,7 +35,7 @@ public class NsisExecutable {
 	private BinaryReader reader;
 	private NsisDecompressionProvider decompressionProvider;
 	private NsisScriptHeader scriptHeader;
-	private NsisBlockHeader blockHeader;
+	private NsisCommonHeader commonHeader;
 	private long headerOffset;
 
 	/**
@@ -86,7 +85,7 @@ public class NsisExecutable {
 		try(InputStream decompressesdStream = this.getDecompressedInputStream()){
 			ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream, this.scriptHeader.inflatedHeaderSize);
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
-			this.blockHeader = new NsisBlockHeader(blockReader);
+			this.commonHeader = new NsisCommonHeader(blockReader);
 		}
 	}
 
@@ -186,8 +185,8 @@ public class NsisExecutable {
 		return this.scriptHeader.toDataType();
 	}
   
-	public DataType getBlockHeaderDataType() {
-		return this.blockHeader.toDataType();
+	public DataType getCommonHeaderDataType() {
+		return this.commonHeader.toDataType();
 	}
 
 	public InputStream getDecompressedInputStream() throws IOException {
