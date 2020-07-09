@@ -19,8 +19,8 @@ import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
+import nsis.format.NsisFirstHeader;
 import nsis.format.NsisCommonHeader;
-import nsis.format.NsisScriptHeader;
 
 /**
  * 
@@ -34,7 +34,7 @@ public class NsisExecutable {
 
 	private BinaryReader reader;
 	private NsisDecompressionProvider decompressionProvider;
-	private NsisScriptHeader scriptHeader;
+	private NsisFirstHeader scriptHeader;
 	private NsisCommonHeader commonHeader;
 	private long headerOffset;
 
@@ -56,21 +56,24 @@ public class NsisExecutable {
 	 * @throws InvalidFormatException
 	 */
 	public static NsisExecutable createInitializeNsisExecutable(GenericFactory factory,
-			ByteProvider bp, SectionLayout layout)
-			throws IOException, InvalidFormatException {
+			ByteProvider bp, SectionLayout layout) throws IOException, InvalidFormatException {
 		NsisExecutable nsisExecutable = NsisExecutable.createNsisExecutable(factory, bp);
 		nsisExecutable.initNsisExecutable(factory);
 		return nsisExecutable;
 	}
-	
+
 	/**
-	 * Creates a Nsis Executable object, sets the reader and the offset parameter. To create and initialize a Nsis Executable object, use createInitializeNsisExecutable.
+	 * Creates a Nsis Executable object, sets the reader and the offset parameter.
+	 * To create and initialize a Nsis Executable object, use
+	 * createInitializeNsisExecutable.
+	 * 
 	 * @param factory
 	 * @param bp
 	 * @throws IOException
 	 * @throws InvalidFormatException
 	 */
-	public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp) throws IOException, InvalidFormatException {
+	public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp)
+			throws IOException, InvalidFormatException {
 		NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
 		nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
 				NsisConstants.IS_LITTLE_ENDIAN);
@@ -110,7 +113,7 @@ public class NsisExecutable {
 	 */
 	private void initScriptHeader() throws IOException, InvalidFormatException {
 		this.reader.setPointerIndex(this.headerOffset);
-		this.scriptHeader = new NsisScriptHeader(this.reader);
+		this.scriptHeader = new NsisFirstHeader(this.reader);
 	}
 
 	/**

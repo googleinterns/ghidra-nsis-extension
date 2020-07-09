@@ -10,7 +10,7 @@ import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
 import nsis.file.NsisConstants;
 
-public class NsisScriptHeader implements StructConverter {
+public class NsisFirstHeader implements StructConverter {
 	public final int flags;
 	private byte[] siginfo;
 	private byte[] magic;
@@ -35,7 +35,7 @@ public class NsisScriptHeader implements StructConverter {
 				"If the most significant bit is set, the following data is compressed");
 	}
 
-	public NsisScriptHeader(BinaryReader reader) throws IOException, InvalidFormatException {
+	public NsisFirstHeader(BinaryReader reader) throws IOException, InvalidFormatException {
 		this.flags = reader.readNextInt();
 		this.siginfo = reader.readNextByteArray(NsisConstants.NSIS_SIGINFO.length);
 		this.magic = reader.readNextByteArray(NsisConstants.NSIS_MAGIC.length);
