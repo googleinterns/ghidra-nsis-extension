@@ -22,13 +22,13 @@ define context contextreg
 ;
 
 define token instr(224)
-    opcode = (0,32)
-    arg1 = (33,64)
-    arg2 = (65,96)
-    arg3 = (97,128)
-    arg4 = (129,160)
-    arg5 = (161,192) 
-    arg6 = (193,224);
+    opcode = (0,31)
+    arg1 = (32,63)
+    arg2 = (64,95)
+    arg3 = (96,127)
+    arg4 = (128,159)
+    arg5 = (160,191) 
+    arg6 = (192,223);
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # AT LEAST ONE INSTRUCTION IS REQUIRED
