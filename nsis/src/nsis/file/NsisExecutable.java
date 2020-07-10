@@ -21,6 +21,7 @@ import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisCommonHeader;
 
 /**
  * 
@@ -34,8 +35,8 @@ public class NsisExecutable {
 
 	private BinaryReader reader;
 	private NsisDecompressionProvider decompressionProvider;
-	private NsisFirstHeader scriptHeader;
-	private NsisBlockHeader blockHeader;
+	private NsisFirstHeader firstHeader;
+	private NsisCommonHeader commonHeader;
 	private long headerOffset;
 
 	/**
@@ -83,14 +84,14 @@ public class NsisExecutable {
 
 	private void initNsisExecutable(GenericFactory factory)
 			throws IOException, InvalidFormatException {
-		initScriptHeader();
+		initFirstHeader();
 		this.decompressionProvider = getDecompressionProvider();
 		try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
 			ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream,
-					this.scriptHeader.inflatedHeaderSize);
+					this.firstHeader.inflatedHeaderSize);
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
-			this.blockHeader = new NsisBlockHeader(blockReader);
+			this.commonHeader = new NsisCommonHeader(blockReader);
 		}
 	}
 
@@ -113,9 +114,9 @@ public class NsisExecutable {
 	 * @throws IOException
 	 * @throws InvalidFormatException
 	 */
-	private void initScriptHeader() throws IOException, InvalidFormatException {
+	private void initFirstHeader() throws IOException, InvalidFormatException {
 		this.reader.setPointerIndex(this.headerOffset);
-		this.scriptHeader = new NsisFirstHeader(this.reader);
+		this.firstHeader = new NsisFirstHeader(this.reader);
 	}
 
 	/**
@@ -127,12 +128,12 @@ public class NsisExecutable {
 	 * @throws IOException
 	 */
 	private NsisDecompressionProvider getDecompressionProvider() throws IOException {
-		if ((this.scriptHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) {
+		if ((this.firstHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) {
 			byte compressionByte = this.reader.peekNextByte();
 			if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
 				this.reader.readNextByte();
 				int dictionarySize = this.reader.readNextInt();
-				long compressedDataLength = (this.scriptHeader.compressedHeaderSize
+				long compressedDataLength = (this.firstHeader.compressedHeaderSize
 						& ~FLAG_IS_COMPRESSED) - NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
 				ByteProvider compressedBytesProvider = new ByteProviderWrapper(
 						this.reader.getByteProvider(), this.reader.getPointerIndex(),
@@ -145,19 +146,19 @@ public class NsisExecutable {
 				System.out.println("Decompress Bzip");
 				ByteProvider uncompressedBytes = new ByteProviderWrapper(
 						this.reader.getByteProvider(), this.reader.getPointerIndex(),
-						this.scriptHeader.compressedHeaderSize);
+						this.firstHeader.compressedHeaderSize);
 				return new NsisUncompressedProvider(uncompressedBytes);
 			} else {// TODO find a was to identify Zlib compressed
 				// TODO Zlib decompress
 				System.out.println("Decompress Zlib");
 				ByteProvider uncompressedBytes = new ByteProviderWrapper(
 						this.reader.getByteProvider(), this.reader.getPointerIndex(),
-						this.scriptHeader.compressedHeaderSize);
+						this.firstHeader.compressedHeaderSize);
 				return new NsisUncompressedProvider(uncompressedBytes);
 			}
 		}
 		ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
-				this.reader.getPointerIndex(), this.scriptHeader.compressedHeaderSize);
+				this.reader.getPointerIndex(), this.firstHeader.compressedHeaderSize);
 		return new NsisUncompressedProvider(uncompressedBytes);
 	}
 
@@ -166,19 +167,19 @@ public class NsisExecutable {
 	}
 
 	public int getInflatedHeaderSize() {
-		return this.scriptHeader.inflatedHeaderSize;
+		return this.firstHeader.inflatedHeaderSize;
 	}
 
 	public int getArchiveSize() {
-		return this.scriptHeader.archiveSize;
+		return this.firstHeader.archiveSize;
 	}
 
 	public int getCompressedHeaderSize() {
-		return this.scriptHeader.compressedHeaderSize;
+		return this.firstHeader.compressedHeaderSize;
 	}
 
 	public int getScriptHeaderFlags() {
-		return this.scriptHeader.flags;
+		return this.firstHeader.flags;
 	}
 
 	/**
@@ -187,11 +188,25 @@ public class NsisExecutable {
 	 * @return a DataType object that represents the Nsis Script header
 	 */
 	public DataType getHeaderDataType() {
-		return this.scriptHeader.toDataType();
+		return this.firstHeader.toDataType();
 	}
 
-	public DataType getBlockHeaderDataType() {
-		return this.blockHeader.toDataType();
+	public DataType getCommonHeaderDataType() {
+		return this.commonHeader.toDataType();
+	}
+
+	public int getCommonHeaderFlags() {
+		return this.commonHeader.getFlags();
+	}
+
+	/**
+	 * Get the block header at the specified index
+	 * 
+	 * @param index
+	 * @return the NsisBlockHeader at that index
+	 */
+	public NsisBlockHeader getBlockHeader(int index) {
+		return this.commonHeader.getBlockHeader(index);
 	}
 
 	public InputStream getDecompressedInputStream() throws IOException {
