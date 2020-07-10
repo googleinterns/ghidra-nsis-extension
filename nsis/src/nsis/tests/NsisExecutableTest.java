@@ -96,11 +96,13 @@ public class NsisExecutableTest {
 			assertEquals(2010, ne.getInflatedHeaderSize());
 		}
 	}
-	
+
 	/**
+	 * Deobfuscated the inputStream object passed as a parameter. The obfuscation is
+	 * a simple XOR with 0x55
 	 * 
 	 * @param inputStream
-	 * @return
+	 * @return the deobfuscated ByteArrayProvider object
 	 * @throws IOException
 	 */
 	private ByteArrayProvider deobfuscate(InputStream inputStream) throws IOException {
@@ -108,7 +110,7 @@ public class NsisExecutableTest {
 		byte[] original = new byte[obfuscated.length];
 		int i = 0;
 		for (byte obfuscatedByte : obfuscated) {
-			original[i] = (byte) (obfuscatedByte^0x55);
+			original[i] = (byte) (obfuscatedByte ^ 0x55);
 			i++;
 		}
 		return new ByteArrayProvider(original);
