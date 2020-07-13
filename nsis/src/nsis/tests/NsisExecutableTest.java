@@ -17,17 +17,16 @@ import nsis.format.InvalidFormatException;
 
 public class NsisExecutableTest {
 
-	private final String pathWithoutCompression = "src/testData/nsis_without_compression.exe";
-	private final String pathWithBzip = "src/testData/nsis_with_bzip.exe";
-	private final String pathWithLZMA = "src/testData/nsis_with_lzma.exe";
-	private final String pathWithZlib = "src/testData/nsis_with_zlib.exe";
+	private final String pathWithoutCompression = "src/testData/nsis_without_compression.dat";
+	private final String pathWithBzip = "src/testData/nsis_with_bzip.dat";
+	private final String pathWithLZMA = "src/testData/nsis_with_lzma.dat";
+	private final String pathWithZlib = "src/testData/nsis_with_zlib.dat";
 
 	@Test
 	public void testNsisCreationNotCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(
 				new File(pathWithoutCompression))) {
-
-			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
+			ByteArrayProvider bp = deobfuscate(binaryInputStream);
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
@@ -48,7 +47,7 @@ public class NsisExecutableTest {
 	@Test
 	public void testNsisCreationLZMACompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithLZMA))) {
-			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
+			ByteArrayProvider bp = deobfuscate(binaryInputStream);
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
@@ -69,7 +68,7 @@ public class NsisExecutableTest {
 	@Test
 	public void testNsisCreationZlibCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithZlib))) {
-			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
+			ByteArrayProvider bp = deobfuscate(binaryInputStream);
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
@@ -85,7 +84,7 @@ public class NsisExecutableTest {
 	@Test
 	public void testNsisCreationBzipCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithBzip))) {
-			ByteArrayProvider bp = new ByteArrayProvider(binaryInputStream.readAllBytes());
+			ByteArrayProvider bp = deobfuscate(binaryInputStream);
 			NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(
 					RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
 
@@ -96,6 +95,25 @@ public class NsisExecutableTest {
 			assertEquals(0x800001ab, ne.getCompressedHeaderSize());
 			assertEquals(2010, ne.getInflatedHeaderSize());
 		}
+	}
+
+	/**
+	 * Deobfuscated the inputStream object passed as a parameter. The obfuscation is
+	 * a simple XOR with 0x55
+	 * 
+	 * @param inputStream
+	 * @return the deobfuscated ByteArrayProvider object
+	 * @throws IOException
+	 */
+	private ByteArrayProvider deobfuscate(InputStream inputStream) throws IOException {
+		byte[] obfuscated = inputStream.readAllBytes();
+		byte[] original = new byte[obfuscated.length];
+		int i = 0;
+		for (byte obfuscatedByte : obfuscated) {
+			original[i] = (byte) (obfuscatedByte ^ 0x55);
+			i++;
+		}
+		return new ByteArrayProvider(original);
 	}
 
 }
