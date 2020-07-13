@@ -13,12 +13,12 @@ import nsis.file.NsisConstants;
 
 public class NsisSection implements StructConverter {
 
-	private int name_ptr;
-	private int install_types;
+	private int namePtr;
+	private int installTypes;
 	private int flags;
 	private int code;
-	private int code_size;
-	private int size_kb;
+	private int codeSize;
+	private int sizeKb;
 	private String name;
 
 	private final static Structure STRUCTURE;
@@ -42,12 +42,12 @@ public class NsisSection implements StructConverter {
 	}
 
 	public NsisSection(BinaryReader reader) throws IOException {
-		this.name_ptr = reader.readNextInt();
-		this.install_types = reader.readNextInt();
+		this.namePtr = reader.readNextInt();
+		this.installTypes = reader.readNextInt();
 		this.flags = reader.readNextInt();
 		this.code = reader.readNextInt();
-		this.code_size = reader.readNextInt();
-		this.size_kb = reader.readNextInt();
+		this.codeSize = reader.readNextInt();
+		this.sizeKb = reader.readNextInt();
 		this.name = reader.readNextAsciiString(NsisConstants.NSIS_MAX_STRLEN);
 	}
 
