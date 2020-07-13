@@ -13,8 +13,8 @@ import ghidra.util.exception.DuplicateNameException;
 public class NsisPage implements StructConverter {
 
 	private static final int NB_PARAMETERS = 5;
-	private int dlg_id;
-	private int wndproc_id;
+	private int dialogResourceId;
+	private int wndProcId;
 	private int prefunc;
 	private int showfunc;
 	private int leavefunc;
@@ -24,7 +24,7 @@ public class NsisPage implements StructConverter {
 	private int next;
 	private int clicknext;
 	private int cancel;
-	private int[] parms = new int[NB_PARAMETERS];
+	private int[] parameters = new int[NB_PARAMETERS];
 
 	private final static Structure STRUCTURE;
 
@@ -50,8 +50,8 @@ public class NsisPage implements StructConverter {
 	}
 
 	public NsisPage(BinaryReader reader) throws IOException {
-		this.dlg_id = reader.readNextInt();
-		this.wndproc_id = reader.readNextInt();
+		this.dialogResourceId = reader.readNextInt();
+		this.wndProcId = reader.readNextInt();
 		this.prefunc = reader.readNextInt();
 		this.showfunc = reader.readNextInt();
 		this.leavefunc = reader.readNextInt();
@@ -61,7 +61,7 @@ public class NsisPage implements StructConverter {
 		this.next = reader.readNextInt();
 		this.clicknext = reader.readNextInt();
 		this.cancel = reader.readNextInt();
-		this.parms = reader.readNextIntArray(NB_PARAMETERS);
+		this.parameters = reader.readNextIntArray(NB_PARAMETERS);
 	}
 
 	@Override
