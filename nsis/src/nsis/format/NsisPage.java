@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
+import ghidra.program.model.data.ArrayDataType;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
@@ -44,8 +45,8 @@ public class NsisPage implements StructConverter {
 		STRUCTURE.add(DWORD, DWORD.getLength(), "next", "");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "clicknext", "");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "cancel", "");
-		STRUCTURE.add(DWORD, DWORD.getLength() * NB_PARAMETERS, "parms", ""); // TODO list of 5 int
-
+		STRUCTURE.add(new ArrayDataType(DWORD, NB_PARAMETERS, DWORD.getLength()), 0, "parms",
+				"raw parameters");
 	}
 
 	public NsisPage(BinaryReader reader) throws IOException {
@@ -60,7 +61,6 @@ public class NsisPage implements StructConverter {
 		this.clicknext = reader.readNextInt();
 		this.cancel = reader.readNextInt();
 		this.parms = reader.readNextIntArray(NB_PARAMETERS);
-
 	}
 
 	@Override
