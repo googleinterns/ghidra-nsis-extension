@@ -37,7 +37,8 @@ public class NsisSection implements StructConverter {
 		STRUCTURE.add(DWORD, DWORD.getLength(), "code_size",
 				"The size of the code in num of entries");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "size_kb", "Size in kb");
-		STRUCTURE.add(new StringDataType(), NsisConstants.NSIS_MAX_STRLEN, "name", "'' for invisible sections");
+		STRUCTURE.add(new StringDataType(), NsisConstants.NSIS_MAX_STRLEN, "name",
+				"'' for invisible sections");
 	}
 
 	public NsisSection(BinaryReader reader) throws IOException {
