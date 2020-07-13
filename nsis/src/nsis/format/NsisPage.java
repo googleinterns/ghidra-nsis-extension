@@ -29,7 +29,7 @@ public class NsisPage implements StructConverter {
 	private final static Structure STRUCTURE;
 
 	static {
-		// Values are named after the NSIS implementation of header struct:
+		// Values are named after the NSIS implementation of page struct:
 		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l448
 		STRUCTURE = new StructureDataType("Page", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "dlg_id", "dialog resource id");
