@@ -58,6 +58,7 @@ public class NsisPage implements StructConverter {
 		this.flags = reader.readNextInt();
 		this.caption = reader.readNextInt();
 		this.back = reader.readNextInt();
+		this.next = reader.readNextInt();
 		this.clicknext = reader.readNextInt();
 		this.cancel = reader.readNextInt();
 		this.parms = reader.readNextIntArray(NB_PARAMETERS);
