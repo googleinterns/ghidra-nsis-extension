@@ -9,10 +9,9 @@ import ghidra.program.model.data.StringDataType;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
+import nsis.file.NsisConstants;
 
 public class NsisSection implements StructConverter {
-
-	private static final int NSIS_MAX_STRLEN = 1024;
 
 	private int name_ptr;
 	private int install_types;
@@ -38,7 +37,7 @@ public class NsisSection implements StructConverter {
 		STRUCTURE.add(DWORD, DWORD.getLength(), "code_size",
 				"The size of the code in num of entries");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "size_kb", "Size in kb");
-		STRUCTURE.add(new StringDataType(), NSIS_MAX_STRLEN, "name", "'' for invisible sections");
+		STRUCTURE.add(new StringDataType(), NsisConstants.NSIS_MAX_STRLEN, "name", "'' for invisible sections");
 	}
 
 	public NsisSection(BinaryReader reader) throws IOException {
@@ -48,7 +47,7 @@ public class NsisSection implements StructConverter {
 		this.code = reader.readNextInt();
 		this.code_size = reader.readNextInt();
 		this.size_kb = reader.readNextInt();
-		this.name = reader.readNextAsciiString(NSIS_MAX_STRLEN);
+		this.name = reader.readNextAsciiString(NsisConstants.NSIS_MAX_STRLEN);
 	}
 
 	@Override
