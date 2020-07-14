@@ -49,9 +49,8 @@ import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
-import nsis.format.NsisBlockHeader;
-import nsis.format.NsisFirstHeader;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisFirstHeader;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 

@@ -8,6 +8,7 @@ public class NsisConstants {
 			't' };
 	public static final int NB_NSIS_BLOCKS = 8;
 	public static final int NSIS_MAX_STRLEN = 1024;
+	public static final int NSIS_MAX_INST_TYPES = 32;
 	public static final byte COMPRESSION_LZMA = 0x5d;
 	public static final byte COMPRESSION_BZIP2 = 0x31;
 	public static final int COMPRESSION_LZMA_HEADER_LENGTH = 5;
