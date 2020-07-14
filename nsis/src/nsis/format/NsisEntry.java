@@ -23,7 +23,9 @@ public class NsisEntry implements StructConverter {
 		STRUCTURE.add(DWORD, DWORD.getLength(), "which",
 				"EW_* enum.  Look at the enum values to see what offsets mean");
 		STRUCTURE.add(new ArrayDataType(DWORD, MAX_ENTRY_OFFSETS, DWORD.getLength()), 0, "offsets",
-				"count and meaning of offsets depend on 'which'. Sometimes they are just straight int values or bool values and sometimes they are indices into string tables.");
+				"count and meaning of offsets depend on 'which'."
+						+ " Sometimes they are just straight int values or bool values and sometimes they are "
+						+ "indices into string tables.");
 	}
 
 	public NsisEntry(BinaryReader reader) throws IOException {
