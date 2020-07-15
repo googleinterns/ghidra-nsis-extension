@@ -44,6 +44,7 @@ import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.mem.MemoryConflictException;
 import ghidra.program.model.util.CodeUnitInsertionException;
+import ghidra.util.InvalidNameException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
@@ -216,11 +217,13 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws AddressOverflowException
 	 * @throws CancelledException
 	 * @throws CodeUnitInsertionException
+	 * @throws InvalidNameException
 	 */
 	private void initPagesSection(InputStream is, Address startingAddr, Program program,
 			DataType dataType, TaskMonitor monitor, int size, int numPages)
 			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
-			AddressOverflowException, CancelledException, CodeUnitInsertionException {
+			AddressOverflowException, CancelledException, CodeUnitInsertionException,
+			InvalidNameException {
 		Memory memory = program.getMemory();
 		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".pages", startingAddr, is,
 				size * numPages, monitor, false);
@@ -229,7 +232,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		blockHeadersBlock.setWrite(false);
 		blockHeadersBlock.setExecute(false);
 
-		for (int p = 0; p < numPages; p++) {
+		for (int i = 0; i < numPages; i++) {
+			dataType.setName("Page #" + (i + 1));
 			createData(program, startingAddr, dataType);
 			startingAddr = startingAddr.add(size);
 		}
