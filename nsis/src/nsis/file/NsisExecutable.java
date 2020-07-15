@@ -15,6 +15,8 @@ import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.program.model.data.DataType;
+import ghidra.program.model.data.StructureDataType;
+import ghidra.util.exception.DuplicateNameException;
 import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
@@ -232,6 +234,24 @@ public class NsisExecutable {
 
 	public InputStream getDecompressedInputStream() throws IOException {
 		return this.decompressionProvider.getDecompressedStream();
+	}
+	
+	/**
+	 * Get the number of pages in the Nsis executable
+	 * @return the number of pages
+	 */
+	public int getNumPages() {
+		return this.pages.length;
+	}
+	
+	/**
+	 * Returns the data structure of a Nsis page
+	 * @return a DataType object that represents one Nsis page
+	 * @throws DuplicateNameException
+	 * @throws IOException
+	 */
+	public DataType getPageDataType() throws DuplicateNameException, IOException {
+		return this.pages[0].toDataType();
 	}
 
 }
