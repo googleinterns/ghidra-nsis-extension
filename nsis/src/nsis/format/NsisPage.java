@@ -68,7 +68,12 @@ public class NsisPage implements StructConverter {
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		return STRUCTURE;
 	}
-	
+
+	/**
+	 * Get the size of the Page structure
+	 * 
+	 * @return the size of the structure
+	 */
 	public static int getPageSize() {
 		return STRUCTURE.getLength();
 	}

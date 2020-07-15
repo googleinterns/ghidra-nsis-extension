@@ -105,7 +105,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				Address pagesSectionAddress = commonHeaderAddress
 						.add(NsisCommonHeader.getHeaderSize());
 				initPagesSection(bodyInputStream, pagesSectionAddress, program,
-						ne.getPageDataType(), monitor, NsisPage.getPageSize());
+						ne.getPageDataType(), monitor, NsisPage.getPageSize(), ne.getNumPages());
 			}
 
 		} catch (Exception e) {
@@ -166,17 +166,20 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Initializes the common header and adds them to the "Program Trees" view in
+	 * Initializes the common header and adds it to the "Program Trees" view in
 	 * Ghidra.
 	 * 
+	 * @param is
+	 * @param startingAddr
 	 * @param program
-	 * @param reader
-	 * @param startingAddr, the Address where the nsis script header starts
+	 * @param dataType
+	 * @param monitor
+	 * @param size
 	 * @throws IOException
-	 * @throws AddressOverflowException
-	 * @throws MemoryConflictException
-	 * @throws DuplicateNameException
 	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
 	 * @throws CancelledException
 	 * @throws CodeUnitInsertionException
 	 */
@@ -195,18 +198,40 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		createData(program, startingAddr, dataType);
 	}
 
+	/**
+	 * Initializes the pages section and adds the section to the /program Trees"
+	 * view in Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param dataType
+	 * @param monitor
+	 * @param size
+	 * @param numPages
+	 * @throws IOException
+	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws CodeUnitInsertionException
+	 */
 	private void initPagesSection(InputStream is, Address startingAddr, Program program,
-			DataType dataType, TaskMonitor monitor, int size)
+			DataType dataType, TaskMonitor monitor, int size, int numPages)
 			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
 			AddressOverflowException, CancelledException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
 		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".pages", startingAddr, is,
-				size, monitor, false);
+				size * numPages, monitor, false);
 
 		blockHeadersBlock.setRead(true);
 		blockHeadersBlock.setWrite(false);
 		blockHeadersBlock.setExecute(false);
 
-		createData(program, startingAddr, dataType);
+		for (int p = 0; p < numPages; p++) {
+			createData(program, startingAddr, dataType);
+			startingAddr = startingAddr.add(size);
+		}
 	}
 }
