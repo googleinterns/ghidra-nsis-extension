@@ -2,7 +2,6 @@ package nsis.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,8 +42,8 @@ public class NsisExecutableTest {
 			assertEquals(0x80, ne.getCommonHeaderFlags());
 			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
 			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
-			
-			//Pages
+
+			// Pages
 			assertEquals(2, ne.getNumPages());
 		}
 	}
@@ -67,8 +66,8 @@ public class NsisExecutableTest {
 			assertEquals(0x80, ne.getCommonHeaderFlags());
 			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
 			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
-			
-			//Pages
+
+			// Pages
 			assertEquals(2, ne.getNumPages());
 		}
 	}
