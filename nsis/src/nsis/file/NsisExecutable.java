@@ -21,6 +21,7 @@ import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisPage;
 import nsis.format.NsisCommonHeader;
 
 /**
@@ -37,6 +38,7 @@ public class NsisExecutable {
 	private NsisDecompressionProvider decompressionProvider;
 	private NsisFirstHeader firstHeader;
 	private NsisCommonHeader commonHeader;
+	private NsisPage[] pages;
 	private long headerOffset;
 
 	/**
@@ -92,7 +94,26 @@ public class NsisExecutable {
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
+			this.pages = getPages(blockReader);
 		}
+	}
+
+	/**
+	 * Get an array of the right amount of pages in the Nsis executable. The reader
+	 * object is expected to be at the right offset (at the beginning of the first
+	 * page) before calling this function.
+	 * 
+	 * @param reader
+	 * @return NsisPage array that contains all the pages in the Nsis executable
+	 * @throws IOException
+	 */
+	private NsisPage[] getPages(BinaryReader reader) throws IOException {
+		NsisBlockHeader pagesBlockHeader = this.commonHeader.getBlockHeader(0);
+		NsisPage[] pages = new NsisPage[pagesBlockHeader.getNumEntries()];
+		for (int i = 0; i < pages.length; i++) {
+			pages[i] = new NsisPage(reader);
+		}
+		return pages;
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {

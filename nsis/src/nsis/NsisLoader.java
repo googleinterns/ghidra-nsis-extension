@@ -101,7 +101,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 						.add(NsisFirstHeader.getHeaderSize());
 				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
 						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
+				
+				//TODO init pages struct
+				//initPages(bodyInputStream, pagesBlockAddress, program,
+					//	ne.getPagesDataType(), monitor, NsisCommonHeader.getHeaderSize());	
 			}
+			
 
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
