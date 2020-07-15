@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import generic.continues.RethrowContinuesFactory;
@@ -65,6 +66,7 @@ public class NsisExecutableTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testNsisCreationZlibCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithZlib))) {
@@ -81,6 +83,7 @@ public class NsisExecutableTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testNsisCreationBzipCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithBzip))) {
