@@ -49,10 +49,9 @@ import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
-import nsis.format.NsisBlockHeader;
+import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisPage;
-import nsis.format.NsisCommonHeader;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 
@@ -102,12 +101,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 						.add(NsisFirstHeader.getHeaderSize());
 				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
 						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
-				
-				Address pagesSectionAddress = commonHeaderAddress.add(NsisCommonHeader.getHeaderSize());
+
+				Address pagesSectionAddress = commonHeaderAddress
+						.add(NsisCommonHeader.getHeaderSize());
 				initPagesSection(bodyInputStream, pagesSectionAddress, program,
 						ne.getPageDataType(), monitor, NsisPage.getPageSize());
 			}
-			
 
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
@@ -195,14 +194,14 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 		createData(program, startingAddr, dataType);
 	}
-	
+
 	private void initPagesSection(InputStream is, Address startingAddr, Program program,
 			DataType dataType, TaskMonitor monitor, int size)
 			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
 			AddressOverflowException, CancelledException, CodeUnitInsertionException {
 		Memory memory = program.getMemory();
-		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".pages",
-				startingAddr, is, size, monitor, false);
+		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".pages", startingAddr, is,
+				size, monitor, false);
 
 		blockHeadersBlock.setRead(true);
 		blockHeadersBlock.setWrite(false);

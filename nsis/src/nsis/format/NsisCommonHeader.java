@@ -4,12 +4,16 @@ import java.io.IOException;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
+import ghidra.program.model.data.ArrayDataType;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
 import nsis.file.NsisConstants;
 
 public class NsisCommonHeader implements StructConverter {
+
+	private final static int INSTALL_TYPE_SIZE = NsisConstants.NSIS_MAX_INST_TYPES + 1;
+
 	private int flags;
 	private NsisBlockHeader[] blockHeaders;
 	private int installRegRootkey;
@@ -32,7 +36,7 @@ public class NsisCommonHeader implements StructConverter {
 	private int codeOnVerifyInstDir;
 	private int codeOnSelChange;
 	private int codeOnRebootFailed;
-	private int installTypes;
+	private int[] installTypes = new int[INSTALL_TYPE_SIZE];
 	private int installDirectoryPtr;
 	private int installDirectoryAutoAppend;
 	private int strUninstChild;
@@ -90,8 +94,8 @@ public class NsisCommonHeader implements StructConverter {
 				"component page config code callback");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "code_onRebootFailed",
 				"reboot support code callback");
-		STRUCTURE.add(DWORD, DWORD.getLength(), "install_types",
-				"raw install types from component page config");
+		STRUCTURE.add(new ArrayDataType(DWORD, INSTALL_TYPE_SIZE, DWORD.getLength()), 0,
+				"install_types", "raw install types from component page config");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "install_directory_ptr",
 				"default install directory");
 		STRUCTURE.add(DWORD, DWORD.getLength(), "install_directory_auto_append",
@@ -127,7 +131,7 @@ public class NsisCommonHeader implements StructConverter {
 		this.codeOnVerifyInstDir = reader.readNextInt();
 		this.codeOnSelChange = reader.readNextInt();
 		this.codeOnRebootFailed = reader.readNextInt();
-		this.installTypes = reader.readNextInt();
+		this.installTypes = reader.readNextIntArray(INSTALL_TYPE_SIZE);
 		this.installDirectoryPtr = reader.readNextInt();
 		this.installDirectoryAutoAppend = reader.readNextInt();
 		this.strUninstChild = reader.readNextInt();
