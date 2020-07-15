@@ -2,12 +2,13 @@ package nsis.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import generic.continues.RethrowContinuesFactory;
@@ -42,6 +43,9 @@ public class NsisExecutableTest {
 			assertEquals(0x80, ne.getCommonHeaderFlags());
 			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
 			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
+			
+			//Pages
+			assertEquals(2, ne.getNumPages());
 		}
 	}
 
@@ -63,10 +67,13 @@ public class NsisExecutableTest {
 			assertEquals(0x80, ne.getCommonHeaderFlags());
 			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
 			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
+			
+			//Pages
+			assertEquals(2, ne.getNumPages());
 		}
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testNsisCreationZlibCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithZlib))) {
@@ -83,7 +90,7 @@ public class NsisExecutableTest {
 		}
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testNsisCreationBzipCompressed() throws IOException, InvalidFormatException {
 		try (InputStream binaryInputStream = new FileInputStream(new File(pathWithBzip))) {
