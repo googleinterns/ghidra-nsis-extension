@@ -218,7 +218,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			CodeUnitInsertionException, InvalidNameException {
 		Memory memory = program.getMemory();
 		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".section_headers",
-				startingAddr, is, nbEntries * NsisSection.STRUCTURE.getLength(), monitor, false);
+				startingAddr, is, nbEntries * NsisSection.getSectionSize(), monitor, false);
 
 		blockHeadersBlock.setRead(true);
 		blockHeadersBlock.setWrite(false);
@@ -227,7 +227,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		for (int i = 0; i < nbEntries; i++) {
 			NsisSection.STRUCTURE.setName("Section #" + (i + 1));
 			createData(program, startingAddr, NsisSection.STRUCTURE);
-			startingAddr = startingAddr.add(NsisSection.STRUCTURE.getLength());
+			startingAddr = startingAddr.add(NsisSection.getSectionSize());
 		}
 	}
 }

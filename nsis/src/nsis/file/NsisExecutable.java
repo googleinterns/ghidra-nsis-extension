@@ -39,7 +39,7 @@ public class NsisExecutable {
 	private NsisFirstHeader firstHeader;
 	private NsisCommonHeader commonHeader;
 	private long headerOffset;
-	private NsisSection section;
+	private NsisSection[] sections;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
@@ -94,8 +94,26 @@ public class NsisExecutable {
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
-			this.section = new NsisSection(blockReader);
+			this.sections = getSections(blockReader);
 		}
+	}
+
+	/**
+	 * Get an array of the right amount of sections in the Nsis executable. The
+	 * reader object is expected to be at the right offset (at the beginning of the
+	 * first page) before calling this function.
+	 * 
+	 * @param reader
+	 * @return
+	 * @throws IOException
+	 */
+	private NsisSection[] getSections(BinaryReader reader) throws IOException {
+		NsisBlockHeader sectionBlockHeader = this.commonHeader.getBlockHeader(1);
+		NsisSection[] sections = new NsisSection[sectionBlockHeader.getNumEntries()];
+		for (int i = 0; i < sections.length; i++) {
+			sections[i] = new NsisSection(reader);
+		}
+		return sections;
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -214,6 +232,25 @@ public class NsisExecutable {
 
 	public InputStream getDecompressedInputStream() throws IOException {
 		return this.decompressionProvider.getDecompressedStream();
+	}
+
+	/**
+	 * Get the number of sections in the section headers part of the Nsis executable
+	 * 
+	 * @return
+	 */
+	public int getNumSections() {
+		return this.sections.length;
+	}
+
+	/**
+	 * Get the section from the section header at the specified index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public NsisSection getSection(int index) {
+		return this.sections[index];
 	}
 
 }

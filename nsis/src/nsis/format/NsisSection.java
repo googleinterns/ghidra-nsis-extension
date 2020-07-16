@@ -56,4 +56,17 @@ public class NsisSection implements StructConverter {
 		return STRUCTURE;
 	}
 
+	/**
+	 * Get the size of the Section structure
+	 * 
+	 * @return
+	 */
+	public static int getSectionSize() {
+		return STRUCTURE.getLength();
+	}
+
+	public int getNamePtr() {
+		return this.namePtr;
+	}
+	
 }
