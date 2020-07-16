@@ -21,6 +21,7 @@ import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisSection;
 import nsis.format.NsisCommonHeader;
 
 /**
@@ -38,6 +39,7 @@ public class NsisExecutable {
 	private NsisFirstHeader firstHeader;
 	private NsisCommonHeader commonHeader;
 	private long headerOffset;
+	private NsisSection section;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
@@ -92,6 +94,7 @@ public class NsisExecutable {
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
+			this.section = new NsisSection(blockReader);
 		}
 	}
 

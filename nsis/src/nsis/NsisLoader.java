@@ -44,6 +44,7 @@ import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.mem.MemoryConflictException;
 import ghidra.program.model.util.CodeUnitInsertionException;
+import ghidra.util.InvalidNameException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
@@ -51,6 +52,7 @@ import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisSection;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 
@@ -100,6 +102,11 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 						.add(NsisFirstHeader.getHeaderSize());
 				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
 						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
+
+				Address sectionHeadersAddress = commonHeaderAddress
+						.add(NsisCommonHeader.getHeaderSize());
+				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
+						ne.getBlockHeader(1).getNumEntries());
 			}
 
 		} catch (Exception e) {
@@ -187,5 +194,40 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		blockHeadersBlock.setExecute(false);
 
 		createData(program, startingAddr, dataType);
+	}
+
+	/**
+	 * Initializes the section headers section and adds the it to the "program
+	 * Trees" view in Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param monitor
+	 * @throws LockException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws DuplicateNameException
+	 * @throws CodeUnitInsertionException
+	 * @throws InvalidNameException
+	 */
+	private void initSectionHeaders(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int nbEntries) throws LockException, MemoryConflictException,
+			AddressOverflowException, CancelledException, DuplicateNameException,
+			CodeUnitInsertionException, InvalidNameException {
+		Memory memory = program.getMemory();
+		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".section_headers",
+				startingAddr, is, nbEntries * NsisSection.STRUCTURE.getLength(), monitor, false);
+
+		blockHeadersBlock.setRead(true);
+		blockHeadersBlock.setWrite(false);
+		blockHeadersBlock.setExecute(false);
+
+		for (int i = 0; i < nbEntries; i++) {
+			NsisSection.STRUCTURE.setName("Section #" + (i + 1));
+			createData(program, startingAddr, NsisSection.STRUCTURE);
+			startingAddr = startingAddr.add(NsisSection.STRUCTURE.getLength());
+		}
 	}
 }
