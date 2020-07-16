@@ -200,7 +200,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Initializes the pages section and adds the section to the /program Trees"
+	 * Initializes the pages section and adds the section to the "program Trees"
 	 * view in Ghidra.
 	 * 
 	 * @param is
