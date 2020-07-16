@@ -106,7 +106,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				Address sectionHeadersAddress = commonHeaderAddress
 						.add(NsisCommonHeader.getHeaderSize());
 				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
-						ne.getBlockHeader(1).getNumEntries());
+						ne.getNumSections());
 			}
 
 		} catch (Exception e) {
