@@ -244,15 +244,4 @@ public class NsisExecutable {
 		return this.pages.length;
 	}
 
-	/**
-	 * Returns the data structure of a Nsis page
-	 * 
-	 * @return a DataType object that represents one Nsis page
-	 * @throws DuplicateNameException
-	 * @throws IOException
-	 */
-	public DataType getPageDataType() throws DuplicateNameException, IOException {
-		return this.pages[0].toDataType();
-	}
-
 }

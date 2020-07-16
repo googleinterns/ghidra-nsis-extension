@@ -105,8 +105,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 				Address pagesSectionAddress = commonHeaderAddress
 						.add(NsisCommonHeader.getHeaderSize());
-				initPagesSection(bodyInputStream, pagesSectionAddress, program,
-						ne.getPageDataType(), monitor, NsisPage.getPageSize(), ne.getNumPages());
+				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
+						ne.getNumPages());
 			}
 
 		} catch (Exception e) {
@@ -220,22 +220,21 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws InvalidNameException
 	 */
 	private void initPagesSection(InputStream is, Address startingAddr, Program program,
-			DataType dataType, TaskMonitor monitor, int size, int numPages)
-			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
-			AddressOverflowException, CancelledException, CodeUnitInsertionException,
-			InvalidNameException {
+			TaskMonitor monitor, int numPages) throws IOException, LockException,
+			DuplicateNameException, MemoryConflictException, AddressOverflowException,
+			CancelledException, CodeUnitInsertionException, InvalidNameException {
 		Memory memory = program.getMemory();
 		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".pages", startingAddr, is,
-				size * numPages, monitor, false);
+				NsisPage.getPageSize() * numPages, monitor, false);
 
 		blockHeadersBlock.setRead(true);
 		blockHeadersBlock.setWrite(false);
 		blockHeadersBlock.setExecute(false);
 
 		for (int i = 0; i < numPages; i++) {
-			dataType.setName("Page #" + (i + 1));
-			createData(program, startingAddr, dataType);
-			startingAddr = startingAddr.add(size);
+			NsisPage.STRUCTURE.setName("Page #" + (i + 1));
+			createData(program, startingAddr, NsisPage.STRUCTURE);
+			startingAddr = startingAddr.add(NsisPage.getPageSize());
 		}
 	}
 }
