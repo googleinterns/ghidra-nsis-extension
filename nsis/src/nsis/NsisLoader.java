@@ -91,15 +91,13 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 					.getAddress(scriptHeaderOffset);
 
 			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
-				initFirstHeader(headerInputStream, firstHeaderAddress, program,
-						ne.getHeaderDataType(), monitor, NsisFirstHeader.getHeaderSize());
+				initFirstHeader(headerInputStream, firstHeaderAddress, program, monitor);
 			}
 
 			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
 				Address commonHeaderAddress = firstHeaderAddress
 						.add(NsisFirstHeader.getHeaderSize());
-				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
-						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
+				initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
 			}
 
 		} catch (Exception e) {
@@ -125,17 +123,16 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws CodeUnitInsertionException
 	 */
 	private void initFirstHeader(InputStream is, Address startingAddr, Program program,
-			DataType dataType, TaskMonitor monitor, int size)
-			throws MemoryConflictException, AddressOverflowException, CancelledException,
-			DuplicateNameException, LockException, CodeUnitInsertionException {
+			TaskMonitor monitor) throws MemoryConflictException, AddressOverflowException,
+			CancelledException, DuplicateNameException, LockException, CodeUnitInsertionException {
 
 		String blockName = ".first_header";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
-		createGhidraMemoryBlock(is, startingAddr, program, monitor, size, blockName, readPermission,
-				writePermission, executePermission);
-		createData(program, startingAddr, dataType);
+		createGhidraMemoryBlock(is, startingAddr, program, monitor, NsisFirstHeader.getHeaderSize(),
+				blockName, readPermission, writePermission, executePermission);
+		createData(program, startingAddr, NsisFirstHeader.STRUCTURE);
 	}
 
 	/**
@@ -207,7 +204,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws CodeUnitInsertionException
 	 */
 	private void initCommonHeader(InputStream is, Address startingAddr, Program program,
-			DataType dataType, TaskMonitor monitor, int size)
+			TaskMonitor monitor)
 			throws LockException, MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, CodeUnitInsertionException {
 
@@ -215,8 +212,9 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
-		createGhidraMemoryBlock(is, startingAddr, program, monitor, size, blockName, readPermission,
-				writePermission, executePermission);
-		createData(program, startingAddr, dataType);
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				NsisCommonHeader.getHeaderSize(), blockName, readPermission, writePermission,
+				executePermission);
+		createData(program, startingAddr, NsisCommonHeader.STRUCTURE);
 	}
 }

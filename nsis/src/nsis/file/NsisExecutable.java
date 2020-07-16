@@ -182,19 +182,6 @@ public class NsisExecutable {
 		return this.firstHeader.flags;
 	}
 
-	/**
-	 * Returns the data structure of the Nsis Script Header.
-	 * 
-	 * @return a DataType object that represents the Nsis Script header
-	 */
-	public DataType getHeaderDataType() {
-		return this.firstHeader.toDataType();
-	}
-
-	public DataType getCommonHeaderDataType() {
-		return this.commonHeader.toDataType();
-	}
-
 	public int getCommonHeaderFlags() {
 		return this.commonHeader.getFlags();
 	}
