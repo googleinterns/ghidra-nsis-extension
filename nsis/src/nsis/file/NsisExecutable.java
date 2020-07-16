@@ -244,4 +244,14 @@ public class NsisExecutable {
 		return this.pages.length;
 	}
 
+	/**
+	 * Get the page at the specified index
+	 * 
+	 * @param index
+	 * @return the corresponding NsisPage
+	 */
+	public NsisPage getPage(int index) {
+		return this.pages[index];
+	}
+
 }

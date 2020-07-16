@@ -78,4 +78,8 @@ public class NsisPage implements StructConverter {
 		return STRUCTURE.getLength();
 	}
 
+	public int getDialogResourceId() {
+		return this.dialogResourceId;
+	}
+
 }
