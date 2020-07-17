@@ -1,5 +1,7 @@
 **This is not an officially supported Google product.**
 
+This plugin supports NSIS binaries built using the default NSIS spec
+
 # Loading Extension into Eclipse for Development
 * Install Java
   * Tested verison: `jdk-11.0.2`
