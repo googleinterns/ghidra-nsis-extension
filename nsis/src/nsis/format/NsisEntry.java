@@ -47,4 +47,13 @@ public class NsisEntry implements StructConverter {
 		return STRUCTURE.getLength();
 	}
 
+	/**
+	 * Get the opcode of the entry
+	 * 
+	 * @return
+	 */
+	public int getOpCode() {
+		return this.which;
+	}
+
 }
