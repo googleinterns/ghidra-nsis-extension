@@ -112,8 +112,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
 						ne.getNumSections());
 
-				Address entiresSectionAddress = pagesSectionAddress
-						.add(NsisPage.getPageSize() * ne.getNumPages());
+				Address entiresSectionAddress = sectionHeadersAddress
+						.add(NsisSection.getSectionSize() * ne.getNumSections());
 				initEntriesSection(bodyInputStream, entiresSectionAddress, program, monitor,
 						ne.getEntriesSectionSize());
 			}
