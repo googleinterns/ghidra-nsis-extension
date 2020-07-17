@@ -106,6 +106,10 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
 						ne.getNumPages());
 
+				Address entiresSectionAddress = pagesSectionAddress
+						.add(NsisPage.getPageSize() * ne.getNumPages());
+				initEntriesSection(bodyInputStream, entiresSectionAddress, program, monitor, ne.getEntriesSectionSize());
+
 			}
 
 		} catch (Exception e) {
@@ -268,5 +272,32 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			createData(program, startingAddr, NsisPage.STRUCTURE);
 			startingAddr = startingAddr.add(NsisPage.getPageSize());
 		}
+	}
+
+	/**
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param monitor
+	 * @throws DuplicateNameException
+	 * @throws CancelledException
+	 * @throws AddressOverflowException
+	 * @throws MemoryConflictException
+	 * @throws LockException
+	 */
+	private void initEntriesSection(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int size) throws LockException, MemoryConflictException,
+			AddressOverflowException, CancelledException, DuplicateNameException {
+
+		String blockName = ".entries";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				size, blockName,
+				readPermission, writePermission, executePermission);
+
 	}
 }

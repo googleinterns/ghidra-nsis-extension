@@ -238,5 +238,16 @@ public class NsisExecutable {
 	public NsisPage getPage(int index) {
 		return this.pages[index];
 	}
+	
+	/**
+	 * Get the size of the entries section
+	 * 
+	 * @return the size in number of bytes
+	 */
+	public int getEntriesSectionSize() {
+		NsisBlockHeader colors = this.commonHeader.getBlockHeader(3);
+		NsisBlockHeader entries = this.commonHeader.getBlockHeader(2);
+		return (colors.getOffset() - entries.getOffset());
+	}
 
 }
