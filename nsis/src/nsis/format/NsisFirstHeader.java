@@ -17,7 +17,7 @@ public class NsisFirstHeader implements StructConverter {
 	public final int inflatedHeaderSize;
 	public final int archiveSize;
 	public final int compressedHeaderSize;
-	private final static Structure STRUCTURE;
+	public final static Structure STRUCTURE;
 
 	static {
 		// Values are named after the NSIS implementation of the first header:

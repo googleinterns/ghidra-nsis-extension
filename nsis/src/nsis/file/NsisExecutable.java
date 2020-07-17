@@ -14,8 +14,6 @@ import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
-import ghidra.program.model.data.DataType;
-import ghidra.util.exception.DuplicateNameException;
 import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
@@ -202,19 +200,6 @@ public class NsisExecutable {
 
 	public int getScriptHeaderFlags() {
 		return this.firstHeader.flags;
-	}
-
-	/**
-	 * Returns the data structure of the Nsis Script Header.
-	 * 
-	 * @return a DataType object that represents the Nsis Script header
-	 */
-	public DataType getHeaderDataType() {
-		return this.firstHeader.toDataType();
-	}
-
-	public DataType getCommonHeaderDataType() {
-		return this.commonHeader.toDataType();
 	}
 
 	public int getCommonHeaderFlags() {
