@@ -44,6 +44,7 @@ import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.mem.MemoryConflictException;
 import ghidra.program.model.util.CodeUnitInsertionException;
+import ghidra.util.InvalidNameException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
@@ -51,6 +52,7 @@ import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisPage;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 
@@ -98,11 +100,71 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				Address commonHeaderAddress = firstHeaderAddress
 						.add(NsisFirstHeader.getHeaderSize());
 				initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
+
+				Address pagesSectionAddress = commonHeaderAddress
+						.add(NsisCommonHeader.getHeaderSize());
+				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
+						ne.getNumPages());
+
 			}
 
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
+	}
+
+	/**
+	 * Applies the DataType structure to the data at given address.
+	 * 
+	 * @param program
+	 * @param listing
+	 * @param address  at which to apply the data structure
+	 * @param dataType to apply to the bytes
+	 * @return
+	 * @throws CodeUnitInsertionException
+	 */
+	private Data createData(Program program, Address address, DataType dt)
+			throws CodeUnitInsertionException {
+		Listing listing = program.getListing();
+		Data d = listing.getDataAt(address);
+		if (d == null || !dt.isEquivalent(d.getDataType())) {
+			d = DataUtilities.createData(program, address, dt, -1, false,
+					ClearDataMode.CLEAR_ALL_UNDEFINED_CONFLICT_DATA);
+		}
+		return d;
+	}
+
+	/**
+	 * 
+	 * Initializes a memory block in Ghidra with the given permissions and the given
+	 * data
+	 * 
+	 * @param is                InputStream of the data
+	 * @param startingAddr
+	 * @param program
+	 * @param monitor
+	 * @param size
+	 * @param blockName
+	 * @param readPermission
+	 * @param writePermission
+	 * @param executePermission
+	 * @throws DuplicateNameException
+	 * @throws CancelledException
+	 * @throws AddressOverflowException
+	 * @throws MemoryConflictException
+	 * @throws LockException
+	 */
+	private void createGhidraMemoryBlock(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int size, String blockName, boolean readPermission,
+			boolean writePermission, boolean executePermission)
+			throws LockException, MemoryConflictException, AddressOverflowException,
+			CancelledException, DuplicateNameException {
+		Memory memory = program.getMemory();
+		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr, is,
+				size, monitor, /* Overlay */ false);
+		firstHeaderBlock.setRead(readPermission);
+		firstHeaderBlock.setWrite(writePermission);
+		firstHeaderBlock.setExecute(executePermission);
 	}
 
 	/**
@@ -136,70 +198,20 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Applies the DataType structure to the data at given address.
-	 * 
-	 * @param program
-	 * @param listing
-	 * @param address  at which to apply the data structure
-	 * @param dataType to apply to the bytes
-	 * @return
-	 * @throws CodeUnitInsertionException
-	 */
-	private Data createData(Program program, Address address, DataType dt)
-			throws CodeUnitInsertionException {
-		Listing listing = program.getListing();
-		Data d = listing.getDataAt(address);
-		if (d == null || !dt.isEquivalent(d.getDataType())) {
-			d = DataUtilities.createData(program, address, dt, -1, false,
-					ClearDataMode.CLEAR_ALL_UNDEFINED_CONFLICT_DATA);
-		}
-		return d;
-	}
-
-	/**
-	 * 
-	 * Initializes a memory block in Ghidra with the given permissions
-	 * 
-	 * @param is                InputStream of the data
-	 * @param startingAddr
-	 * @param program
-	 * @param monitor
-	 * @param size
-	 * @param blockName
-	 * @param readPermission
-	 * @param writePermission
-	 * @param executePermission
-	 * @throws DuplicateNameException
-	 * @throws CancelledException
-	 * @throws AddressOverflowException
-	 * @throws MemoryConflictException
-	 * @throws LockException
-	 */
-	private void createGhidraMemoryBlock(InputStream is, Address startingAddr, Program program,
-			TaskMonitor monitor, int size, String blockName, boolean readPermission,
-			boolean writePermission, boolean executePermission)
-			throws LockException, MemoryConflictException, AddressOverflowException,
-			CancelledException, DuplicateNameException {
-		Memory memory = program.getMemory();
-		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr, is,
-				size, monitor, /* Overlay */ false);
-		firstHeaderBlock.setRead(readPermission);
-		firstHeaderBlock.setWrite(writePermission);
-		firstHeaderBlock.setExecute(executePermission);
-	}
-
-	/**
-	 * Initializes the common header and adds them to the "Program Trees" view in
+	 * Initializes the common header and adds it to the "Program Trees" view in
 	 * Ghidra.
 	 * 
+	 * @param is
+	 * @param startingAddr
 	 * @param program
-	 * @param reader
-	 * @param startingAddr, the Address where the nsis script header starts
+	 * @param dataType
+	 * @param monitor
+	 * @param size
 	 * @throws IOException
-	 * @throws AddressOverflowException
-	 * @throws MemoryConflictException
-	 * @throws DuplicateNameException
 	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
 	 * @throws CancelledException
 	 * @throws CodeUnitInsertionException
 	 */
@@ -216,5 +228,45 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				NsisCommonHeader.getHeaderSize(), blockName, readPermission, writePermission,
 				executePermission);
 		createData(program, startingAddr, NsisCommonHeader.STRUCTURE);
+	}
+
+	/**
+	 * Initializes the pages section and adds the section to the "program Trees"
+	 * view in Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param dataType
+	 * @param monitor
+	 * @param size
+	 * @param numPages
+	 * @throws IOException
+	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws CodeUnitInsertionException
+	 * @throws InvalidNameException
+	 */
+	private void initPagesSection(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int numPages) throws IOException, LockException,
+			DuplicateNameException, MemoryConflictException, AddressOverflowException,
+			CancelledException, CodeUnitInsertionException, InvalidNameException {
+
+		String blockName = ".pages";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				NsisPage.getPageSize() * numPages, blockName, readPermission, writePermission,
+				executePermission);
+
+		for (int i = 0; i < numPages; i++) {
+			NsisPage.STRUCTURE.setName("Page #" + (i + 1));
+			createData(program, startingAddr, NsisPage.STRUCTURE);
+			startingAddr = startingAddr.add(NsisPage.getPageSize());
+		}
 	}
 }
