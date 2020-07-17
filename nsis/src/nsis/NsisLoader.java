@@ -293,7 +293,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		String blockName = ".entries";
 		boolean readPermission = true;
 		boolean writePermission = false;
-		boolean executePermission = false;
+		boolean executePermission = true;
 		
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
 				size, blockName,
