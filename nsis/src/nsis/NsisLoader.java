@@ -108,7 +108,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 				Address entiresSectionAddress = pagesSectionAddress
 						.add(NsisPage.getPageSize() * ne.getNumPages());
-				initEntriesSection(bodyInputStream, entiresSectionAddress, program, monitor, ne.getEntriesSectionSize());
+				initEntriesSection(bodyInputStream, entiresSectionAddress, program, monitor,
+						ne.getEntriesSectionSize());
 
 			}
 
@@ -275,6 +276,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
+	 * Initializes the entries section and adds the section to the "program Trees"
+	 * view in Ghidra.
 	 * 
 	 * @param is
 	 * @param startingAddr
@@ -294,10 +297,9 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = true;
-		
-		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				size, blockName,
-				readPermission, writePermission, executePermission);
+
+		createGhidraMemoryBlock(is, startingAddr, program, monitor, size, blockName, readPermission,
+				writePermission, executePermission);
 
 	}
 }
