@@ -14,15 +14,15 @@ import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
-import ghidra.program.model.data.DataType;
 import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
-import nsis.format.NsisFirstHeader;
-import nsis.format.NsisSection;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisFirstHeader;
+import nsis.format.NsisPage;
+import nsis.format.NsisSection;
 
 /**
  * 
@@ -38,6 +38,7 @@ public class NsisExecutable {
 	private NsisDecompressionProvider decompressionProvider;
 	private NsisFirstHeader firstHeader;
 	private NsisCommonHeader commonHeader;
+	private NsisPage[] pages;
 	private long headerOffset;
 	private NsisSection[] sections;
 
@@ -94,14 +95,37 @@ public class NsisExecutable {
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
+			this.pages = getPages(blockReader);
 			this.sections = getSections(blockReader);
 		}
 	}
 
 	/**
+	 * Get an array of the right amount of pages in the Nsis executable. The reader
+	 * object is expected to be at the right offset (at the beginning of the first
+	 * page) before calling this function. The reader index is advanced and after
+	 * executing this function, the index of the reader is pointing to the first
+	 * byte after the pages section.
+	 * 
+	 * @param reader
+	 * @return NsisPage array that contains all the pages in the Nsis executable
+	 * @throws IOException
+	 */
+	private NsisPage[] getPages(BinaryReader reader) throws IOException {
+		NsisBlockHeader pagesBlockHeader = this.commonHeader.getBlockHeader(0);
+		NsisPage[] pages = new NsisPage[pagesBlockHeader.getNumEntries()];
+		for (int i = 0; i < pages.length; i++) {
+			pages[i] = new NsisPage(reader);
+		}
+		return pages;
+	}
+
+	/**
 	 * Get an array of the right amount of sections in the Nsis executable. The
 	 * reader object is expected to be at the right offset (at the beginning of the
-	 * first page) before calling this function.
+	 * first page) before calling this function. The reader index is advanced and
+	 * after executing this function, the index of the reader is pointing to the
+	 * first byte after the section headers section.
 	 * 
 	 * @param reader
 	 * @return
@@ -203,19 +227,6 @@ public class NsisExecutable {
 		return this.firstHeader.flags;
 	}
 
-	/**
-	 * Returns the data structure of the Nsis Script Header.
-	 * 
-	 * @return a DataType object that represents the Nsis Script header
-	 */
-	public DataType getHeaderDataType() {
-		return this.firstHeader.toDataType();
-	}
-
-	public DataType getCommonHeaderDataType() {
-		return this.commonHeader.toDataType();
-	}
-
 	public int getCommonHeaderFlags() {
 		return this.commonHeader.getFlags();
 	}
@@ -232,6 +243,26 @@ public class NsisExecutable {
 
 	public InputStream getDecompressedInputStream() throws IOException {
 		return this.decompressionProvider.getDecompressedStream();
+	}
+
+	/**
+	 * Get the number of pages in the Nsis executable
+	 * 
+	 * @return the number of pages
+	 */
+	public int getNumPages() {
+		return this.pages.length;
+	}
+
+	/**
+	 * Get the page at the specified index
+	 * 
+	 * @param index
+	 * @return the corresponding NsisPage
+	 */
+	public NsisPage getPage(int index) {
+		return this.pages[index];
+
 	}
 
 	/**
@@ -252,5 +283,4 @@ public class NsisExecutable {
 	public NsisSection getSection(int index) {
 		return this.sections[index];
 	}
-
 }

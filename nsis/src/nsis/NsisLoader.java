@@ -52,6 +52,7 @@ import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisPage;
 import nsis.format.NsisSection;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
@@ -93,56 +94,29 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 					.getAddress(scriptHeaderOffset);
 
 			try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
-				initFirstHeader(headerInputStream, firstHeaderAddress, program,
-						ne.getHeaderDataType(), monitor, NsisFirstHeader.getHeaderSize());
+				initFirstHeader(headerInputStream, firstHeaderAddress, program, monitor);
 			}
 
 			try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
 				Address commonHeaderAddress = firstHeaderAddress
 						.add(NsisFirstHeader.getHeaderSize());
-				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
-						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
+				initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
 
-				Address sectionHeadersAddress = commonHeaderAddress
+				Address pagesSectionAddress = commonHeaderAddress
 						.add(NsisCommonHeader.getHeaderSize());
+				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
+						ne.getNumPages());
+
+				Address sectionHeadersAddress = pagesSectionAddress
+						.add(NsisPage.getPageSize() * ne.getNumPages());
 				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
 						ne.getNumSections());
+
 			}
 
 		} catch (Exception e) {
 			throw new IOException(e); // Ghidra handles the thrown exception
 		}
-	}
-
-	/**
-	 * Initializes the first header and adds it to the "Program Trees" view in
-	 * Ghidra.
-	 * 
-	 * @param fileBytes            object that starts at the NSIS magic bytes
-	 * @param scriptHeaderAddress, the address at which the nsis script header
-	 *                             starts
-	 * @param size                 of the header
-	 * @param program              object
-	 * @param dataType             of the script header
-	 * @throws MemoryConflictException
-	 * @throws AddressOverflowException
-	 * @throws CancelledException
-	 * @throws DuplicateNameException
-	 * @throws LockException
-	 * @throws CodeUnitInsertionException
-	 */
-	private void initFirstHeader(InputStream is, Address startingAddr, Program program,
-			DataType dataType, TaskMonitor monitor, int size)
-			throws MemoryConflictException, AddressOverflowException, CancelledException,
-			DuplicateNameException, LockException, CodeUnitInsertionException {
-		Memory memory = program.getMemory();
-		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(".first_header", startingAddr,
-				is, size, monitor, false);
-		firstHeaderBlock.setRead(true);
-		firstHeaderBlock.setWrite(false);
-		firstHeaderBlock.setExecute(false);
-
-		createData(program, startingAddr, dataType);
 	}
 
 	/**
@@ -167,33 +141,139 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Initializes the common header and adds them to the "Program Trees" view in
-	 * Ghidra.
 	 * 
+	 * Initializes a memory block in Ghidra with the given permissions and the given
+	 * data
+	 * 
+	 * @param is                InputStream of the data
+	 * @param startingAddr
 	 * @param program
-	 * @param reader
-	 * @param startingAddr, the Address where the nsis script header starts
-	 * @throws IOException
+	 * @param monitor
+	 * @param size
+	 * @param blockName
+	 * @param readPermission
+	 * @param writePermission
+	 * @param executePermission
+	 * @throws DuplicateNameException
+	 * @throws CancelledException
 	 * @throws AddressOverflowException
 	 * @throws MemoryConflictException
+	 * @throws LockException
+	 */
+	private void createGhidraMemoryBlock(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int size, String blockName, boolean readPermission,
+			boolean writePermission, boolean executePermission)
+			throws LockException, MemoryConflictException, AddressOverflowException,
+			CancelledException, DuplicateNameException {
+		Memory memory = program.getMemory();
+		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr, is,
+				size, monitor, /* Overlay */ false);
+		firstHeaderBlock.setRead(readPermission);
+		firstHeaderBlock.setWrite(writePermission);
+		firstHeaderBlock.setExecute(executePermission);
+	}
+
+	/**
+	 * Initializes the first header and adds it to the "Program Trees" view in
+	 * Ghidra.
+	 * 
+	 * @param fileBytes            object that starts at the NSIS magic bytes
+	 * @param scriptHeaderAddress, the address at which the nsis script header
+	 *                             starts
+	 * @param size                 of the header
+	 * @param program              object
+	 * @param dataType             of the script header
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
 	 * @throws DuplicateNameException
 	 * @throws LockException
+	 * @throws CodeUnitInsertionException
+	 */
+	private void initFirstHeader(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor) throws MemoryConflictException, AddressOverflowException,
+			CancelledException, DuplicateNameException, LockException, CodeUnitInsertionException {
+
+		String blockName = ".first_header";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor, NsisFirstHeader.getHeaderSize(),
+				blockName, readPermission, writePermission, executePermission);
+		createData(program, startingAddr, NsisFirstHeader.STRUCTURE);
+	}
+
+	/**
+	 * Initializes the common header and adds it to the "Program Trees" view in
+	 * Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param dataType
+	 * @param monitor
+	 * @param size
+	 * @throws IOException
+	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
 	 * @throws CancelledException
 	 * @throws CodeUnitInsertionException
 	 */
 	private void initCommonHeader(InputStream is, Address startingAddr, Program program,
-			DataType dataType, TaskMonitor monitor, int size)
-			throws IOException, LockException, DuplicateNameException, MemoryConflictException,
-			AddressOverflowException, CancelledException, CodeUnitInsertionException {
-		Memory memory = program.getMemory();
-		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".common_header",
-				startingAddr, is, size, monitor, false);
+			TaskMonitor monitor)
+			throws LockException, MemoryConflictException, AddressOverflowException,
+			CancelledException, DuplicateNameException, CodeUnitInsertionException {
 
-		blockHeadersBlock.setRead(true);
-		blockHeadersBlock.setWrite(false);
-		blockHeadersBlock.setExecute(false);
+		String blockName = ".common_header";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				NsisCommonHeader.getHeaderSize(), blockName, readPermission, writePermission,
+				executePermission);
+		createData(program, startingAddr, NsisCommonHeader.STRUCTURE);
+	}
 
-		createData(program, startingAddr, dataType);
+	/**
+	 * Initializes the pages section and adds the section to the "program Trees"
+	 * view in Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param dataType
+	 * @param monitor
+	 * @param size
+	 * @param numPages
+	 * @throws IOException
+	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws CodeUnitInsertionException
+	 * @throws InvalidNameException
+	 */
+	private void initPagesSection(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int numPages) throws IOException, LockException,
+			DuplicateNameException, MemoryConflictException, AddressOverflowException,
+			CancelledException, CodeUnitInsertionException, InvalidNameException {
+
+		String blockName = ".pages";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				NsisPage.getPageSize() * numPages, blockName, readPermission, writePermission,
+				executePermission);
+
+		for (int i = 0; i < numPages; i++) {
+			NsisPage.STRUCTURE.setName("Page #" + (i + 1));
+			createData(program, startingAddr, NsisPage.STRUCTURE);
+			startingAddr = startingAddr.add(NsisPage.getPageSize());
+		}
 	}
 
 	/**
@@ -216,13 +296,14 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			TaskMonitor monitor, int nbEntries) throws LockException, MemoryConflictException,
 			AddressOverflowException, CancelledException, DuplicateNameException,
 			CodeUnitInsertionException, InvalidNameException {
-		Memory memory = program.getMemory();
-		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".section_headers",
-				startingAddr, is, nbEntries * NsisSection.getSectionSize(), monitor, false);
 
-		blockHeadersBlock.setRead(true);
-		blockHeadersBlock.setWrite(false);
-		blockHeadersBlock.setExecute(false);
+		String blockName = ".section_headers";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				NsisSection.getSectionSize() * nbEntries, blockName, readPermission,
+				writePermission, executePermission);
 
 		for (int i = 0; i < nbEntries; i++) {
 			NsisSection.STRUCTURE.setName("Section #" + (i + 1));
