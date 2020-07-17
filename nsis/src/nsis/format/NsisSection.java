@@ -21,7 +21,7 @@ public class NsisSection implements StructConverter {
 	private int sizeKb;
 	private String name;
 
-	private final static Structure STRUCTURE;
+	public final static Structure STRUCTURE;
 
 	static {
 		// Values are named after the NSIS implementation of section struct:
@@ -56,4 +56,17 @@ public class NsisSection implements StructConverter {
 		return STRUCTURE;
 	}
 
+	/**
+	 * Get the size of the Section structure
+	 * 
+	 * @return
+	 */
+	public static int getSectionSize() {
+		return STRUCTURE.getLength();
+	}
+
+	public int getNamePtr() {
+		return this.namePtr;
+	}
+	
 }

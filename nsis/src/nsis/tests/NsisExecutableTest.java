@@ -47,6 +47,10 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumPages());
 			assertEquals(0x6a, ne.getPage(0).getDialogResourceId());
 			assertEquals(0xffffffff, ne.getPage(1).getDialogResourceId());
+
+			// Sections
+			assertEquals(1, ne.getNumSections());
+			assertEquals(0x0, ne.getSection(0).getNamePtr());
 		}
 	}
 
@@ -73,6 +77,10 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumPages());
 			assertEquals(0x6a, ne.getPage(0).getDialogResourceId());
 			assertEquals(0xffffffff, ne.getPage(1).getDialogResourceId());
+
+			// Sections
+			assertEquals(1, ne.getNumSections());
+			assertEquals(0x0, ne.getSection(0).getNamePtr());
 		}
 	}
 
@@ -100,6 +108,10 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumPages());
 			assertEquals(0x6a, ne.getPage(0).getDialogResourceId());
 			assertEquals(0xffffffff, ne.getPage(1).getDialogResourceId());
+
+			// Sections
+			assertEquals(1, ne.getNumSections());
+			assertEquals(0x0, ne.getSection(0).getNamePtr());
 		}
 	}
 
@@ -127,6 +139,10 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumPages());
 			assertEquals(0x6a, ne.getPage(0).getDialogResourceId());
 			assertEquals(0xffffffff, ne.getPage(1).getDialogResourceId());
+
+			// Sections
+			assertEquals(1, ne.getNumSections());
+			assertEquals(0x0, ne.getSection(0).getNamePtr());
 		}
 	}
 
