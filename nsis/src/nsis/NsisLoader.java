@@ -53,6 +53,7 @@ import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisPage;
+import nsis.format.NsisSection;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 
@@ -106,11 +107,15 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
 						ne.getNumPages());
 
+				Address sectionHeadersAddress = pagesSectionAddress
+						.add(NsisPage.getPageSize() * ne.getNumPages());
+				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
+						ne.getNumSections());
+
 				Address entiresSectionAddress = pagesSectionAddress
 						.add(NsisPage.getPageSize() * ne.getNumPages());
 				initEntriesSection(bodyInputStream, entiresSectionAddress, program, monitor,
 						ne.getEntriesSectionSize());
-
 			}
 
 		} catch (Exception e) {
@@ -276,6 +281,42 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
+	 * Initializes the section headers section and adds it to the "program Trees"
+	 * view in Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param monitor
+	 * @throws LockException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws DuplicateNameException
+	 * @throws CodeUnitInsertionException
+	 * @throws InvalidNameException
+	 */
+	private void initSectionHeaders(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int nbEntries) throws LockException, MemoryConflictException,
+			AddressOverflowException, CancelledException, DuplicateNameException,
+			CodeUnitInsertionException, InvalidNameException {
+
+		String blockName = ".section_headers";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor,
+				NsisSection.getSectionSize() * nbEntries, blockName, readPermission,
+				writePermission, executePermission);
+
+		for (int i = 0; i < nbEntries; i++) {
+			NsisSection.STRUCTURE.setName("Section #" + (i + 1));
+			createData(program, startingAddr, NsisSection.STRUCTURE);
+			startingAddr = startingAddr.add(NsisSection.getSectionSize());
+		}
+	}
+
+	/**
 	 * Initializes the entries section and adds the section to the "program Trees"
 	 * view in Ghidra.
 	 * 
@@ -283,11 +324,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @param startingAddr
 	 * @param program
 	 * @param monitor
-	 * @throws DuplicateNameException
-	 * @throws CancelledException
-	 * @throws AddressOverflowException
-	 * @throws MemoryConflictException
+	 * @param size
 	 * @throws LockException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws DuplicateNameException
 	 */
 	private void initEntriesSection(InputStream is, Address startingAddr, Program program,
 			TaskMonitor monitor, int size) throws LockException, MemoryConflictException,
@@ -300,6 +342,6 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 		createGhidraMemoryBlock(is, startingAddr, program, monitor, size, blockName, readPermission,
 				writePermission, executePermission);
-
 	}
+
 }

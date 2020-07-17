@@ -1,5 +1,7 @@
 **This is not an officially supported Google product.**
 
+This extension supports Nullsoft Scriptable Install System (NSIS) binaries built using the NSIS builder available from https://nsis.sourceforge.io/
+
 # Loading Extension into Eclipse for Development
 * Install Java
   * Tested verison: `jdk-11.0.2`
