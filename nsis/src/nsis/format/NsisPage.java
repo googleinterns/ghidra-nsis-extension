@@ -26,7 +26,7 @@ public class NsisPage implements StructConverter {
 	private int cancel;
 	private int[] parameters = new int[NB_PARAMETERS];
 
-	private final static Structure STRUCTURE;
+	public final static Structure STRUCTURE;
 
 	static {
 		// Values are named after the NSIS implementation of page struct:
@@ -67,6 +67,19 @@ public class NsisPage implements StructConverter {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		return STRUCTURE;
+	}
+
+	/**
+	 * Get the size of the Page structure
+	 * 
+	 * @return the size of the structure
+	 */
+	public static int getPageSize() {
+		return STRUCTURE.getLength();
+	}
+
+	public int getDialogResourceId() {
+		return this.dialogResourceId;
 	}
 
 }

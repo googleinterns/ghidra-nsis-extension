@@ -44,6 +44,7 @@ import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.mem.MemoryConflictException;
 import ghidra.program.model.util.CodeUnitInsertionException;
+import ghidra.util.InvalidNameException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
@@ -51,6 +52,7 @@ import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisPage;
 
 public class NsisLoader extends AbstractLibrarySupportLoader {
 
@@ -100,6 +102,11 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 						.add(NsisFirstHeader.getHeaderSize());
 				initCommonHeader(bodyInputStream, commonHeaderAddress, program,
 						ne.getCommonHeaderDataType(), monitor, NsisCommonHeader.getHeaderSize());
+
+				Address pagesSectionAddress = commonHeaderAddress
+						.add(NsisCommonHeader.getHeaderSize());
+				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
+						ne.getNumPages());
 			}
 
 		} catch (Exception e) {
@@ -160,17 +167,20 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
-	 * Initializes the common header and adds them to the "Program Trees" view in
+	 * Initializes the common header and adds it to the "Program Trees" view in
 	 * Ghidra.
 	 * 
+	 * @param is
+	 * @param startingAddr
 	 * @param program
-	 * @param reader
-	 * @param startingAddr, the Address where the nsis script header starts
+	 * @param dataType
+	 * @param monitor
+	 * @param size
 	 * @throws IOException
-	 * @throws AddressOverflowException
-	 * @throws MemoryConflictException
-	 * @throws DuplicateNameException
 	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
 	 * @throws CancelledException
 	 * @throws CodeUnitInsertionException
 	 */
@@ -187,5 +197,44 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		blockHeadersBlock.setExecute(false);
 
 		createData(program, startingAddr, dataType);
+	}
+
+	/**
+	 * Initializes the pages section and adds the section to the "program Trees"
+	 * view in Ghidra.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param dataType
+	 * @param monitor
+	 * @param size
+	 * @param numPages
+	 * @throws IOException
+	 * @throws LockException
+	 * @throws DuplicateNameException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws CodeUnitInsertionException
+	 * @throws InvalidNameException
+	 */
+	private void initPagesSection(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int numPages) throws IOException, LockException,
+			DuplicateNameException, MemoryConflictException, AddressOverflowException,
+			CancelledException, CodeUnitInsertionException, InvalidNameException {
+		Memory memory = program.getMemory();
+		MemoryBlock blockHeadersBlock = memory.createInitializedBlock(".pages", startingAddr, is,
+				NsisPage.getPageSize() * numPages, monitor, false);
+
+		blockHeadersBlock.setRead(true);
+		blockHeadersBlock.setWrite(false);
+		blockHeadersBlock.setExecute(false);
+
+		for (int i = 0; i < numPages; i++) {
+			NsisPage.STRUCTURE.setName("Page #" + (i + 1));
+			createData(program, startingAddr, NsisPage.STRUCTURE);
+			startingAddr = startingAddr.add(NsisPage.getPageSize());
+		}
 	}
 }

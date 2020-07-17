@@ -15,13 +15,15 @@ import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.program.model.data.DataType;
+import ghidra.util.exception.DuplicateNameException;
 import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
-import nsis.format.NsisFirstHeader;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisFirstHeader;
+import nsis.format.NsisPage;
 
 /**
  * 
@@ -37,6 +39,7 @@ public class NsisExecutable {
 	private NsisDecompressionProvider decompressionProvider;
 	private NsisFirstHeader firstHeader;
 	private NsisCommonHeader commonHeader;
+	private NsisPage[] pages;
 	private long headerOffset;
 
 	/**
@@ -92,7 +95,26 @@ public class NsisExecutable {
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
+			this.pages = getPages(blockReader);
 		}
+	}
+
+	/**
+	 * Get an array of the right amount of pages in the Nsis executable. The reader
+	 * object is expected to be at the right offset (at the beginning of the first
+	 * page) before calling this function.
+	 * 
+	 * @param reader
+	 * @return NsisPage array that contains all the pages in the Nsis executable
+	 * @throws IOException
+	 */
+	private NsisPage[] getPages(BinaryReader reader) throws IOException {
+		NsisBlockHeader pagesBlockHeader = this.commonHeader.getBlockHeader(0);
+		NsisPage[] pages = new NsisPage[pagesBlockHeader.getNumEntries()];
+		for (int i = 0; i < pages.length; i++) {
+			pages[i] = new NsisPage(reader);
+		}
+		return pages;
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -211,6 +233,25 @@ public class NsisExecutable {
 
 	public InputStream getDecompressedInputStream() throws IOException {
 		return this.decompressionProvider.getDecompressedStream();
+	}
+
+	/**
+	 * Get the number of pages in the Nsis executable
+	 * 
+	 * @return the number of pages
+	 */
+	public int getNumPages() {
+		return this.pages.length;
+	}
+
+	/**
+	 * Get the page at the specified index
+	 * 
+	 * @param index
+	 * @return the corresponding NsisPage
+	 */
+	public NsisPage getPage(int index) {
+		return this.pages[index];
 	}
 
 }
