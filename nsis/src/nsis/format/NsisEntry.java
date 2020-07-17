@@ -16,7 +16,7 @@ public class NsisEntry implements StructConverter {
 	private int which;
 	private int[] offsets = new int[MAX_ENTRY_OFFSETS];
 
-	private final static Structure STRUCTURE;
+	public final static Structure STRUCTURE;
 
 	static {
 		STRUCTURE = new StructureDataType("Entry", 0);
@@ -36,6 +36,15 @@ public class NsisEntry implements StructConverter {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		return STRUCTURE;
+	}
+
+	/**
+	 * Get the size of the Entry structure
+	 * 
+	 * @return
+	 */
+	public static int getEntrySize() {
+		return STRUCTURE.getLength();
 	}
 
 }

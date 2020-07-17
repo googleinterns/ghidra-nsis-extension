@@ -20,6 +20,7 @@ import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisPage;
 import nsis.format.NsisSection;
@@ -41,6 +42,7 @@ public class NsisExecutable {
 	private NsisPage[] pages;
 	private long headerOffset;
 	private NsisSection[] sections;
+	private NsisEntry[] entries;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
@@ -97,6 +99,7 @@ public class NsisExecutable {
 			this.commonHeader = new NsisCommonHeader(blockReader);
 			this.pages = getPages(blockReader);
 			this.sections = getSections(blockReader);
+			this.entries = getEntries(blockReader);
 		}
 	}
 
@@ -123,7 +126,7 @@ public class NsisExecutable {
 	/**
 	 * Get an array of the right amount of sections in the Nsis executable. The
 	 * reader object is expected to be at the right offset (at the beginning of the
-	 * first page) before calling this function. The reader index is advanced and
+	 * first section) before calling this function. The reader index is advanced and
 	 * after executing this function, the index of the reader is pointing to the
 	 * first byte after the section headers section.
 	 * 
@@ -138,6 +141,26 @@ public class NsisExecutable {
 			sections[i] = new NsisSection(reader);
 		}
 		return sections;
+	}
+
+	/**
+	 * Get an array of the right amount of entries in the Nsis executable. The
+	 * reader object is expected to be at the right offset (at the beginning of the
+	 * first entry) before calling this function. The reader index is advanced and
+	 * after executing this function, the index of the reader is pointing to the
+	 * first byte after the entries section.
+	 * 
+	 * @param reader
+	 * @return
+	 * @throws IOException
+	 */
+	private NsisEntry[] getEntries(BinaryReader reader) throws IOException {
+		NsisBlockHeader entriesBlockHeader = this.commonHeader.getBlockHeader(2);
+		NsisEntry[] entries = new NsisEntry[entriesBlockHeader.getNumEntries()];
+		for (int i = 0; i < entries.length; i++) {
+			entries[i] = new NsisEntry(reader);
+		}
+		return entries;
 	}
 
 	private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -264,17 +287,6 @@ public class NsisExecutable {
 		return this.pages[index];
 
 	}
-	
-	/**
-	 * Get the size of the entries section
-	 * 
-	 * @return the size in number of bytes
-	 */
-	public int getEntriesSectionSize() {
-		NsisBlockHeader colors = this.commonHeader.getBlockHeader(3);
-		NsisBlockHeader entries = this.commonHeader.getBlockHeader(2);
-		return (colors.getOffset() - entries.getOffset());
-	}
 
 	/**
 	 * Get the number of sections in the section headers part of the Nsis executable
@@ -293,5 +305,24 @@ public class NsisExecutable {
 	 */
 	public NsisSection getSection(int index) {
 		return this.sections[index];
+	}
+
+	/**
+	 * Get the NsisEntry from the entries section at the specified index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public NsisEntry getEntry(int index) {
+		return this.entries[index];
+	}
+
+	/**
+	 * Get the number of entries in the entries section part of the Nsis executable
+	 * 
+	 * @return
+	 */
+	public int getNumEntries() {
+		return this.entries.length;
 	}
 }
