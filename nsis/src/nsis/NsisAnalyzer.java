@@ -34,7 +34,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 
 		// TODO: Name the analyzer and give it a description.
 
-		super("Decompile into NSIS script", "Decompiles the entries section into NSIS script",
+		super("Nsis", "Analyzer description goes here",
 				AnalyzerType.BYTE_ANALYZER);
 	}
 
@@ -54,7 +54,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 		// Return true
 		// if it can.
 
-		return true;
+		return false;
 	}
 
 	@Override
