@@ -23,6 +23,7 @@ import nsis.format.NsisCommonHeader;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisPage;
 import nsis.format.NsisSection;
+import nsis.format.NsisStrings;
 
 /**
  * 
@@ -41,6 +42,7 @@ public class NsisExecutable {
 	private NsisPage[] pages;
 	private long headerOffset;
 	private NsisSection[] sections;
+	private NsisStrings strings;
 
 	/**
 	 * Use createNsisExecutable to create a Nsis Executable object
@@ -97,6 +99,7 @@ public class NsisExecutable {
 			this.commonHeader = new NsisCommonHeader(blockReader);
 			this.pages = getPages(blockReader);
 			this.sections = getSections(blockReader);
+			this.strings = new NsisStrings(blockReader, this.getBlockHeader(3).getOffset(), this.getBlockHeader(4).getOffset());
 		}
 	}
 
@@ -289,8 +292,6 @@ public class NsisExecutable {
 	 * @return
 	 */
 	public int getStringsSectionSize() {
-		NsisBlockHeader strings = this.getBlockHeader(3);
-		NsisBlockHeader language = this.getBlockHeader(4);
-		return language.getOffset() - strings.getOffset();
+		return this.strings.getStringsSectionLength();
 	}
 }
