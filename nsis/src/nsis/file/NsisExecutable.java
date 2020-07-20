@@ -283,4 +283,14 @@ public class NsisExecutable {
 	public NsisSection getSection(int index) {
 		return this.sections[index];
 	}
+
+	/**
+	 * Get the size of the strings section of the NSIS executable
+	 * @return
+	 */
+	public int getStringsSectionSize() {
+		NsisBlockHeader strings = this.getBlockHeader(3);
+		NsisBlockHeader language = this.getBlockHeader(4);
+		return language.getOffset() - strings.getOffset();
+	}
 }

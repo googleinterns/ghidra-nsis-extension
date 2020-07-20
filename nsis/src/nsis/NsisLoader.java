@@ -112,6 +112,11 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
 						ne.getNumSections());
 
+				Address stringsAddress = sectionHeadersAddress
+						.add(NsisSection.getSectionSize() * ne.getNumSections());
+				initStringsSection(bodyInputStream, stringsAddress, program, monitor,
+						ne.getStringsSectionSize());
+
 			}
 
 		} catch (Exception e) {
@@ -310,5 +315,33 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			createData(program, startingAddr, NsisSection.STRUCTURE);
 			startingAddr = startingAddr.add(NsisSection.getSectionSize());
 		}
+	}
+
+	/**
+	 * Initializes the strings section and adds the it to the "program Trees" view
+	 * in Ghidra. Please not this function will not analyze the section to create
+	 * the strings as the ASCII strings analyzer is available for this purpose.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param monitor
+	 * @param sectionLength
+	 * @throws DuplicateNameException
+	 * @throws CancelledException
+	 * @throws AddressOverflowException
+	 * @throws MemoryConflictException
+	 * @throws LockException
+	 */
+	private void initStringsSection(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+			AddressOverflowException, CancelledException, DuplicateNameException {
+
+		String blockName = ".strings";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength, blockName,
+				readPermission, writePermission, executePermission);
 	}
 }
