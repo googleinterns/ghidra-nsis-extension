@@ -107,8 +107,8 @@ public class NsisCommonHeader implements StructConverter {
 
 	public NsisCommonHeader(BinaryReader reader) throws IOException {
 		this.flags = reader.readNextInt();
-		blockHeaders = new NsisBlockHeader[NsisConstants.Blocks.NB_BLOCKS.ordinal()];
-		for (int i = 0; i < NsisConstants.Blocks.NB_BLOCKS.ordinal(); i++) {
+		this.blockHeaders = new NsisBlockHeader[NsisConstants.Blocks.NB_BLOCKS.ordinal()];
+		for (int i = 0; i < this.blockHeaders.length; i++) {
 			this.blockHeaders[i] = new NsisBlockHeader(reader);
 		}
 		this.installRegRootkey = reader.readNextInt();
