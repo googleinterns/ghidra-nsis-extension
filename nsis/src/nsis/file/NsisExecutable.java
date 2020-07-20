@@ -115,7 +115,8 @@ public class NsisExecutable {
 	 * @throws IOException
 	 */
 	private NsisPage[] getPages(BinaryReader reader) throws IOException {
-		NsisBlockHeader pagesBlockHeader = this.commonHeader.getBlockHeader(0);
+		NsisBlockHeader pagesBlockHeader = this.commonHeader
+				.getBlockHeader(NsisConstants.Blocks.NB_PAGES.ordinal());
 		NsisPage[] pages = new NsisPage[pagesBlockHeader.getNumEntries()];
 		for (int i = 0; i < pages.length; i++) {
 			pages[i] = new NsisPage(reader);
@@ -135,7 +136,8 @@ public class NsisExecutable {
 	 * @throws IOException
 	 */
 	private NsisSection[] getSections(BinaryReader reader) throws IOException {
-		NsisBlockHeader sectionBlockHeader = this.commonHeader.getBlockHeader(1);
+		NsisBlockHeader sectionBlockHeader = this.commonHeader
+				.getBlockHeader(NsisConstants.Blocks.NB_SECTIONS.ordinal());
 		NsisSection[] sections = new NsisSection[sectionBlockHeader.getNumEntries()];
 		for (int i = 0; i < sections.length; i++) {
 			sections[i] = new NsisSection(reader);
@@ -155,7 +157,8 @@ public class NsisExecutable {
 	 * @throws IOException
 	 */
 	private NsisEntry[] getEntries(BinaryReader reader) throws IOException {
-		NsisBlockHeader entriesBlockHeader = this.commonHeader.getBlockHeader(2);
+		NsisBlockHeader entriesBlockHeader = this.commonHeader
+				.getBlockHeader(NsisConstants.Blocks.NB_ENTRIES.ordinal());
 		NsisEntry[] entries = new NsisEntry[entriesBlockHeader.getNumEntries()];
 		for (int i = 0; i < entries.length; i++) {
 			entries[i] = new NsisEntry(reader);
