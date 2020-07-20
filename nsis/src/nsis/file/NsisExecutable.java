@@ -99,7 +99,8 @@ public class NsisExecutable {
 			this.commonHeader = new NsisCommonHeader(blockReader);
 			this.pages = getPages(blockReader);
 			this.sections = getSections(blockReader);
-			this.strings = new NsisStrings(blockReader, this.getBlockHeader(3).getOffset(), this.getBlockHeader(4).getOffset());
+			this.strings = new NsisStrings(blockReader, this.getBlockHeader(3).getOffset(),
+					this.getBlockHeader(4).getOffset());
 		}
 	}
 
@@ -289,6 +290,7 @@ public class NsisExecutable {
 
 	/**
 	 * Get the size of the strings section of the NSIS executable
+	 * 
 	 * @return
 	 */
 	public int getStringsSectionSize() {
