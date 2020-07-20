@@ -12,7 +12,9 @@ public class NsisConstants {
 	public static final byte COMPRESSION_BZIP2 = 0x31;
 	public static final int COMPRESSION_LZMA_HEADER_LENGTH = 5;
 
-	public enum Blocks {
+	// The order of the blocks is important as their ordinal value corresponds to
+	// their position in the NsisCommonHeader
+	public enum BlockHeaderType {
 		NB_PAGES, NB_SECTIONS, NB_ENTRIES, NB_STRINGS, NB_LANGTABLES, NB_CTLCOLORS, NB_BGFONT,
 		NB_DATA, NB_BLOCKS
 	}
