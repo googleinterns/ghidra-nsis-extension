@@ -13,12 +13,15 @@ import ghidra.util.exception.DuplicateNameException;
 public class NsisEntry implements StructConverter {
 	private final static int MAX_ENTRY_OFFSETS = 6;
 
-	private int which;
-	private int[] offsets = new int[MAX_ENTRY_OFFSETS];
+	private int opCode;
+	private int[] parametersOffsets = new int[MAX_ENTRY_OFFSETS];
 
 	public final static Structure STRUCTURE;
 
 	static {
+		// Values are named after the NSIS implementation of entry struct:
+		// https://sourceforge.net/p/nsis/code/HEAD/tree/NSIS/trunk/Source/exehead/fileform.h#l408
+		// Each entry corresponds to an instruction
 		STRUCTURE = new StructureDataType("Entry", 0);
 		STRUCTURE.add(DWORD, DWORD.getLength(), "which",
 				"EW_* enum.  Look at the enum values to see what offsets mean");
@@ -29,8 +32,8 @@ public class NsisEntry implements StructConverter {
 	}
 
 	public NsisEntry(BinaryReader reader) throws IOException {
-		this.which = reader.readNextInt();
-		this.offsets = reader.readNextIntArray(MAX_ENTRY_OFFSETS);
+		this.opCode = reader.readNextInt();
+		this.parametersOffsets = reader.readNextIntArray(MAX_ENTRY_OFFSETS);
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class NsisEntry implements StructConverter {
 	 * @return
 	 */
 	public int getOpCode() {
-		return this.which;
+		return this.opCode;
 	}
 
 }
