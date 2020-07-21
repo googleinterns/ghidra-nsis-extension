@@ -102,8 +102,11 @@ public class NsisExecutable {
 			this.pages = getPages(blockReader);
 			this.sections = getSections(blockReader);
 			this.entries = getEntries(blockReader);
-			this.strings = new NsisStrings(blockReader, this.getBlockHeader(3).getOffset(),
-					this.getBlockHeader(4).getOffset());
+			this.strings = new NsisStrings(blockReader,
+					this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal())
+							.getOffset(),
+					this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
+							.getOffset());
 		}
 	}
 
