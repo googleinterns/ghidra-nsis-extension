@@ -36,7 +36,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 	}
 
 	/**
-	 * Determines if the analyzer should me enabled by default
+	 * Determines if the analyzer should be enabled by default
 	 */
 	@Override
 	public boolean getDefaultEnablement(Program program) {
