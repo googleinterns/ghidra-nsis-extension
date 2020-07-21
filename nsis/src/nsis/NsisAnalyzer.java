@@ -31,10 +31,7 @@ import ghidra.util.task.TaskMonitor;
 public class NsisAnalyzer extends AbstractAnalyzer {
 
 	public NsisAnalyzer() {
-
-		// TODO: Name the analyzer and give it a description.
-
-		super("Nsis", "Analyzer description goes here",
+		super("NSIS script decompiler", "Decompiles NSIS bytecode into NSIS script.",
 				AnalyzerType.BYTE_ANALYZER);
 	}
 
