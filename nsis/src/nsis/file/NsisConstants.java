@@ -15,7 +15,6 @@ public class NsisConstants {
 	// The order of the blocks is important as their ordinal value corresponds to
 	// their position in the NsisCommonHeader
 	public enum BlockHeaderType {
-		NB_PAGES, NB_SECTIONS, NB_ENTRIES, NB_STRINGS, NB_LANGTABLES, NB_CTLCOLORS, NB_BGFONT,
-		NB_DATA, NB_BLOCKS
+		PAGES, SECTIONS, ENTRIES, STRINGS, LANGTABLES, CONTROL_COLORS, BACKGROUND_FONT, DATA
 	}
 }
