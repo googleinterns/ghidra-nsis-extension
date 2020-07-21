@@ -52,6 +52,11 @@ public class NsisExecutableTest {
 			assertEquals(1, ne.getNumSections());
 			assertEquals(0x0, ne.getSection(0).getNamePtr());
 
+			// Entries
+			assertEquals(2, ne.getNumEntries());
+			assertEquals(0x16, ne.getEntry(0).getOpCode());
+			assertEquals(0x01, ne.getEntry(1).getOpCode());
+			
 			// Strings
 			assertEquals(0x11c, ne.getStringsSectionSize());
 		}
@@ -84,6 +89,11 @@ public class NsisExecutableTest {
 			// Sections
 			assertEquals(1, ne.getNumSections());
 			assertEquals(0x0, ne.getSection(0).getNamePtr());
+
+			// Entries
+			assertEquals(2, ne.getNumEntries());
+			assertEquals(0x16, ne.getEntry(0).getOpCode());
+			assertEquals(0x01, ne.getEntry(1).getOpCode());
 
 			// Strings
 			assertEquals(0x11c, ne.getStringsSectionSize());
@@ -119,6 +129,11 @@ public class NsisExecutableTest {
 			assertEquals(1, ne.getNumSections());
 			assertEquals(0x0, ne.getSection(0).getNamePtr());
 
+			// Entries
+			assertEquals(2, ne.getNumEntries());
+			assertEquals(0x16, ne.getEntry(0).getOpCode());
+			assertEquals(0x01, ne.getEntry(1).getOpCode());
+
 			// Strings
 			assertEquals(0x11c, ne.getStringsSectionSize());
 		}
@@ -152,6 +167,11 @@ public class NsisExecutableTest {
 			// Sections
 			assertEquals(1, ne.getNumSections());
 			assertEquals(0x0, ne.getSection(0).getNamePtr());
+
+			// Entries
+			assertEquals(2, ne.getNumEntries());
+			assertEquals(0x16, ne.getEntry(0).getOpCode());
+			assertEquals(0x01, ne.getEntry(1).getOpCode());
 
 			// Strings
 			assertEquals(0x11c, ne.getStringsSectionSize());

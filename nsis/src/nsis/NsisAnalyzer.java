@@ -25,50 +25,50 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * TODO: Provide class-level documentation that describes what this analyzer
- * does.
+ * This analyzer finds NSIS bytecode and will try to decompile it into the
+ * original NSIS script.
  */
 public class NsisAnalyzer extends AbstractAnalyzer {
 
 	public NsisAnalyzer() {
-
-		// TODO: Name the analyzer and give it a description.
-
-		super("Nsis", "Analyzer description goes here",
+		super("NSIS script decompiler", "Decompiles NSIS bytecode into NSIS script.",
 				AnalyzerType.BYTE_ANALYZER);
 	}
 
+	/**
+	 * Determines if the analyzer should be enabled by default
+	 */
 	@Override
 	public boolean getDefaultEnablement(Program program) {
-
-		// TODO: Return true if analyzer should be enabled by default
-
-		return false;
+		return true;
 	}
 
+	/**
+	 * Determines if this analyzer can analyze the given program.
+	 */
 	@Override
 	public boolean canAnalyze(Program program) {
-
-		// TODO: Examine 'program' to determine of this analyzer should analyze
-		// it.
-		// Return true
-		// if it can.
-
+		String format = program.getExecutableFormat();
+		if (format.equals(NsisLoader.NE_NAME)) {
+			return true;
+		}
 		return false;
 	}
 
+	/**
+	 * Registers the options provided to the user for this analyzer.
+	 */
 	@Override
 	public void registerOptions(Options options, Program program) {
-
-		// TODO: If this analyzer has custom options, register them here
-
-		options.registerOption("Option name goes here", false, null,
-				"Option description goes here");
 	}
 
+	/**
+	 * Perform analysis when things get added to the 'program'. Return true if the
+	 * analysis succeeded.
+	 */
 	@Override
-	public boolean added(Program program, AddressSetView set,
-			TaskMonitor monitor, MessageLog log) throws CancelledException {
+	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
+			throws CancelledException {
 
 		// TODO: Perform analysis when things get added to the 'program'. Return
 		// true if
