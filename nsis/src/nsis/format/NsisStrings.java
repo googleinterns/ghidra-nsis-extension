@@ -10,11 +10,11 @@ public class NsisStrings {
 	 * the end of the strings section.
 	 * 
 	 * @param reader
-	 * @param stringsSectionOffset
-	 * @param languageSectionOffset
+	 * @param sectionStartOffset
+	 * @param sectionEndOffset
 	 */
-	public NsisStrings(BinaryReader reader, int stringsSectionOffset, int languageSectionOffset) {
-		this.sectionLength = languageSectionOffset - stringsSectionOffset;
+	public NsisStrings(BinaryReader reader, int sectionStartOffset, int sectionEndOffset) {
+		this.sectionLength = sectionEndOffset - sectionStartOffset;
 		reader.setPointerIndex(reader.getPointerIndex() + this.sectionLength);
 	}
 
