@@ -19,6 +19,7 @@ import ghidra.app.services.AbstractAnalyzer;
 import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.Options;
+import ghidra.program.disassemble.Disassembler;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
 import ghidra.util.exception.CancelledException;
@@ -75,6 +76,10 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 		// the
 		// analysis succeeded.
 
-		return false;
+		Disassembler disassembler = Disassembler.getDisassembler(program, monitor, null);
+		disassembler.disassemble(program.getImageBase(), null);
+		
+		
+		return true;
 	}
 }
