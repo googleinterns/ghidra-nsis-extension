@@ -71,7 +71,6 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		try {
 			NsisExecutable ne = NsisExecutable
 					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
-			
 			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
 			loadSpecs.add(my_spec);
