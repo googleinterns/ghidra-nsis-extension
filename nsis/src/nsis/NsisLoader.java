@@ -72,7 +72,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			NsisExecutable ne = NsisExecutable
 					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
 			
-			LoadSpec my_spec = new LoadSpec(this, 0x00400000,
+			LoadSpec my_spec = new LoadSpec(this, 0x400000,
 					new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
 			loadSpecs.add(my_spec);
 		} catch (InvalidFormatException e) {
