@@ -17,4 +17,11 @@ public class NsisConstants {
 	public enum BlockHeaderType {
 		PAGES, SECTIONS, ENTRIES, STRINGS, LANGTABLES, CONTROL_COLORS, BACKGROUND_FONT, DATA
 	}
+
+	// Ghidra memory block names
+	public static final String firstHeaderMemoryBlockName = ".first_header";
+	public static final String commonHeaderMemoryBlockName = ".common_header";
+	public static final String pagesMemoryBlockName = ".pages";
+	public static final String sectionsMemoryBlockName = ".section_headers";
+	public static final String entriesMemoryBlockName = ".entries";
 }

@@ -26,6 +26,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
+import nsis.file.NsisConstants;
 
 /**
  * This analyzer finds NSIS bytecode and will try to decompile it into the
@@ -72,9 +73,9 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
 			throws CancelledException {
-		MemoryBlock entriesBlock = program.getMemory().getBlock(".entries");
+		MemoryBlock entriesBlock = program.getMemory()
+				.getBlock(NsisConstants.entriesMemoryBlockName);
 		Disassembler disassembler = Disassembler.getDisassembler(program, monitor, null);
-
 		AddressSet modifiedAddrSet = disassembler.disassemble(entriesBlock.getStart(), null);
 		if (modifiedAddrSet.isEmpty()) {
 			return false;
