@@ -20,8 +20,10 @@ import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.Options;
 import ghidra.program.disassemble.Disassembler;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -70,16 +72,13 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 	@Override
 	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
 			throws CancelledException {
-
-		// TODO: Perform analysis when things get added to the 'program'. Return
-		// true if
-		// the
-		// analysis succeeded.
-
+		MemoryBlock entriesBlock = program.getMemory().getBlock(".entries");
 		Disassembler disassembler = Disassembler.getDisassembler(program, monitor, null);
-		disassembler.disassemble(program.getImageBase(), null);
-		
-		
+
+		AddressSet modifiedAddrSet = disassembler.disassemble(entriesBlock.getStart(), null);
+		if (modifiedAddrSet.isEmpty()) {
+			return false;
+		}
 		return true;
 	}
 }
