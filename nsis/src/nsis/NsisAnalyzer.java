@@ -74,7 +74,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
 			throws CancelledException {
 		MemoryBlock entriesBlock = program.getMemory()
-				.getBlock(NsisConstants.entriesMemoryBlockName);
+				.getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
 		Disassembler disassembler = Disassembler.getDisassembler(program, monitor, null);
 		AddressSet modifiedAddrSet = disassembler.disassemble(entriesBlock.getStart(), null);
 		if (modifiedAddrSet.isEmpty()) {

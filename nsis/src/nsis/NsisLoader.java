@@ -204,7 +204,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor, NsisFirstHeader.getHeaderSize(),
-				NsisConstants.firstHeaderMemoryBlockName, readPermission, writePermission,
+				NsisConstants.FIRST_HEADER_MEMORY_BLOCK_NAME, readPermission, writePermission,
 				executePermission);
 		createData(program, startingAddr, NsisFirstHeader.STRUCTURE);
 	}
@@ -236,7 +236,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisCommonHeader.getHeaderSize(), NsisConstants.commonHeaderMemoryBlockName,
+				NsisCommonHeader.getHeaderSize(), NsisConstants.COMMON_HEADER_MEMORY_BLOCK_NAME,
 				readPermission, writePermission, executePermission);
 		createData(program, startingAddr, NsisCommonHeader.STRUCTURE);
 	}
@@ -270,7 +270,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisPage.getPageSize() * numPages, NsisConstants.pagesMemoryBlockName,
+				NsisPage.getPageSize() * numPages, NsisConstants.PAGES_MEMORY_BLOCK_NAME,
 				readPermission, writePermission, executePermission);
 
 		for (int i = 0; i < numPages; i++) {
@@ -305,7 +305,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisSection.getSectionSize() * nbSections, NsisConstants.sectionsMemoryBlockName,
+				NsisSection.getSectionSize() * nbSections, NsisConstants.SECTIONS_MEMORY_BLOCK_NAME,
 				readPermission, writePermission, executePermission);
 
 		for (int i = 0; i < nbSections; i++) {
@@ -341,7 +341,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		boolean executePermission = true;
 
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisEntry.getEntrySize() * nbEntries, NsisConstants.entriesMemoryBlockName,
+				NsisEntry.getEntrySize() * nbEntries, NsisConstants.ENTRIES_MEMORY_BLOCK_NAME,
 				readPermission, writePermission, executePermission);
 	}
 

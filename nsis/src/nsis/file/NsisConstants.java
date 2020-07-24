@@ -19,9 +19,9 @@ public class NsisConstants {
 	}
 
 	// Ghidra memory block names
-	public static final String firstHeaderMemoryBlockName = ".first_header";
-	public static final String commonHeaderMemoryBlockName = ".common_header";
-	public static final String pagesMemoryBlockName = ".pages";
-	public static final String sectionsMemoryBlockName = ".section_headers";
-	public static final String entriesMemoryBlockName = ".entries";
+	public static final String FIRST_HEADER_MEMORY_BLOCK_NAME = ".first_header";
+	public static final String COMMON_HEADER_MEMORY_BLOCK_NAME = ".common_header";
+	public static final String PAGES_MEMORY_BLOCK_NAME = ".pages";
+	public static final String SECTIONS_MEMORY_BLOCK_NAME = ".section_headers";
+	public static final String ENTRIES_MEMORY_BLOCK_NAME = ".entries";
 }
