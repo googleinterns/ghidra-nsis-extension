@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
+import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 
@@ -40,8 +41,25 @@ public class NsisExecutableTest {
 
 			// Header
 			assertEquals(0x80, ne.getCommonHeaderFlags());
-			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
-			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
+			assertEquals(0x12c,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal()).getOffset());
+			assertEquals(0x1ac, ne.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
+					.getOffset());
+			assertEquals(0x5c4,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal()).getOffset());
+			assertEquals(0x5fc,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset());
+			assertEquals(0x718,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
+							.getOffset());
+			assertEquals(0x7da,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.DATA.ordinal()).getOffset());
 
 			// Pages
 			assertEquals(2, ne.getNumPages());
@@ -56,6 +74,9 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumEntries());
 			assertEquals(0x16, ne.getEntry(0).getOpCode());
 			assertEquals(0x01, ne.getEntry(1).getOpCode());
+
+			// Strings
+			assertEquals(0x11c, ne.getStringsSectionSize());
 		}
 	}
 
@@ -75,8 +96,25 @@ public class NsisExecutableTest {
 
 			// Header
 			assertEquals(0x80, ne.getCommonHeaderFlags());
-			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
-			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
+			assertEquals(0x12c,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal()).getOffset());
+			assertEquals(0x1ac, ne.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
+					.getOffset());
+			assertEquals(0x5c4,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal()).getOffset());
+			assertEquals(0x5fc,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset());
+			assertEquals(0x718,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
+							.getOffset());
+			assertEquals(0x7da,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.DATA.ordinal()).getOffset());
 
 			// Pages
 			assertEquals(2, ne.getNumPages());
@@ -91,6 +129,9 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumEntries());
 			assertEquals(0x16, ne.getEntry(0).getOpCode());
 			assertEquals(0x01, ne.getEntry(1).getOpCode());
+
+			// Strings
+			assertEquals(0x11c, ne.getStringsSectionSize());
 		}
 	}
 
@@ -111,8 +152,25 @@ public class NsisExecutableTest {
 
 			// Header
 			assertEquals(0x80, ne.getCommonHeaderFlags());
-			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
-			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
+			assertEquals(0x12c,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal()).getOffset());
+			assertEquals(0x1ac, ne.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
+					.getOffset());
+			assertEquals(0x5c4,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal()).getOffset());
+			assertEquals(0x5fc,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset());
+			assertEquals(0x718,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
+							.getOffset());
+			assertEquals(0x7da,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.DATA.ordinal()).getOffset());
 
 			// Pages
 			assertEquals(2, ne.getNumPages());
@@ -127,6 +185,9 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumEntries());
 			assertEquals(0x16, ne.getEntry(0).getOpCode());
 			assertEquals(0x01, ne.getEntry(1).getOpCode());
+
+			// Strings
+			assertEquals(0x11c, ne.getStringsSectionSize());
 		}
 	}
 
@@ -147,8 +208,25 @@ public class NsisExecutableTest {
 
 			// Header
 			assertEquals(0x80, ne.getCommonHeaderFlags());
-			assertEquals(0x12c, ne.getBlockHeader(0).getOffset());
-			assertEquals(2, ne.getBlockHeader(0).getNumEntries());
+			assertEquals(0x12c,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal()).getOffset());
+			assertEquals(0x1ac, ne.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
+					.getOffset());
+			assertEquals(0x5c4,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal()).getOffset());
+			assertEquals(0x5fc,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset());
+			assertEquals(0x718,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
+							.getOffset());
+			assertEquals(0x7da,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal())
+							.getOffset());
+			assertEquals(0x0,
+					ne.getBlockHeader(NsisConstants.BlockHeaderType.DATA.ordinal()).getOffset());
 
 			// Pages
 			assertEquals(2, ne.getNumPages());
@@ -163,6 +241,9 @@ public class NsisExecutableTest {
 			assertEquals(2, ne.getNumEntries());
 			assertEquals(0x16, ne.getEntry(0).getOpCode());
 			assertEquals(0x01, ne.getEntry(1).getOpCode());
+
+			// Strings
+			assertEquals(0x11c, ne.getStringsSectionSize());
 		}
 	}
 

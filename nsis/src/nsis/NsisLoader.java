@@ -117,6 +117,11 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 						.add(NsisSection.getSectionSize() * ne.getNumSections());
 				initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
 						ne.getNumEntries());
+
+				Address stringsAddress = entriesSectionAddress
+						.add(NsisEntry.getEntrySize() * ne.getNumEntries());
+				initStringsSection(bodyInputStream, stringsAddress, program, monitor,
+						ne.getStringsSectionSize());
 			}
 
 		} catch (Exception e) {
@@ -318,6 +323,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	}
 
 	/**
+	 * 
 	 * Initializes the entries section and adds the section to the "program Trees"
 	 * view in Ghidra.
 	 * 
@@ -346,6 +352,34 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
 				NsisEntry.getEntrySize() * nbEntries, blockName, readPermission, writePermission,
 				executePermission);
+	}
+
+	/**
+	 * Initializes the strings section and adds the it to the "program Trees" view
+	 * in Ghidra. Please not this function will not analyze the section to create
+	 * the strings as the ASCII strings analyzer is available for this purpose.
+	 * 
+	 * @param is
+	 * @param startingAddr
+	 * @param program
+	 * @param monitor
+	 * @param sectionLength
+	 * @throws LockException
+	 * @throws MemoryConflictException
+	 * @throws AddressOverflowException
+	 * @throws CancelledException
+	 * @throws DuplicateNameException
+	 */
+	private void initStringsSection(InputStream is, Address startingAddr, Program program,
+			TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+			AddressOverflowException, CancelledException, DuplicateNameException {
+
+		String blockName = ".strings";
+		boolean readPermission = true;
+		boolean writePermission = false;
+		boolean executePermission = false;
+		createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength, blockName,
+				readPermission, writePermission, executePermission);
 	}
 
 }
