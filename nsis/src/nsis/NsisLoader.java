@@ -48,6 +48,7 @@ import ghidra.util.InvalidNameException;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.task.TaskMonitor;
+import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
@@ -71,7 +72,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 		try {
 			NsisExecutable ne = NsisExecutable
 					.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
-			LoadSpec my_spec = new LoadSpec(this, 0x400000,
+			LoadSpec my_spec = new LoadSpec(this, ne.getHeaderOffset(),
 					new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
 			loadSpecs.add(my_spec);
 		} catch (InvalidFormatException e) {
@@ -204,12 +205,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			TaskMonitor monitor) throws MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, LockException, CodeUnitInsertionException {
 
-		String blockName = ".first_header";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor, NsisFirstHeader.getHeaderSize(),
-				blockName, readPermission, writePermission, executePermission);
+				NsisConstants.FIRST_HEADER_MEMORY_BLOCK_NAME, readPermission, writePermission,
+				executePermission);
 		createData(program, startingAddr, NsisFirstHeader.STRUCTURE);
 	}
 
@@ -236,13 +237,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			throws LockException, MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, CodeUnitInsertionException {
 
-		String blockName = ".common_header";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisCommonHeader.getHeaderSize(), blockName, readPermission, writePermission,
-				executePermission);
+				NsisCommonHeader.getHeaderSize(), NsisConstants.COMMON_HEADER_MEMORY_BLOCK_NAME,
+				readPermission, writePermission, executePermission);
 		createData(program, startingAddr, NsisCommonHeader.STRUCTURE);
 	}
 
@@ -271,13 +271,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			DuplicateNameException, MemoryConflictException, AddressOverflowException,
 			CancelledException, CodeUnitInsertionException, InvalidNameException {
 
-		String blockName = ".pages";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisPage.getPageSize() * numPages, blockName, readPermission, writePermission,
-				executePermission);
+				NsisPage.getPageSize() * numPages, NsisConstants.PAGES_MEMORY_BLOCK_NAME,
+				readPermission, writePermission, executePermission);
 
 		for (int i = 0; i < numPages; i++) {
 			NsisPage.STRUCTURE.setName("Page #" + (i + 1));
@@ -307,13 +306,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			AddressOverflowException, CancelledException, DuplicateNameException,
 			CodeUnitInsertionException, InvalidNameException {
 
-		String blockName = ".section_headers";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisSection.getSectionSize() * nbSections, blockName, readPermission,
-				writePermission, executePermission);
+				NsisSection.getSectionSize() * nbSections, NsisConstants.SECTIONS_MEMORY_BLOCK_NAME,
+				readPermission, writePermission, executePermission);
 
 		for (int i = 0; i < nbSections; i++) {
 			NsisSection.STRUCTURE.setName("Section #" + (i + 1));
@@ -344,14 +342,13 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			throws LockException, MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, CodeUnitInsertionException {
 
-		String blockName = ".entries";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = true;
 
 		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisEntry.getEntrySize() * nbEntries, blockName, readPermission, writePermission,
-				executePermission);
+				NsisEntry.getEntrySize() * nbEntries, NsisConstants.ENTRIES_MEMORY_BLOCK_NAME,
+				readPermission, writePermission, executePermission);
 	}
 
 	/**
