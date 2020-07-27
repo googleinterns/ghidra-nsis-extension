@@ -271,6 +271,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			TaskMonitor monitor, int numPages) throws IOException, LockException,
 			DuplicateNameException, MemoryConflictException, AddressOverflowException,
 			CancelledException, CodeUnitInsertionException, InvalidNameException {
+
 		if (numPages > 0) {
 			boolean readPermission = true;
 			boolean writePermission = false;
