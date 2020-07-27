@@ -176,12 +176,14 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			boolean writePermission, boolean executePermission)
 			throws LockException, MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException {
-		Memory memory = program.getMemory();
-		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr, is,
-				size, monitor, /* Overlay */ false);
-		firstHeaderBlock.setRead(readPermission);
-		firstHeaderBlock.setWrite(writePermission);
-		firstHeaderBlock.setExecute(executePermission);
+		if (size > 0) {
+			Memory memory = program.getMemory();
+			MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr,
+					is, size, monitor, /* Overlay */ false);
+			firstHeaderBlock.setRead(readPermission);
+			firstHeaderBlock.setWrite(writePermission);
+			firstHeaderBlock.setExecute(executePermission);
+		}
 	}
 
 	/**
