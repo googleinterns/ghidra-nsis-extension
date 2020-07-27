@@ -279,6 +279,46 @@ public class NsisExecutable {
 	}
 
 	/**
+	 * Get the offset of the Pages section.
+	 * 
+	 * @return
+	 */
+	public int getPagesOffset() {
+		return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal())
+				.getOffset();
+	}
+
+	/**
+	 * Get the offset of the Section headers section.
+	 * 
+	 * @return
+	 */
+	public int getSectionsOffset() {
+		return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
+				.getOffset();
+	}
+
+	/**
+	 * Get the offset of the Entries section.
+	 * 
+	 * @return
+	 */
+	public int getEntriesOffset() {
+		return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal())
+				.getOffset();
+	}
+
+	/**
+	 * Get the offset of the Strings section.
+	 * 
+	 * @return
+	 */
+	public int getStringsOffset() {
+		return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal())
+				.getOffset();
+	}
+
+	/**
 	 * Get the number of pages in the Nsis executable
 	 * 
 	 * @return the number of pages
