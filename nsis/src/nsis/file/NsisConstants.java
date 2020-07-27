@@ -24,4 +24,5 @@ public class NsisConstants {
 	public static final String PAGES_MEMORY_BLOCK_NAME = ".pages";
 	public static final String SECTIONS_MEMORY_BLOCK_NAME = ".section_headers";
 	public static final String ENTRIES_MEMORY_BLOCK_NAME = ".entries";
+	public static final String STRINGS_MEMORY_BLOCK_NAME = ".strings";
 }

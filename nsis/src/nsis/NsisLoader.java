@@ -106,23 +106,31 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 				Address pagesSectionAddress = commonHeaderAddress
 						.add(NsisCommonHeader.getHeaderSize());
-				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
-						ne.getNumPages());
+				if (ne.getNumPages() > 0) {
+					initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
+							ne.getNumPages());
+				}
 
 				Address sectionHeadersAddress = pagesSectionAddress
 						.add(NsisPage.getPageSize() * ne.getNumPages());
-				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
-						ne.getNumSections());
+				if (ne.getNumSections() > 0) {
+					initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
+							ne.getNumSections());
+				}
 
 				Address entriesSectionAddress = sectionHeadersAddress
 						.add(NsisSection.getSectionSize() * ne.getNumSections());
-				initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
-						ne.getNumEntries());
+				if (ne.getNumEntries() > 0) {
+					initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
+							ne.getNumEntries());
+				}
 
 				Address stringsAddress = entriesSectionAddress
 						.add(NsisEntry.getEntrySize() * ne.getNumEntries());
-				initStringsSection(bodyInputStream, stringsAddress, program, monitor,
-						ne.getStringsSectionSize());
+				if (ne.getStringsSectionSize() > 0) {
+					initStringsSection(bodyInputStream, stringsAddress, program, monitor,
+							ne.getStringsSectionSize());
+				}
 			}
 
 		} catch (Exception e) {
@@ -176,14 +184,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			boolean writePermission, boolean executePermission)
 			throws LockException, MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException {
-		if (size > 0) {
-			Memory memory = program.getMemory();
-			MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr,
-					is, size, monitor, /* Overlay */ false);
-			firstHeaderBlock.setRead(readPermission);
-			firstHeaderBlock.setWrite(writePermission);
-			firstHeaderBlock.setExecute(executePermission);
-		}
+		Memory memory = program.getMemory();
+		MemoryBlock firstHeaderBlock = memory.createInitializedBlock(blockName, startingAddr, is,
+				size, monitor, /* Overlay */ false);
+		firstHeaderBlock.setRead(readPermission);
+		firstHeaderBlock.setWrite(writePermission);
+		firstHeaderBlock.setExecute(executePermission);
 	}
 
 	/**
@@ -373,12 +379,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
 			AddressOverflowException, CancelledException, DuplicateNameException {
 
-		String blockName = ".strings";
 		boolean readPermission = true;
 		boolean writePermission = false;
 		boolean executePermission = false;
-		createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength, blockName,
-				readPermission, writePermission, executePermission);
+		createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
+				NsisConstants.STRINGS_MEMORY_BLOCK_NAME, readPermission, writePermission,
+				executePermission);
 	}
 
 }
