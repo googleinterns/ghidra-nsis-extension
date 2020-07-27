@@ -106,31 +106,24 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
 				Address pagesSectionAddress = commonHeaderAddress
 						.add(NsisCommonHeader.getHeaderSize());
-				if (ne.getNumPages() > 0) {
-					initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
-							ne.getNumPages());
-				}
+				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
+						ne.getNumPages());
 
 				Address sectionHeadersAddress = pagesSectionAddress
 						.add(NsisPage.getPageSize() * ne.getNumPages());
-				if (ne.getNumSections() > 0) {
-					initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
-							ne.getNumSections());
-				}
+				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
+						ne.getNumSections());
 
 				Address entriesSectionAddress = sectionHeadersAddress
 						.add(NsisSection.getSectionSize() * ne.getNumSections());
-				if (ne.getNumEntries() > 0) {
-					initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
-							ne.getNumEntries());
-				}
+				initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
+						ne.getNumEntries());
 
 				Address stringsAddress = entriesSectionAddress
 						.add(NsisEntry.getEntrySize() * ne.getNumEntries());
-				if (ne.getStringsSectionSize() > 0) {
-					initStringsSection(bodyInputStream, stringsAddress, program, monitor,
-							ne.getStringsSectionSize());
-				}
+				initStringsSection(bodyInputStream, stringsAddress, program, monitor,
+						ne.getStringsSectionSize());
+
 			}
 
 		} catch (Exception e) {
@@ -278,18 +271,19 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			TaskMonitor monitor, int numPages) throws IOException, LockException,
 			DuplicateNameException, MemoryConflictException, AddressOverflowException,
 			CancelledException, CodeUnitInsertionException, InvalidNameException {
+		if (numPages > 0) {
+			boolean readPermission = true;
+			boolean writePermission = false;
+			boolean executePermission = false;
+			createGhidraMemoryBlock(is, startingAddr, program, monitor,
+					NsisPage.getPageSize() * numPages, NsisConstants.PAGES_MEMORY_BLOCK_NAME,
+					readPermission, writePermission, executePermission);
 
-		boolean readPermission = true;
-		boolean writePermission = false;
-		boolean executePermission = false;
-		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisPage.getPageSize() * numPages, NsisConstants.PAGES_MEMORY_BLOCK_NAME,
-				readPermission, writePermission, executePermission);
-
-		for (int i = 0; i < numPages; i++) {
-			NsisPage.STRUCTURE.setName("Page #" + (i + 1));
-			createData(program, startingAddr, NsisPage.STRUCTURE);
-			startingAddr = startingAddr.add(NsisPage.getPageSize());
+			for (int i = 0; i < numPages; i++) {
+				NsisPage.STRUCTURE.setName("Page #" + (i + 1));
+				createData(program, startingAddr, NsisPage.STRUCTURE);
+				startingAddr = startingAddr.add(NsisPage.getPageSize());
+			}
 		}
 	}
 
@@ -310,21 +304,24 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws InvalidNameException
 	 */
 	private void initSectionHeaders(InputStream is, Address startingAddr, Program program,
-			TaskMonitor monitor, int nbSections) throws LockException, MemoryConflictException,
+			TaskMonitor monitor, int numSections) throws LockException, MemoryConflictException,
 			AddressOverflowException, CancelledException, DuplicateNameException,
 			CodeUnitInsertionException, InvalidNameException {
 
-		boolean readPermission = true;
-		boolean writePermission = false;
-		boolean executePermission = false;
-		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisSection.getSectionSize() * nbSections, NsisConstants.SECTIONS_MEMORY_BLOCK_NAME,
-				readPermission, writePermission, executePermission);
+		if (numSections > 0) {
+			boolean readPermission = true;
+			boolean writePermission = false;
+			boolean executePermission = false;
+			createGhidraMemoryBlock(is, startingAddr, program, monitor,
+					NsisSection.getSectionSize() * numSections,
+					NsisConstants.SECTIONS_MEMORY_BLOCK_NAME, readPermission, writePermission,
+					executePermission);
 
-		for (int i = 0; i < nbSections; i++) {
-			NsisSection.STRUCTURE.setName("Section #" + (i + 1));
-			createData(program, startingAddr, NsisSection.STRUCTURE);
-			startingAddr = startingAddr.add(NsisSection.getSectionSize());
+			for (int i = 0; i < numSections; i++) {
+				NsisSection.STRUCTURE.setName("Section #" + (i + 1));
+				createData(program, startingAddr, NsisSection.STRUCTURE);
+				startingAddr = startingAddr.add(NsisSection.getSectionSize());
+			}
 		}
 	}
 
@@ -346,17 +343,19 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 	 * @throws CodeUnitInsertionException
 	 */
 	private void initEntriesSection(InputStream is, Address startingAddr, Program program,
-			TaskMonitor monitor, int nbEntries)
+			TaskMonitor monitor, int numEntries)
 			throws LockException, MemoryConflictException, AddressOverflowException,
 			CancelledException, DuplicateNameException, CodeUnitInsertionException {
 
-		boolean readPermission = true;
-		boolean writePermission = false;
-		boolean executePermission = true;
+		if (numEntries > 0) {
+			boolean readPermission = true;
+			boolean writePermission = false;
+			boolean executePermission = true;
 
-		createGhidraMemoryBlock(is, startingAddr, program, monitor,
-				NsisEntry.getEntrySize() * nbEntries, NsisConstants.ENTRIES_MEMORY_BLOCK_NAME,
-				readPermission, writePermission, executePermission);
+			createGhidraMemoryBlock(is, startingAddr, program, monitor,
+					NsisEntry.getEntrySize() * numEntries, NsisConstants.ENTRIES_MEMORY_BLOCK_NAME,
+					readPermission, writePermission, executePermission);
+		}
 	}
 
 	/**
@@ -379,12 +378,14 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 			TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
 			AddressOverflowException, CancelledException, DuplicateNameException {
 
-		boolean readPermission = true;
-		boolean writePermission = false;
-		boolean executePermission = false;
-		createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
-				NsisConstants.STRINGS_MEMORY_BLOCK_NAME, readPermission, writePermission,
-				executePermission);
+		if (sectionLength > 0) {
+			boolean readPermission = true;
+			boolean writePermission = false;
+			boolean executePermission = false;
+			createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
+					NsisConstants.STRINGS_MEMORY_BLOCK_NAME, readPermission, writePermission,
+					executePermission);
+		}
 	}
 
 }
