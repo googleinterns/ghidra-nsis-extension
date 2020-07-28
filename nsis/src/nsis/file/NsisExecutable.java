@@ -99,9 +99,13 @@ public class NsisExecutable {
 			BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory,
 					blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
 			this.commonHeader = new NsisCommonHeader(blockReader);
+			blockReader.setPointerIndex(this.getPagesOffset());
 			this.pages = getPages(blockReader);
+			blockReader.setPointerIndex(this.getSectionsOffset());
 			this.sections = getSections(blockReader);
+			blockReader.setPointerIndex(this.getEntriesOffset());
 			this.entries = getEntries(blockReader);
+			blockReader.setPointerIndex(this.getStringsOffset());
 			this.strings = new NsisStrings(blockReader,
 					this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal())
 							.getOffset(),
