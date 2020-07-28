@@ -34,6 +34,7 @@ define token instr(224)
 # AT LEAST ONE INSTRUCTION IS REQUIRED
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+:InvalidOpcode is opcode=0x00 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :Return is opcode=0x01 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :Jmp is opcode=0x02 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :Abort is opcode=0x03 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
@@ -63,6 +64,7 @@ define token instr(224)
 :ReadEnv is opcode=0x1b & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :IntCmp is opcode=0x1c & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :IntOp is opcode=0x1d & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
+:IntFmt is opcode=0x1e & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :PushPop is opcode=0x1f & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :FindWindow is opcode=0x20 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :SendMessage is opcode=0x21 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
@@ -101,3 +103,5 @@ define token instr(224)
 :GetLabelAddr is opcode=0x42 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :GetFunctionAddr is opcode=0x43 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
 :LockWindow is opcode=0x44 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
+:FileWriteUTF16LE is opcode=0x45 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
+:FileReadUTF16LE is opcode=0x46 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }

@@ -5,7 +5,7 @@
 <space name="ram" index="3" bigendian="false" delay="1" size="8" physical="true"/>
 <space name="register" index="4" bigendian="false" delay="0" size="4" physical="true"/>
 </spaces>
-<symbol_table scopesize="68" symbolsize="416">
+<symbol_table scopesize="72" symbolsize="440">
 <scope id="0x0" parent="0x0"/>
 <scope id="0x1" parent="0x0"/>
 <scope id="0x2" parent="0x0"/>
@@ -74,6 +74,10 @@
 <scope id="0x41" parent="0x0"/>
 <scope id="0x42" parent="0x0"/>
 <scope id="0x43" parent="0x0"/>
+<scope id="0x44" parent="0x0"/>
+<scope id="0x45" parent="0x0"/>
+<scope id="0x46" parent="0x0"/>
+<scope id="0x47" parent="0x0"/>
 <subtable_sym_head name="instruction" id="0x0" scope="0x0"/>
 <start_sym_head name="inst_start" id="0x1" scope="0x0"/>
 <end_sym_head name="inst_next" id="0x2" scope="0x0"/>
@@ -490,7 +494,31 @@
 <operand_sym_head name="arg4" id="0x19d" scope="0x43"/>
 <operand_sym_head name="arg5" id="0x19e" scope="0x43"/>
 <operand_sym_head name="arg6" id="0x19f" scope="0x43"/>
-<subtable_sym name="instruction" id="0x0" scope="0x0" numct="67">
+<operand_sym_head name="arg1" id="0x1a0" scope="0x44"/>
+<operand_sym_head name="arg2" id="0x1a1" scope="0x44"/>
+<operand_sym_head name="arg3" id="0x1a2" scope="0x44"/>
+<operand_sym_head name="arg4" id="0x1a3" scope="0x44"/>
+<operand_sym_head name="arg5" id="0x1a4" scope="0x44"/>
+<operand_sym_head name="arg6" id="0x1a5" scope="0x44"/>
+<operand_sym_head name="arg1" id="0x1a6" scope="0x45"/>
+<operand_sym_head name="arg2" id="0x1a7" scope="0x45"/>
+<operand_sym_head name="arg3" id="0x1a8" scope="0x45"/>
+<operand_sym_head name="arg4" id="0x1a9" scope="0x45"/>
+<operand_sym_head name="arg5" id="0x1aa" scope="0x45"/>
+<operand_sym_head name="arg6" id="0x1ab" scope="0x45"/>
+<operand_sym_head name="arg1" id="0x1ac" scope="0x46"/>
+<operand_sym_head name="arg2" id="0x1ad" scope="0x46"/>
+<operand_sym_head name="arg3" id="0x1ae" scope="0x46"/>
+<operand_sym_head name="arg4" id="0x1af" scope="0x46"/>
+<operand_sym_head name="arg5" id="0x1b0" scope="0x46"/>
+<operand_sym_head name="arg6" id="0x1b1" scope="0x46"/>
+<operand_sym_head name="arg1" id="0x1b2" scope="0x47"/>
+<operand_sym_head name="arg2" id="0x1b3" scope="0x47"/>
+<operand_sym_head name="arg3" id="0x1b4" scope="0x47"/>
+<operand_sym_head name="arg4" id="0x1b5" scope="0x47"/>
+<operand_sym_head name="arg5" id="0x1b6" scope="0x47"/>
+<operand_sym_head name="arg6" id="0x1b7" scope="0x47"/>
+<subtable_sym name="instruction" id="0x0" scope="0x0" numct="71">
 <constructor parent="0x0" first="1" length="28" line="37">
 <oper id="0xe"/>
 <oper id="0xf"/>
@@ -498,7 +526,7 @@
 <oper id="0x11"/>
 <oper id="0x12"/>
 <oper id="0x13"/>
-<print piece="Return"/>
+<print piece="InvalidOpcode"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -509,7 +537,7 @@
 <oper id="0x17"/>
 <oper id="0x18"/>
 <oper id="0x19"/>
-<print piece="Jmp"/>
+<print piece="Return"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -520,7 +548,7 @@
 <oper id="0x1d"/>
 <oper id="0x1e"/>
 <oper id="0x1f"/>
-<print piece="Abort"/>
+<print piece="Jmp"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -531,7 +559,7 @@
 <oper id="0x23"/>
 <oper id="0x24"/>
 <oper id="0x25"/>
-<print piece="Quit"/>
+<print piece="Abort"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -542,7 +570,7 @@
 <oper id="0x29"/>
 <oper id="0x2a"/>
 <oper id="0x2b"/>
-<print piece="Call"/>
+<print piece="Quit"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -553,7 +581,7 @@
 <oper id="0x2f"/>
 <oper id="0x30"/>
 <oper id="0x31"/>
-<print piece="UpdateText"/>
+<print piece="Call"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -564,7 +592,7 @@
 <oper id="0x35"/>
 <oper id="0x36"/>
 <oper id="0x37"/>
-<print piece="Sleep"/>
+<print piece="UpdateText"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -575,7 +603,7 @@
 <oper id="0x3b"/>
 <oper id="0x3c"/>
 <oper id="0x3d"/>
-<print piece="BringToFront"/>
+<print piece="Sleep"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -586,7 +614,7 @@
 <oper id="0x41"/>
 <oper id="0x42"/>
 <oper id="0x43"/>
-<print piece="ChDetailsView"/>
+<print piece="BringToFront"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -597,7 +625,7 @@
 <oper id="0x47"/>
 <oper id="0x48"/>
 <oper id="0x49"/>
-<print piece="SetFileAttributes"/>
+<print piece="ChDetailsView"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -608,7 +636,7 @@
 <oper id="0x4d"/>
 <oper id="0x4e"/>
 <oper id="0x4f"/>
-<print piece="CreateDir"/>
+<print piece="SetFileAttributes"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -619,7 +647,7 @@
 <oper id="0x53"/>
 <oper id="0x54"/>
 <oper id="0x55"/>
-<print piece="IfFileExists"/>
+<print piece="CreateDir"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -630,7 +658,7 @@
 <oper id="0x59"/>
 <oper id="0x5a"/>
 <oper id="0x5b"/>
-<print piece="SetFlag"/>
+<print piece="IfFileExists"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -641,7 +669,7 @@
 <oper id="0x5f"/>
 <oper id="0x60"/>
 <oper id="0x61"/>
-<print piece="IfFlag"/>
+<print piece="SetFlag"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -652,7 +680,7 @@
 <oper id="0x65"/>
 <oper id="0x66"/>
 <oper id="0x67"/>
-<print piece="GetFlag"/>
+<print piece="IfFlag"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -663,7 +691,7 @@
 <oper id="0x6b"/>
 <oper id="0x6c"/>
 <oper id="0x6d"/>
-<print piece="Rename"/>
+<print piece="GetFlag"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -674,7 +702,7 @@
 <oper id="0x71"/>
 <oper id="0x72"/>
 <oper id="0x73"/>
-<print piece="GetFullPathName"/>
+<print piece="Rename"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -685,7 +713,7 @@
 <oper id="0x77"/>
 <oper id="0x78"/>
 <oper id="0x79"/>
-<print piece="SearchPath"/>
+<print piece="GetFullPathName"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -696,7 +724,7 @@
 <oper id="0x7d"/>
 <oper id="0x7e"/>
 <oper id="0x7f"/>
-<print piece="GetTempFilename"/>
+<print piece="SearchPath"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -707,7 +735,7 @@
 <oper id="0x83"/>
 <oper id="0x84"/>
 <oper id="0x85"/>
-<print piece="ExtractFile"/>
+<print piece="GetTempFilename"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -718,7 +746,7 @@
 <oper id="0x89"/>
 <oper id="0x8a"/>
 <oper id="0x8b"/>
-<print piece="DeleteFile"/>
+<print piece="ExtractFile"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -729,7 +757,7 @@
 <oper id="0x8f"/>
 <oper id="0x90"/>
 <oper id="0x91"/>
-<print piece="MessageBox"/>
+<print piece="DeleteFile"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -740,7 +768,7 @@
 <oper id="0x95"/>
 <oper id="0x96"/>
 <oper id="0x97"/>
-<print piece="RmDir"/>
+<print piece="MessageBox"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -751,7 +779,7 @@
 <oper id="0x9b"/>
 <oper id="0x9c"/>
 <oper id="0x9d"/>
-<print piece="StrLe"/>
+<print piece="RmDir"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -762,7 +790,7 @@
 <oper id="0xa1"/>
 <oper id="0xa2"/>
 <oper id="0xa3"/>
-<print piece="StrCpy"/>
+<print piece="StrLe"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -773,7 +801,7 @@
 <oper id="0xa7"/>
 <oper id="0xa8"/>
 <oper id="0xa9"/>
-<print piece="StrCmp"/>
+<print piece="StrCpy"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -784,7 +812,7 @@
 <oper id="0xad"/>
 <oper id="0xae"/>
 <oper id="0xaf"/>
-<print piece="ReadEnv"/>
+<print piece="StrCmp"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -795,7 +823,7 @@
 <oper id="0xb3"/>
 <oper id="0xb4"/>
 <oper id="0xb5"/>
-<print piece="IntCmp"/>
+<print piece="ReadEnv"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -806,7 +834,7 @@
 <oper id="0xb9"/>
 <oper id="0xba"/>
 <oper id="0xbb"/>
-<print piece="IntOp"/>
+<print piece="IntCmp"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -817,7 +845,7 @@
 <oper id="0xbf"/>
 <oper id="0xc0"/>
 <oper id="0xc1"/>
-<print piece="PushPop"/>
+<print piece="IntOp"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -828,7 +856,7 @@
 <oper id="0xc5"/>
 <oper id="0xc6"/>
 <oper id="0xc7"/>
-<print piece="FindWindow"/>
+<print piece="IntFmt"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -839,7 +867,7 @@
 <oper id="0xcb"/>
 <oper id="0xcc"/>
 <oper id="0xcd"/>
-<print piece="SendMessage"/>
+<print piece="PushPop"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -850,7 +878,7 @@
 <oper id="0xd1"/>
 <oper id="0xd2"/>
 <oper id="0xd3"/>
-<print piece="IsWindow"/>
+<print piece="FindWindow"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -861,7 +889,7 @@
 <oper id="0xd7"/>
 <oper id="0xd8"/>
 <oper id="0xd9"/>
-<print piece="GetDlgItem"/>
+<print piece="SendMessage"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -872,7 +900,7 @@
 <oper id="0xdd"/>
 <oper id="0xde"/>
 <oper id="0xdf"/>
-<print piece="SetCtlColors"/>
+<print piece="IsWindow"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -883,7 +911,7 @@
 <oper id="0xe3"/>
 <oper id="0xe4"/>
 <oper id="0xe5"/>
-<print piece="SetBrandingImage"/>
+<print piece="GetDlgItem"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -894,7 +922,7 @@
 <oper id="0xe9"/>
 <oper id="0xea"/>
 <oper id="0xeb"/>
-<print piece="CreateFont"/>
+<print piece="SetCtlColors"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -905,7 +933,7 @@
 <oper id="0xef"/>
 <oper id="0xf0"/>
 <oper id="0xf1"/>
-<print piece="ShowWindow"/>
+<print piece="SetBrandingImage"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -916,7 +944,7 @@
 <oper id="0xf5"/>
 <oper id="0xf6"/>
 <oper id="0xf7"/>
-<print piece="ShellExec"/>
+<print piece="CreateFont"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -927,7 +955,7 @@
 <oper id="0xfb"/>
 <oper id="0xfc"/>
 <oper id="0xfd"/>
-<print piece="Execute"/>
+<print piece="ShowWindow"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -938,7 +966,7 @@
 <oper id="0x101"/>
 <oper id="0x102"/>
 <oper id="0x103"/>
-<print piece="GetFileTime"/>
+<print piece="ShellExec"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -949,7 +977,7 @@
 <oper id="0x107"/>
 <oper id="0x108"/>
 <oper id="0x109"/>
-<print piece="GetDLLVersion"/>
+<print piece="Execute"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -960,7 +988,7 @@
 <oper id="0x10d"/>
 <oper id="0x10e"/>
 <oper id="0x10f"/>
-<print piece="RegisterDLL"/>
+<print piece="GetFileTime"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -971,7 +999,7 @@
 <oper id="0x113"/>
 <oper id="0x114"/>
 <oper id="0x115"/>
-<print piece="CreateShortcut"/>
+<print piece="GetDLLVersion"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -982,7 +1010,7 @@
 <oper id="0x119"/>
 <oper id="0x11a"/>
 <oper id="0x11b"/>
-<print piece="CopyFiles"/>
+<print piece="RegisterDLL"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -993,7 +1021,7 @@
 <oper id="0x11f"/>
 <oper id="0x120"/>
 <oper id="0x121"/>
-<print piece="Reboot"/>
+<print piece="CreateShortcut"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1004,7 +1032,7 @@
 <oper id="0x125"/>
 <oper id="0x126"/>
 <oper id="0x127"/>
-<print piece="WriteIni"/>
+<print piece="CopyFiles"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1015,7 +1043,7 @@
 <oper id="0x12b"/>
 <oper id="0x12c"/>
 <oper id="0x12d"/>
-<print piece="ReadIni"/>
+<print piece="Reboot"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1026,7 +1054,7 @@
 <oper id="0x131"/>
 <oper id="0x132"/>
 <oper id="0x133"/>
-<print piece="DeleteRegKey"/>
+<print piece="WriteIni"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1037,7 +1065,7 @@
 <oper id="0x137"/>
 <oper id="0x138"/>
 <oper id="0x139"/>
-<print piece="WriteRegValue"/>
+<print piece="ReadIni"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1048,7 +1076,7 @@
 <oper id="0x13d"/>
 <oper id="0x13e"/>
 <oper id="0x13f"/>
-<print piece="ReadRegValue"/>
+<print piece="DeleteRegKey"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1059,7 +1087,7 @@
 <oper id="0x143"/>
 <oper id="0x144"/>
 <oper id="0x145"/>
-<print piece="RegEnumKey"/>
+<print piece="WriteRegValue"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1070,7 +1098,7 @@
 <oper id="0x149"/>
 <oper id="0x14a"/>
 <oper id="0x14b"/>
-<print piece="FileClose"/>
+<print piece="ReadRegValue"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1081,7 +1109,7 @@
 <oper id="0x14f"/>
 <oper id="0x150"/>
 <oper id="0x151"/>
-<print piece="FileOpen"/>
+<print piece="RegEnumKey"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1092,7 +1120,7 @@
 <oper id="0x155"/>
 <oper id="0x156"/>
 <oper id="0x157"/>
-<print piece="FileWrite"/>
+<print piece="FileClose"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1103,7 +1131,7 @@
 <oper id="0x15b"/>
 <oper id="0x15c"/>
 <oper id="0x15d"/>
-<print piece="FileRead"/>
+<print piece="FileOpen"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1114,7 +1142,7 @@
 <oper id="0x161"/>
 <oper id="0x162"/>
 <oper id="0x163"/>
-<print piece="FileSeek"/>
+<print piece="FileWrite"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1125,7 +1153,7 @@
 <oper id="0x167"/>
 <oper id="0x168"/>
 <oper id="0x169"/>
-<print piece="FindClose"/>
+<print piece="FileRead"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1136,7 +1164,7 @@
 <oper id="0x16d"/>
 <oper id="0x16e"/>
 <oper id="0x16f"/>
-<print piece="FindNext"/>
+<print piece="FileSeek"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1147,7 +1175,7 @@
 <oper id="0x173"/>
 <oper id="0x174"/>
 <oper id="0x175"/>
-<print piece="FindFirst"/>
+<print piece="FindClose"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1158,7 +1186,7 @@
 <oper id="0x179"/>
 <oper id="0x17a"/>
 <oper id="0x17b"/>
-<print piece="WriteUninstaller"/>
+<print piece="FindNext"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1169,7 +1197,7 @@
 <oper id="0x17f"/>
 <oper id="0x180"/>
 <oper id="0x181"/>
-<print piece="LogText"/>
+<print piece="FindFirst"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1180,7 +1208,7 @@
 <oper id="0x185"/>
 <oper id="0x186"/>
 <oper id="0x187"/>
-<print piece="SectionSet"/>
+<print piece="WriteUninstaller"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1191,7 +1219,7 @@
 <oper id="0x18b"/>
 <oper id="0x18c"/>
 <oper id="0x18d"/>
-<print piece="InstTypeSet"/>
+<print piece="LogText"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1202,7 +1230,7 @@
 <oper id="0x191"/>
 <oper id="0x192"/>
 <oper id="0x193"/>
-<print piece="GetLabelAddr"/>
+<print piece="SectionSet"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1213,7 +1241,7 @@
 <oper id="0x197"/>
 <oper id="0x198"/>
 <oper id="0x199"/>
-<print piece="GetFunctionAddr"/>
+<print piece="InstTypeSet"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1224,18 +1252,60 @@
 <oper id="0x19d"/>
 <oper id="0x19e"/>
 <oper id="0x19f"/>
+<print piece="GetLabelAddr"/>
+<construct_tpl>
+<null/></construct_tpl>
+</constructor>
+<constructor parent="0x0" first="1" length="28" line="104">
+<oper id="0x1a0"/>
+<oper id="0x1a1"/>
+<oper id="0x1a2"/>
+<oper id="0x1a3"/>
+<oper id="0x1a4"/>
+<oper id="0x1a5"/>
+<print piece="GetFunctionAddr"/>
+<construct_tpl>
+<null/></construct_tpl>
+</constructor>
+<constructor parent="0x0" first="1" length="28" line="105">
+<oper id="0x1a6"/>
+<oper id="0x1a7"/>
+<oper id="0x1a8"/>
+<oper id="0x1a9"/>
+<oper id="0x1aa"/>
+<oper id="0x1ab"/>
 <print piece="LockWindow"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
-<decision number="67" context="false" start="1" size="7">
-<decision number="0" context="false" start="0" size="0">
-</decision>
+<constructor parent="0x0" first="1" length="28" line="106">
+<oper id="0x1ac"/>
+<oper id="0x1ad"/>
+<oper id="0x1ae"/>
+<oper id="0x1af"/>
+<oper id="0x1b0"/>
+<oper id="0x1b1"/>
+<print piece="FileWriteUTF16LE"/>
+<construct_tpl>
+<null/></construct_tpl>
+</constructor>
+<constructor parent="0x0" first="1" length="28" line="107">
+<oper id="0x1b2"/>
+<oper id="0x1b3"/>
+<oper id="0x1b4"/>
+<oper id="0x1b5"/>
+<oper id="0x1b6"/>
+<oper id="0x1b7"/>
+<print piece="FileReadUTF16LE"/>
+<construct_tpl>
+<null/></construct_tpl>
+</constructor>
+<decision number="71" context="false" start="1" size="7">
 <decision number="1" context="false" start="0" size="0">
 <pair id="0">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x1000000"/>
+  <mask_word mask="0xffffffff" val="0x0"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1244,7 +1314,7 @@
 <pair id="1">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2000000"/>
+  <mask_word mask="0xffffffff" val="0x1000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1253,7 +1323,7 @@
 <pair id="2">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3000000"/>
+  <mask_word mask="0xffffffff" val="0x2000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1262,7 +1332,7 @@
 <pair id="3">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x4000000"/>
+  <mask_word mask="0xffffffff" val="0x3000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1271,7 +1341,7 @@
 <pair id="4">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x5000000"/>
+  <mask_word mask="0xffffffff" val="0x4000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1280,7 +1350,7 @@
 <pair id="5">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x6000000"/>
+  <mask_word mask="0xffffffff" val="0x5000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1289,7 +1359,7 @@
 <pair id="6">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x7000000"/>
+  <mask_word mask="0xffffffff" val="0x6000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1298,7 +1368,7 @@
 <pair id="7">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x8000000"/>
+  <mask_word mask="0xffffffff" val="0x7000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1307,7 +1377,7 @@
 <pair id="8">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x9000000"/>
+  <mask_word mask="0xffffffff" val="0x8000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1316,7 +1386,7 @@
 <pair id="9">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0xa000000"/>
+  <mask_word mask="0xffffffff" val="0x9000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1325,7 +1395,7 @@
 <pair id="10">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0xb000000"/>
+  <mask_word mask="0xffffffff" val="0xa000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1334,7 +1404,7 @@
 <pair id="11">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0xc000000"/>
+  <mask_word mask="0xffffffff" val="0xb000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1343,7 +1413,7 @@
 <pair id="12">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0xd000000"/>
+  <mask_word mask="0xffffffff" val="0xc000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1352,7 +1422,7 @@
 <pair id="13">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0xe000000"/>
+  <mask_word mask="0xffffffff" val="0xd000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1361,7 +1431,7 @@
 <pair id="14">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0xf000000"/>
+  <mask_word mask="0xffffffff" val="0xe000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1370,7 +1440,7 @@
 <pair id="15">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x10000000"/>
+  <mask_word mask="0xffffffff" val="0xf000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1379,7 +1449,7 @@
 <pair id="16">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x11000000"/>
+  <mask_word mask="0xffffffff" val="0x10000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1388,7 +1458,7 @@
 <pair id="17">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x12000000"/>
+  <mask_word mask="0xffffffff" val="0x11000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1397,7 +1467,7 @@
 <pair id="18">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x13000000"/>
+  <mask_word mask="0xffffffff" val="0x12000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1406,7 +1476,7 @@
 <pair id="19">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x14000000"/>
+  <mask_word mask="0xffffffff" val="0x13000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1415,7 +1485,7 @@
 <pair id="20">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x15000000"/>
+  <mask_word mask="0xffffffff" val="0x14000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1424,7 +1494,7 @@
 <pair id="21">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x16000000"/>
+  <mask_word mask="0xffffffff" val="0x15000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1433,7 +1503,7 @@
 <pair id="22">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x17000000"/>
+  <mask_word mask="0xffffffff" val="0x16000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1442,7 +1512,7 @@
 <pair id="23">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x18000000"/>
+  <mask_word mask="0xffffffff" val="0x17000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1451,7 +1521,7 @@
 <pair id="24">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x19000000"/>
+  <mask_word mask="0xffffffff" val="0x18000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1460,7 +1530,7 @@
 <pair id="25">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x1a000000"/>
+  <mask_word mask="0xffffffff" val="0x19000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1469,7 +1539,7 @@
 <pair id="26">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x1b000000"/>
+  <mask_word mask="0xffffffff" val="0x1a000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1478,7 +1548,7 @@
 <pair id="27">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x1c000000"/>
+  <mask_word mask="0xffffffff" val="0x1b000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1487,18 +1557,16 @@
 <pair id="28">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x1d000000"/>
+  <mask_word mask="0xffffffff" val="0x1c000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
-</decision>
-<decision number="0" context="false" start="0" size="0">
 </decision>
 <decision number="1" context="false" start="0" size="0">
 <pair id="29">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x1f000000"/>
+  <mask_word mask="0xffffffff" val="0x1d000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1507,7 +1575,7 @@
 <pair id="30">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x20000000"/>
+  <mask_word mask="0xffffffff" val="0x1e000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1516,7 +1584,7 @@
 <pair id="31">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x21000000"/>
+  <mask_word mask="0xffffffff" val="0x1f000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1525,7 +1593,7 @@
 <pair id="32">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x22000000"/>
+  <mask_word mask="0xffffffff" val="0x20000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1534,7 +1602,7 @@
 <pair id="33">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x23000000"/>
+  <mask_word mask="0xffffffff" val="0x21000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1543,7 +1611,7 @@
 <pair id="34">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x24000000"/>
+  <mask_word mask="0xffffffff" val="0x22000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1552,7 +1620,7 @@
 <pair id="35">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x25000000"/>
+  <mask_word mask="0xffffffff" val="0x23000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1561,7 +1629,7 @@
 <pair id="36">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x26000000"/>
+  <mask_word mask="0xffffffff" val="0x24000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1570,7 +1638,7 @@
 <pair id="37">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x27000000"/>
+  <mask_word mask="0xffffffff" val="0x25000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1579,7 +1647,7 @@
 <pair id="38">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x28000000"/>
+  <mask_word mask="0xffffffff" val="0x26000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1588,7 +1656,7 @@
 <pair id="39">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x29000000"/>
+  <mask_word mask="0xffffffff" val="0x27000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1597,7 +1665,7 @@
 <pair id="40">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2a000000"/>
+  <mask_word mask="0xffffffff" val="0x28000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1606,7 +1674,7 @@
 <pair id="41">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2b000000"/>
+  <mask_word mask="0xffffffff" val="0x29000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1615,7 +1683,7 @@
 <pair id="42">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2c000000"/>
+  <mask_word mask="0xffffffff" val="0x2a000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1624,7 +1692,7 @@
 <pair id="43">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2d000000"/>
+  <mask_word mask="0xffffffff" val="0x2b000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1633,7 +1701,7 @@
 <pair id="44">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2e000000"/>
+  <mask_word mask="0xffffffff" val="0x2c000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1642,7 +1710,7 @@
 <pair id="45">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x2f000000"/>
+  <mask_word mask="0xffffffff" val="0x2d000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1651,7 +1719,7 @@
 <pair id="46">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x30000000"/>
+  <mask_word mask="0xffffffff" val="0x2e000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1660,7 +1728,7 @@
 <pair id="47">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x31000000"/>
+  <mask_word mask="0xffffffff" val="0x2f000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1669,7 +1737,7 @@
 <pair id="48">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x32000000"/>
+  <mask_word mask="0xffffffff" val="0x30000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1678,7 +1746,7 @@
 <pair id="49">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x33000000"/>
+  <mask_word mask="0xffffffff" val="0x31000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1687,7 +1755,7 @@
 <pair id="50">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x34000000"/>
+  <mask_word mask="0xffffffff" val="0x32000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1696,7 +1764,7 @@
 <pair id="51">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x35000000"/>
+  <mask_word mask="0xffffffff" val="0x33000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1705,7 +1773,7 @@
 <pair id="52">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x36000000"/>
+  <mask_word mask="0xffffffff" val="0x34000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1714,7 +1782,7 @@
 <pair id="53">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x37000000"/>
+  <mask_word mask="0xffffffff" val="0x35000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1723,7 +1791,7 @@
 <pair id="54">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x38000000"/>
+  <mask_word mask="0xffffffff" val="0x36000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1732,7 +1800,7 @@
 <pair id="55">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x39000000"/>
+  <mask_word mask="0xffffffff" val="0x37000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1741,7 +1809,7 @@
 <pair id="56">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3a000000"/>
+  <mask_word mask="0xffffffff" val="0x38000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1750,7 +1818,7 @@
 <pair id="57">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3b000000"/>
+  <mask_word mask="0xffffffff" val="0x39000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1759,7 +1827,7 @@
 <pair id="58">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3c000000"/>
+  <mask_word mask="0xffffffff" val="0x3a000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1768,7 +1836,7 @@
 <pair id="59">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3d000000"/>
+  <mask_word mask="0xffffffff" val="0x3b000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1777,7 +1845,7 @@
 <pair id="60">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3e000000"/>
+  <mask_word mask="0xffffffff" val="0x3c000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1786,7 +1854,7 @@
 <pair id="61">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x3f000000"/>
+  <mask_word mask="0xffffffff" val="0x3d000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1795,7 +1863,7 @@
 <pair id="62">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x40000000"/>
+  <mask_word mask="0xffffffff" val="0x3e000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1804,7 +1872,7 @@
 <pair id="63">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x41000000"/>
+  <mask_word mask="0xffffffff" val="0x3f000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1813,7 +1881,7 @@
 <pair id="64">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x42000000"/>
+  <mask_word mask="0xffffffff" val="0x40000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1822,7 +1890,7 @@
 <pair id="65">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
-  <mask_word mask="0xffffffff" val="0x43000000"/>
+  <mask_word mask="0xffffffff" val="0x41000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
@@ -1831,14 +1899,46 @@
 <pair id="66">
 <instruct_pat>
 <pat_block offset="0" nonzero="4">
+  <mask_word mask="0xffffffff" val="0x42000000"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+<decision number="1" context="false" start="0" size="0">
+<pair id="67">
+<instruct_pat>
+<pat_block offset="0" nonzero="4">
+  <mask_word mask="0xffffffff" val="0x43000000"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+<decision number="1" context="false" start="0" size="0">
+<pair id="68">
+<instruct_pat>
+<pat_block offset="0" nonzero="4">
   <mask_word mask="0xffffffff" val="0x44000000"/>
 </pat_block>
 </instruct_pat>
 </pair>
 </decision>
-<decision number="0" context="false" start="0" size="0">
+<decision number="1" context="false" start="0" size="0">
+<pair id="69">
+<instruct_pat>
+<pat_block offset="0" nonzero="4">
+  <mask_word mask="0xffffffff" val="0x45000000"/>
+</pat_block>
+</instruct_pat>
+</pair>
 </decision>
-<decision number="0" context="false" start="0" size="0">
+<decision number="1" context="false" start="0" size="0">
+<pair id="70">
+<instruct_pat>
+<pat_block offset="0" nonzero="4">
+  <mask_word mask="0xffffffff" val="0x46000000"/>
+</pat_block>
+</instruct_pat>
+</pair>
 </decision>
 <decision number="0" context="false" start="0" size="0">
 </decision>
@@ -3594,6 +3694,102 @@
 </operand_sym>
 <operand_sym name="arg6" id="0x19f" scope="0x43" off="0" base="-1" minlen="28" index="5">
 <operand_exp index="5" table="0x0" ct="0x42"/>
+<tokenfield bigendian="false" signbit="false" bitstart="192" bitend="223" bytestart="24" byteend="27" shift="0"/>
+</operand_sym>
+<operand_sym name="arg1" id="0x1a0" scope="0x44" off="0" base="-1" minlen="28" index="0">
+<operand_exp index="0" table="0x0" ct="0x43"/>
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="63" bytestart="4" byteend="7" shift="0"/>
+</operand_sym>
+<operand_sym name="arg2" id="0x1a1" scope="0x44" off="0" base="-1" minlen="28" index="1">
+<operand_exp index="1" table="0x0" ct="0x43"/>
+<tokenfield bigendian="false" signbit="false" bitstart="64" bitend="95" bytestart="8" byteend="11" shift="0"/>
+</operand_sym>
+<operand_sym name="arg3" id="0x1a2" scope="0x44" off="0" base="-1" minlen="28" index="2">
+<operand_exp index="2" table="0x0" ct="0x43"/>
+<tokenfield bigendian="false" signbit="false" bitstart="96" bitend="127" bytestart="12" byteend="15" shift="0"/>
+</operand_sym>
+<operand_sym name="arg4" id="0x1a3" scope="0x44" off="0" base="-1" minlen="28" index="3">
+<operand_exp index="3" table="0x0" ct="0x43"/>
+<tokenfield bigendian="false" signbit="false" bitstart="128" bitend="159" bytestart="16" byteend="19" shift="0"/>
+</operand_sym>
+<operand_sym name="arg5" id="0x1a4" scope="0x44" off="0" base="-1" minlen="28" index="4">
+<operand_exp index="4" table="0x0" ct="0x43"/>
+<tokenfield bigendian="false" signbit="false" bitstart="160" bitend="191" bytestart="20" byteend="23" shift="0"/>
+</operand_sym>
+<operand_sym name="arg6" id="0x1a5" scope="0x44" off="0" base="-1" minlen="28" index="5">
+<operand_exp index="5" table="0x0" ct="0x43"/>
+<tokenfield bigendian="false" signbit="false" bitstart="192" bitend="223" bytestart="24" byteend="27" shift="0"/>
+</operand_sym>
+<operand_sym name="arg1" id="0x1a6" scope="0x45" off="0" base="-1" minlen="28" index="0">
+<operand_exp index="0" table="0x0" ct="0x44"/>
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="63" bytestart="4" byteend="7" shift="0"/>
+</operand_sym>
+<operand_sym name="arg2" id="0x1a7" scope="0x45" off="0" base="-1" minlen="28" index="1">
+<operand_exp index="1" table="0x0" ct="0x44"/>
+<tokenfield bigendian="false" signbit="false" bitstart="64" bitend="95" bytestart="8" byteend="11" shift="0"/>
+</operand_sym>
+<operand_sym name="arg3" id="0x1a8" scope="0x45" off="0" base="-1" minlen="28" index="2">
+<operand_exp index="2" table="0x0" ct="0x44"/>
+<tokenfield bigendian="false" signbit="false" bitstart="96" bitend="127" bytestart="12" byteend="15" shift="0"/>
+</operand_sym>
+<operand_sym name="arg4" id="0x1a9" scope="0x45" off="0" base="-1" minlen="28" index="3">
+<operand_exp index="3" table="0x0" ct="0x44"/>
+<tokenfield bigendian="false" signbit="false" bitstart="128" bitend="159" bytestart="16" byteend="19" shift="0"/>
+</operand_sym>
+<operand_sym name="arg5" id="0x1aa" scope="0x45" off="0" base="-1" minlen="28" index="4">
+<operand_exp index="4" table="0x0" ct="0x44"/>
+<tokenfield bigendian="false" signbit="false" bitstart="160" bitend="191" bytestart="20" byteend="23" shift="0"/>
+</operand_sym>
+<operand_sym name="arg6" id="0x1ab" scope="0x45" off="0" base="-1" minlen="28" index="5">
+<operand_exp index="5" table="0x0" ct="0x44"/>
+<tokenfield bigendian="false" signbit="false" bitstart="192" bitend="223" bytestart="24" byteend="27" shift="0"/>
+</operand_sym>
+<operand_sym name="arg1" id="0x1ac" scope="0x46" off="0" base="-1" minlen="28" index="0">
+<operand_exp index="0" table="0x0" ct="0x45"/>
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="63" bytestart="4" byteend="7" shift="0"/>
+</operand_sym>
+<operand_sym name="arg2" id="0x1ad" scope="0x46" off="0" base="-1" minlen="28" index="1">
+<operand_exp index="1" table="0x0" ct="0x45"/>
+<tokenfield bigendian="false" signbit="false" bitstart="64" bitend="95" bytestart="8" byteend="11" shift="0"/>
+</operand_sym>
+<operand_sym name="arg3" id="0x1ae" scope="0x46" off="0" base="-1" minlen="28" index="2">
+<operand_exp index="2" table="0x0" ct="0x45"/>
+<tokenfield bigendian="false" signbit="false" bitstart="96" bitend="127" bytestart="12" byteend="15" shift="0"/>
+</operand_sym>
+<operand_sym name="arg4" id="0x1af" scope="0x46" off="0" base="-1" minlen="28" index="3">
+<operand_exp index="3" table="0x0" ct="0x45"/>
+<tokenfield bigendian="false" signbit="false" bitstart="128" bitend="159" bytestart="16" byteend="19" shift="0"/>
+</operand_sym>
+<operand_sym name="arg5" id="0x1b0" scope="0x46" off="0" base="-1" minlen="28" index="4">
+<operand_exp index="4" table="0x0" ct="0x45"/>
+<tokenfield bigendian="false" signbit="false" bitstart="160" bitend="191" bytestart="20" byteend="23" shift="0"/>
+</operand_sym>
+<operand_sym name="arg6" id="0x1b1" scope="0x46" off="0" base="-1" minlen="28" index="5">
+<operand_exp index="5" table="0x0" ct="0x45"/>
+<tokenfield bigendian="false" signbit="false" bitstart="192" bitend="223" bytestart="24" byteend="27" shift="0"/>
+</operand_sym>
+<operand_sym name="arg1" id="0x1b2" scope="0x47" off="0" base="-1" minlen="28" index="0">
+<operand_exp index="0" table="0x0" ct="0x46"/>
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="63" bytestart="4" byteend="7" shift="0"/>
+</operand_sym>
+<operand_sym name="arg2" id="0x1b3" scope="0x47" off="0" base="-1" minlen="28" index="1">
+<operand_exp index="1" table="0x0" ct="0x46"/>
+<tokenfield bigendian="false" signbit="false" bitstart="64" bitend="95" bytestart="8" byteend="11" shift="0"/>
+</operand_sym>
+<operand_sym name="arg3" id="0x1b4" scope="0x47" off="0" base="-1" minlen="28" index="2">
+<operand_exp index="2" table="0x0" ct="0x46"/>
+<tokenfield bigendian="false" signbit="false" bitstart="96" bitend="127" bytestart="12" byteend="15" shift="0"/>
+</operand_sym>
+<operand_sym name="arg4" id="0x1b5" scope="0x47" off="0" base="-1" minlen="28" index="3">
+<operand_exp index="3" table="0x0" ct="0x46"/>
+<tokenfield bigendian="false" signbit="false" bitstart="128" bitend="159" bytestart="16" byteend="19" shift="0"/>
+</operand_sym>
+<operand_sym name="arg5" id="0x1b6" scope="0x47" off="0" base="-1" minlen="28" index="4">
+<operand_exp index="4" table="0x0" ct="0x46"/>
+<tokenfield bigendian="false" signbit="false" bitstart="160" bitend="191" bytestart="20" byteend="23" shift="0"/>
+</operand_sym>
+<operand_sym name="arg6" id="0x1b7" scope="0x47" off="0" base="-1" minlen="28" index="5">
+<operand_exp index="5" table="0x0" ct="0x46"/>
 <tokenfield bigendian="false" signbit="false" bitstart="192" bitend="223" bytestart="24" byteend="27" shift="0"/>
 </operand_sym>
 </symbol_table>
