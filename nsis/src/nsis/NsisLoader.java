@@ -104,23 +104,19 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 						.add(NsisFirstHeader.getHeaderSize());
 				initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
 
-				Address pagesSectionAddress = commonHeaderAddress
-						.add(NsisCommonHeader.getHeaderSize());
+				Address pagesSectionAddress = commonHeaderAddress.add(ne.getPagesOffset());
 				initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
 						ne.getNumPages());
 
-				Address sectionHeadersAddress = pagesSectionAddress
-						.add(NsisPage.getPageSize() * ne.getNumPages());
+				Address sectionHeadersAddress = commonHeaderAddress.add(ne.getSectionsOffset());
 				initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
 						ne.getNumSections());
 
-				Address entriesSectionAddress = sectionHeadersAddress
-						.add(NsisSection.getSectionSize() * ne.getNumSections());
+				Address entriesSectionAddress = commonHeaderAddress.add(ne.getEntriesOffset());
 				initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
 						ne.getNumEntries());
 
-				Address stringsAddress = entriesSectionAddress
-						.add(NsisEntry.getEntrySize() * ne.getNumEntries());
+				Address stringsAddress = commonHeaderAddress.add(ne.getStringsOffset());
 				initStringsSection(bodyInputStream, stringsAddress, program, monitor,
 						ne.getStringsSectionSize());
 
