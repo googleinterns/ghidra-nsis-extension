@@ -2,7 +2,7 @@
 
 <compiler_spec>
 	<data_organization>
-		<pointer_size value="8" />
+		<pointer_size value="4" />
 	</data_organization>
 
 	<global>
@@ -15,12 +15,12 @@
 	<default_proto>
 		<prototype name="__stdcall" extrapop="0" stackshift="0">
 			<input>
-				<pentry maxsize="8" minsize="1">
+				<pentry maxsize="4" minsize="1">
 					<register name="r0"/>
 				</pentry>
 			</input>
 			<output>
-				<pentry maxsize="8" minsize="1">
+				<pentry maxsize="4" minsize="1">
 					<register name="r0"/>
 				</pentry>
 			</output>
