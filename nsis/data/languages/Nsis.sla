@@ -767,6 +767,16 @@
 <oper id="0x94"/>
 <oper id="0x95"/>
 <print piece="MessageBox"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
