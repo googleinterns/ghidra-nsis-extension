@@ -4,7 +4,7 @@ define endian = little;
 
 define alignment = 1;
 
-define space ram       type=ram_space       size=8  default;
+define space ram       type=ram_space       size=4  default;
 
 define space register  type=register_space  size=4;
 
@@ -12,96 +12,102 @@ define space register  type=register_space  size=4;
 # AT LEAST ONE REGISTER, AND STACK POINTER ARE REQUIRED
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-define register offset=0x0 size=8 [  sp r0 ];
+define register offset=0x0 size=4 [ sp r0 ];
 
-# Define context bits
-define register offset=0x100 size=4   contextreg;
+define token instr(32)
+    opcode = (0,31);
+    
+define token argument1(32)
+    arg1 = (0,31);
+    
+define token argument2(32)
+    arg2 = (0,31);
 
-define context contextreg
-  test=(0,0)  
-;
+define token argument3(32)
+    arg3 = (0,31);
+    
+define token argument4(32)
+    arg4 = (0,31);
 
-define token instr(224)
-    opcode = (0,31)
-    arg1 = (32,63)
-    arg2 = (64,95)
-    arg3 = (96,127)
-    arg4 = (128,159)
-    arg5 = (160,191) 
-    arg6 = (192,223);
+define token argument5(32)
+    arg5 = (0,31);
+    
+define token argument6(32)
+    arg6 = (0,31);
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # AT LEAST ONE INSTRUCTION IS REQUIRED
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-:InvalidOpcode is opcode=0x00 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Return is opcode=0x01 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Jmp is opcode=0x02 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Abort is opcode=0x03 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Quit is opcode=0x04 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Call is opcode=0x05 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:UpdateText is opcode=0x06 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Sleep is opcode=0x07 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:BringToFront is opcode=0x08 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ChDetailsView is opcode=0x09 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SetFileAttributes is opcode=0x0a & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:CreateDir is opcode=0x0b & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:IfFileExists is opcode=0x0c & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SetFlag is opcode=0x0d & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:IfFlag is opcode=0x0e & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetFlag is opcode=0x0f & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Rename is opcode=0x10 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetFullPathName is opcode=0x11 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SearchPath is opcode=0x12 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetTempFilename is opcode=0x13 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ExtractFile is opcode=0x14 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:DeleteFile is opcode=0x15 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:MessageBox is opcode=0x16 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:RmDir is opcode=0x17 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:StrLe is opcode=0x18 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:StrCpy is opcode=0x19 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:StrCmp is opcode=0x1a & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ReadEnv is opcode=0x1b & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:IntCmp is opcode=0x1c & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:IntOp is opcode=0x1d & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:IntFmt is opcode=0x1e & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:PushPop is opcode=0x1f & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FindWindow is opcode=0x20 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SendMessage is opcode=0x21 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:IsWindow is opcode=0x22 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetDlgItem is opcode=0x23 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SetCtlColors is opcode=0x24 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SetBrandingImage is opcode=0x25 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:CreateFont is opcode=0x26 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ShowWindow is opcode=0x27 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ShellExec is opcode=0x28 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Execute is opcode=0x29 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetFileTime is opcode=0x2a & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetDLLVersion is opcode=0x2b & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:RegisterDLL is opcode=0x2c & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:CreateShortcut is opcode=0x2d & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:CopyFiles is opcode=0x2e & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:Reboot is opcode=0x2f & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:WriteIni is opcode=0x30 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ReadIni is opcode=0x31 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:DeleteRegKey is opcode=0x32 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:WriteRegValue is opcode=0x33 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:ReadRegValue is opcode=0x34 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:RegEnumKey is opcode=0x35 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileClose is opcode=0x36 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileOpen is opcode=0x37 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileWrite is opcode=0x38 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileRead is opcode=0x39 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileSeek is opcode=0x3a & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FindClose is opcode=0x3b & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FindNext is opcode=0x3c & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FindFirst is opcode=0x3d & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:WriteUninstaller is opcode=0x3e & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:LogText is opcode=0x3f & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:SectionSet is opcode=0x40 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:InstTypeSet is opcode=0x41 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetLabelAddr is opcode=0x42 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:GetFunctionAddr is opcode=0x43 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:LockWindow is opcode=0x44 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileWriteUTF16LE is opcode=0x45 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
-:FileReadUTF16LE is opcode=0x46 & arg1 & arg2 & arg3 & arg4 & arg5 & arg6 { }
+:InvalidOpcode is opcode=0x00 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Return is opcode=0x01 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Jmp is opcode=0x02 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Abort is opcode=0x03 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Quit is opcode=0x04 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Call is opcode=0x05 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:UpdateText is opcode=0x06 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Sleep is opcode=0x07 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:BringToFront is opcode=0x08 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ChDetailsView is opcode=0x09 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SetFileAttributes is opcode=0x0a ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:CreateDir is opcode=0x0b ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:IfFileExists is opcode=0x0c ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SetFlag is opcode=0x0d ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:IfFlag is opcode=0x0e ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetFlag is opcode=0x0f ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Rename is opcode=0x10 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetFullPathName is opcode=0x11 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SearchPath is opcode=0x12 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetTempFilename is opcode=0x13 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ExtractFile is opcode=0x14 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:DeleteFile is opcode=0x15 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:MessageBox arg1 arg2 arg3 arg4 arg5 is opcode=0x16 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:RmDir is opcode=0x17 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:StrLe is opcode=0x18 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:StrCpy is opcode=0x19 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:StrCmp is opcode=0x1a ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ReadEnv is opcode=0x1b ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:IntCmp is opcode=0x1c ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:IntOp is opcode=0x1d ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:IntFmt is opcode=0x1e ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:PushPop is opcode=0x1f ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FindWindow is opcode=0x20 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SendMessage is opcode=0x21 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:IsWindow is opcode=0x22 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetDlgItem is opcode=0x23 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SetCtlColors is opcode=0x24 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SetBrandingImage is opcode=0x25 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:CreateFont is opcode=0x26 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ShowWindow is opcode=0x27 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ShellExec is opcode=0x28 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Execute is opcode=0x29 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetFileTime is opcode=0x2a ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetDLLVersion is opcode=0x2b ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:RegisterDLL is opcode=0x2c ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:CreateShortcut is opcode=0x2d ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:CopyFiles is opcode=0x2e ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:Reboot is opcode=0x2f ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:WriteIni is opcode=0x30 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ReadIni is opcode=0x31 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:DeleteRegKey is opcode=0x32 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:WriteRegValue is opcode=0x33 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ReadRegValue is opcode=0x34 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:RegEnumKey is opcode=0x35 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileClose is opcode=0x36 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileOpen is opcode=0x37 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileWrite is opcode=0x38 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileRead is opcode=0x39 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileSeek is opcode=0x3a ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FindClose is opcode=0x3b ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FindNext is opcode=0x3c ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FindFirst is opcode=0x3d ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:WriteUninstaller is opcode=0x3e ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:LogText is opcode=0x3f ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:SectionSet is opcode=0x40 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:InstTypeSet is opcode=0x41 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetLabelAddr is opcode=0x42 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetFunctionAddr is opcode=0x43 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:LockWindow is opcode=0x44 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileWriteUTF16LE is opcode=0x45 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:FileReadUTF16LE is opcode=0x46 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
