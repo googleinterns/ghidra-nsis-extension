@@ -20,6 +20,7 @@ import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.Options;
 import ghidra.program.disassemble.Disassembler;
+import ghidra.program.model.address.AddressRange;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
@@ -77,9 +78,18 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 				.getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
 		Disassembler disassembler = Disassembler.getDisassembler(program, monitor, null);
 		AddressSet modifiedAddrSet = disassembler.disassemble(entriesBlock.getStart(), null);
+
+		resolveStrings(modifiedAddrSet);
+
 		if (modifiedAddrSet.isEmpty()) {
 			return false;
 		}
 		return true;
+	}
+	
+	public void resolveStrings(AddressSet addrSet) {
+		for (AddressRange range: addrSet) {
+			System.out.println(range);
+		}
 	}
 }
