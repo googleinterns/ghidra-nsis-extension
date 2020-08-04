@@ -547,6 +547,8 @@
 <oper id="0x1c"/>
 <oper id="0x1d"/>
 <print piece="Jmp"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -558,6 +560,8 @@
 <oper id="0x22"/>
 <oper id="0x23"/>
 <print piece="Abort"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -580,6 +584,8 @@
 <oper id="0x2e"/>
 <oper id="0x2f"/>
 <print piece="Call"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -591,6 +597,10 @@
 <oper id="0x34"/>
 <oper id="0x35"/>
 <print piece="UpdateText"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -602,6 +612,8 @@
 <oper id="0x3a"/>
 <oper id="0x3b"/>
 <print piece="Sleep"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -624,6 +636,10 @@
 <oper id="0x46"/>
 <oper id="0x47"/>
 <print piece="ChDetailsView"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -635,6 +651,10 @@
 <oper id="0x4c"/>
 <oper id="0x4d"/>
 <print piece="SetFileAttributes"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -646,6 +666,10 @@
 <oper id="0x52"/>
 <oper id="0x53"/>
 <print piece="CreateDir"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -657,6 +681,12 @@
 <oper id="0x58"/>
 <oper id="0x59"/>
 <print piece="IfFileExists"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -668,6 +698,10 @@
 <oper id="0x5e"/>
 <oper id="0x5f"/>
 <print piece="SetFlag"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -679,6 +713,14 @@
 <oper id="0x64"/>
 <oper id="0x65"/>
 <print piece="IfFlag"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -690,6 +732,10 @@
 <oper id="0x6a"/>
 <oper id="0x6b"/>
 <print piece="GetFlag"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -701,6 +747,12 @@
 <oper id="0x70"/>
 <oper id="0x71"/>
 <print piece="Rename"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -712,6 +764,10 @@
 <oper id="0x76"/>
 <oper id="0x77"/>
 <print piece="GetFullPathName"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -723,6 +779,10 @@
 <oper id="0x7c"/>
 <oper id="0x7d"/>
 <print piece="SearchPath"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -734,6 +794,10 @@
 <oper id="0x82"/>
 <oper id="0x83"/>
 <print piece="GetTempFilename"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -745,6 +809,18 @@
 <oper id="0x88"/>
 <oper id="0x89"/>
 <print piece="ExtractFile"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
+<print piece=" "/>
+<opprint id="5"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -756,6 +832,10 @@
 <oper id="0x8e"/>
 <oper id="0x8f"/>
 <print piece="DeleteFile"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -788,6 +868,10 @@
 <oper id="0x9a"/>
 <oper id="0x9b"/>
 <print piece="RmDir"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -798,7 +882,11 @@
 <oper id="0x9f"/>
 <oper id="0xa0"/>
 <oper id="0xa1"/>
-<print piece="StrLe"/>
+<print piece="StrLen"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -810,6 +898,14 @@
 <oper id="0xa6"/>
 <oper id="0xa7"/>
 <print piece="StrCpy"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -821,6 +917,16 @@
 <oper id="0xac"/>
 <oper id="0xad"/>
 <print piece="StrCmp"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -832,6 +938,12 @@
 <oper id="0xb2"/>
 <oper id="0xb3"/>
 <print piece="ReadEnv"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -843,6 +955,16 @@
 <oper id="0xb8"/>
 <oper id="0xb9"/>
 <print piece="IntCmp"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -854,6 +976,14 @@
 <oper id="0xbe"/>
 <oper id="0xbf"/>
 <print piece="IntOp"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -865,6 +995,14 @@
 <oper id="0xc4"/>
 <oper id="0xc5"/>
 <print piece="IntFmt"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -876,6 +1014,12 @@
 <oper id="0xca"/>
 <oper id="0xcb"/>
 <print piece="PushPop"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -887,6 +1031,16 @@
 <oper id="0xd0"/>
 <oper id="0xd1"/>
 <print piece="FindWindow"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -898,6 +1052,18 @@
 <oper id="0xd6"/>
 <oper id="0xd7"/>
 <print piece="SendMessage"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
+<print piece=" "/>
+<opprint id="5"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -909,6 +1075,12 @@
 <oper id="0xdc"/>
 <oper id="0xdd"/>
 <print piece="IsWindow"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -920,6 +1092,12 @@
 <oper id="0xe2"/>
 <oper id="0xe3"/>
 <print piece="GetDlgItem"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -931,6 +1109,12 @@
 <oper id="0xe8"/>
 <oper id="0xe9"/>
 <print piece="SetCtlColors"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -942,6 +1126,16 @@
 <oper id="0xee"/>
 <oper id="0xef"/>
 <print piece="SetBrandingImage"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -953,6 +1147,16 @@
 <oper id="0xf4"/>
 <oper id="0xf5"/>
 <print piece="CreateFont"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -964,6 +1168,10 @@
 <oper id="0xfa"/>
 <oper id="0xfb"/>
 <print piece="ShowWindow"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -975,6 +1183,16 @@
 <oper id="0x100"/>
 <oper id="0x101"/>
 <print piece="ShellExec"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -986,6 +1204,12 @@
 <oper id="0x106"/>
 <oper id="0x107"/>
 <print piece="Execute"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -997,6 +1221,12 @@
 <oper id="0x10c"/>
 <oper id="0x10d"/>
 <print piece="GetFileTime"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1008,6 +1238,12 @@
 <oper id="0x112"/>
 <oper id="0x113"/>
 <print piece="GetDLLVersion"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1019,6 +1255,12 @@
 <oper id="0x118"/>
 <oper id="0x119"/>
 <print piece="RegisterDLL"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1030,6 +1272,16 @@
 <oper id="0x11e"/>
 <oper id="0x11f"/>
 <print piece="CreateShortcut"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1041,6 +1293,12 @@
 <oper id="0x124"/>
 <oper id="0x125"/>
 <print piece="CopyFiles"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1063,6 +1321,14 @@
 <oper id="0x130"/>
 <oper id="0x131"/>
 <print piece="WriteIni"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1074,6 +1340,14 @@
 <oper id="0x136"/>
 <oper id="0x137"/>
 <print piece="ReadIni"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1085,6 +1359,14 @@
 <oper id="0x13c"/>
 <oper id="0x13d"/>
 <print piece="DeleteRegKey"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1096,6 +1378,16 @@
 <oper id="0x142"/>
 <oper id="0x143"/>
 <print piece="WriteRegValue"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1106,7 +1398,17 @@
 <oper id="0x147"/>
 <oper id="0x148"/>
 <oper id="0x149"/>
-<print piece="ReadRegValue"/>
+<print piece="ReadRegStr"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1118,6 +1420,16 @@
 <oper id="0x14e"/>
 <oper id="0x14f"/>
 <print piece="RegEnumKey"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1129,6 +1441,8 @@
 <oper id="0x154"/>
 <oper id="0x155"/>
 <print piece="FileClose"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1140,6 +1454,14 @@
 <oper id="0x15a"/>
 <oper id="0x15b"/>
 <print piece="FileOpen"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1151,6 +1473,12 @@
 <oper id="0x160"/>
 <oper id="0x161"/>
 <print piece="FileWrite"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1162,6 +1490,14 @@
 <oper id="0x166"/>
 <oper id="0x167"/>
 <print piece="FileRead"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1173,6 +1509,14 @@
 <oper id="0x16c"/>
 <oper id="0x16d"/>
 <print piece="FileSeek"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1184,6 +1528,8 @@
 <oper id="0x172"/>
 <oper id="0x173"/>
 <print piece="FindClose"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1195,6 +1541,10 @@
 <oper id="0x178"/>
 <oper id="0x179"/>
 <print piece="FindNext"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1206,6 +1556,10 @@
 <oper id="0x17e"/>
 <oper id="0x17f"/>
 <print piece="FindFirst"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1217,6 +1571,12 @@
 <oper id="0x184"/>
 <oper id="0x185"/>
 <print piece="WriteUninstaller"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1228,6 +1588,10 @@
 <oper id="0x18a"/>
 <oper id="0x18b"/>
 <print piece="LogText"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1239,6 +1603,12 @@
 <oper id="0x190"/>
 <oper id="0x191"/>
 <print piece="SectionSet"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1250,6 +1620,12 @@
 <oper id="0x196"/>
 <oper id="0x197"/>
 <print piece="InstTypeSet"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1261,6 +1637,18 @@
 <oper id="0x19c"/>
 <oper id="0x19d"/>
 <print piece="GetLabelAddr"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
+<print piece=" "/>
+<opprint id="5"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1272,6 +1660,18 @@
 <oper id="0x1a2"/>
 <oper id="0x1a3"/>
 <print piece="GetFunctionAddr"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
+<print piece=" "/>
+<opprint id="4"/>
+<print piece=" "/>
+<opprint id="5"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1283,6 +1683,8 @@
 <oper id="0x1a8"/>
 <oper id="0x1a9"/>
 <print piece="LockWindow"/>
+<print piece=" "/>
+<opprint id="0"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1294,6 +1696,14 @@
 <oper id="0x1ae"/>
 <oper id="0x1af"/>
 <print piece="FileWriteUTF16LE"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
@@ -1305,6 +1715,14 @@
 <oper id="0x1b4"/>
 <oper id="0x1b5"/>
 <print piece="FileReadUTF16LE"/>
+<print piece=" "/>
+<opprint id="0"/>
+<print piece=" "/>
+<opprint id="1"/>
+<print piece=" "/>
+<opprint id="2"/>
+<print piece=" "/>
+<opprint id="3"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
