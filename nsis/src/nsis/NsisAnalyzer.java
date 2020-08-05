@@ -96,8 +96,9 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 			try {
 				resolveStrings(instr, stringsBlock);
 			} catch (MemoryAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				monitor.setMessage(
+						"Unable to revolve strings at instruction: " + instr.getAddressString(
+								/* display mnemonic */ true, /* pad address if necessary */ true));
 			}
 		}
 
