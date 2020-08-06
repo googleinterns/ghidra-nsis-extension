@@ -131,36 +131,18 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 	 */
 	private void resolveStrings(Instruction instr, MemoryBlock stringsBlock)
 			throws MemoryAccessException {
-
 		String mnemonic = instr.getMnemonicString();
-		int[] arguments = new int[NsisConstants.NUMBER_OF_PARAMETERS];
-		for (int i = 0; i < NsisConstants.NUMBER_OF_PARAMETERS; i++) {
-			arguments[i] = instr.getInt(Integer.BYTES * (i + 1));
-		}
-
 		switch (mnemonic) {
 		case "MessageBox":
-			addReferenceToString(instr, stringsBlock, arguments[1], 1);
+			Address parameterAddr = stringsBlock.getStart()
+					.add(instr.getInt(NsisConstants.ARG2_OFFSET));
+			instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
+					SourceType.ANALYSIS);
 			break;
 
 		default:
 			break;
 		}
-	}
-
-	/**
-	 * Adds a reference to a string on the specified parameter of an instruction.
-	 * 
-	 * @param instr          the related instruction
-	 * @param stringsBlock   the memory block containing the strings
-	 * @param stringOffset   the offset of the string in the memory block
-	 * @param parameterIndex the index of the parameter to put the reference on
-	 */
-	private void addReferenceToString(Instruction instr, MemoryBlock stringsBlock, int stringOffset,
-			int parameterIndex) {
-		Address parameterAddr = stringsBlock.getStart().add(stringOffset);
-		instr.addOperandReference(parameterIndex, parameterAddr, RefType.PARAM,
-				SourceType.ANALYSIS);
 	}
 
 }
