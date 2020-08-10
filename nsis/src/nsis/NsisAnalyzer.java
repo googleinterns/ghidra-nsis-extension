@@ -40,109 +40,107 @@ import nsis.file.NsisConstants;
  */
 public class NsisAnalyzer extends AbstractAnalyzer {
 
-	public NsisAnalyzer() {
-		super("NSIS script decompiler", "Decompiles NSIS bytecode into NSIS script.",
-				AnalyzerType.BYTE_ANALYZER);
-	}
+  public NsisAnalyzer() {
+    super("NSIS script decompiler", "Decompiles NSIS bytecode into NSIS script.",
+        AnalyzerType.BYTE_ANALYZER);
+  }
 
-	/**
-	 * Determines if the analyzer should be enabled by default
-	 */
-	@Override
-	public boolean getDefaultEnablement(Program program) {
-		return true;
-	}
+  /**
+   * Determines if the analyzer should be enabled by default
+   */
+  @Override
+  public boolean getDefaultEnablement(Program program) {
+    return true;
+  }
 
-	/**
-	 * Determines if this analyzer can analyze the given program.
-	 */
-	@Override
-	public boolean canAnalyze(Program program) {
-		String format = program.getExecutableFormat();
-		if (format.equals(NsisLoader.NE_NAME)) {
-			return true;
-		}
-		return false;
-	}
+  /**
+   * Determines if this analyzer can analyze the given program.
+   */
+  @Override
+  public boolean canAnalyze(Program program) {
+    String format = program.getExecutableFormat();
+    if (format.equals(NsisLoader.NE_NAME)) {
+      return true;
+    }
+    return false;
+  }
 
-	/**
-	 * Registers the options provided to the user for this analyzer.
-	 */
-	@Override
-	public void registerOptions(Options options, Program program) {
-	}
+  /**
+   * Registers the options provided to the user for this analyzer.
+   */
+  @Override
+  public void registerOptions(Options options, Program program) {
+  }
 
-	/**
-	 * Perform analysis when things get added to the 'program'. Return true if the
-	 * analysis succeeded.
-	 */
-	@Override
-	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
-			throws CancelledException {
-		MemoryBlock entriesBlock = program.getMemory()
-				.getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
-		AddressSet modifiedAddrSet = disassembleByteCode(program, entriesBlock, monitor);
+  /**
+   * Perform analysis when things get added to the 'program'. Return true if the
+   * analysis succeeded.
+   */
+  @Override
+  public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
+      throws CancelledException {
+    MemoryBlock entriesBlock = program.getMemory()
+        .getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
+    AddressSet modifiedAddrSet = disassembleByteCode(program, entriesBlock, monitor);
 
-		if (modifiedAddrSet.isEmpty()) {
-			return false;
-		}
+    if (modifiedAddrSet.isEmpty()) {
+      return false;
+    }
 
-		MemoryBlock stringsBlock = program.getMemory()
-				.getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
-		InstructionIterator instructions = program.getListing().getInstructions(modifiedAddrSet,
-				/* forward direction */ true);
+    MemoryBlock stringsBlock = program.getMemory()
+        .getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
+    InstructionIterator instructions = program.getListing().getInstructions(modifiedAddrSet,
+        /* forward direction */ true);
 
-		for (Instruction instr : instructions) {
-			try {
-				resolveStrings(instr, stringsBlock);
-			} catch (MemoryAccessException e) {
-				monitor.setMessage(
-						"Unable to revolve strings at instruction: " + instr.getAddressString(
-								/* display mnemonic */ true, /* pad address if necessary */ true));
-			}
-		}
+    for (Instruction instr : instructions) {
+      try {
+        resolveStrings(instr, stringsBlock);
+      } catch (MemoryAccessException e) {
+        monitor.setMessage("Unable to revolve strings at instruction: " + instr
+            .getAddressString(/* display mnemonic */ true, /* pad address if necessary */ true));
+      }
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	/**
-	 * Disassembles the byte code in the specified memory block.
-	 * 
-	 * @param program     to instanciate the disassembler with
-	 * @param memoryBlock to perform the disassembly on
-	 * @param monitor     the TaskMonitor object to monitor the operation
-	 * @return the AddressSet of the disassembled instructions
-	 */
-	private AddressSet disassembleByteCode(Program program, MemoryBlock memoryBlock,
-			TaskMonitor monitor) {
-		Disassembler disassembler = Disassembler.getDisassembler(program, monitor,
-				/* Object to notify */ null);
-		AddressSet entriesAddrSet = new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd());
-		return disassembler.disassemble(entriesAddrSet.getMinAddress(), entriesAddrSet,
-				/* follow flow */ true);
-	}
+  /**
+   * Disassembles the byte code in the specified memory block.
+   * 
+   * @param program     to instanciate the disassembler with
+   * @param memoryBlock to perform the disassembly on
+   * @param monitor     the TaskMonitor object to monitor the operation
+   * @return the AddressSet of the disassembled instructions
+   */
+  private AddressSet disassembleByteCode(Program program, MemoryBlock memoryBlock,
+      TaskMonitor monitor) {
+    Disassembler disassembler = Disassembler.getDisassembler(program, monitor,
+        /* Object to notify */ null);
+    AddressSet entriesAddrSet = new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd());
+    return disassembler.disassemble(entriesAddrSet.getMinAddress(), entriesAddrSet,
+        /* follow flow */ true);
+  }
 
-	/**
-	 * Resolve strings for the specified instruction.
-	 * 
-	 * @param instr        the instruction
-	 * @param stringsBlock the memory block containing the strings
-	 * @throws MemoryAccessException
-	 */
-	private void resolveStrings(Instruction instr, MemoryBlock stringsBlock)
-			throws MemoryAccessException {
-		String mnemonic = instr.getMnemonicString();
-		switch (mnemonic) {
-		case "MessageBox":
-			Address parameterAddr = stringsBlock.getStart()
-					.add(instr.getInt(NsisConstants.ARG2_OFFSET));
-			instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
-					SourceType.ANALYSIS);
-			break;
+  /**
+   * Resolve strings for the specified instruction.
+   * 
+   * @param instr        the instruction
+   * @param stringsBlock the memory block containing the strings
+   * @throws MemoryAccessException
+   */
+  private void resolveStrings(Instruction instr, MemoryBlock stringsBlock)
+      throws MemoryAccessException {
+    String mnemonic = instr.getMnemonicString();
+    switch (mnemonic) {
+    case "MessageBox":
+      Address parameterAddr = stringsBlock.getStart().add(instr.getInt(NsisConstants.ARG2_OFFSET));
+      instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
+          SourceType.ANALYSIS);
+      break;
 
-		default:
-			break;
-		}
-	}
+    default:
+      break;
+    }
+  }
 
 }

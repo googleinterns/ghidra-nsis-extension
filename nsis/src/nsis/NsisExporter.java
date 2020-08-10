@@ -33,41 +33,39 @@ import ghidra.util.task.TaskMonitor;
  */
 public class NsisExporter extends Exporter {
 
-	/**
-	 * Exporter constructor.
-	 */
-	public NsisExporter() {
+  /**
+   * Exporter constructor.
+   */
+  public NsisExporter() {
 
-		// TODO: Name the exporter and associate a file extension with it
+    // TODO: Name the exporter and associate a file extension with it
 
-		super("My Exporter", "exp", null);
-	}
+    super("My Exporter", "exp", null);
+  }
 
-	@Override
-	public boolean export(File file, DomainObject domainObj,
-			AddressSetView addrSet, TaskMonitor monitor)
-			throws ExporterException, IOException {
+  @Override
+  public boolean export(File file, DomainObject domainObj, AddressSetView addrSet,
+      TaskMonitor monitor) throws ExporterException, IOException {
 
-		// TODO: Perform the export, and return true if it succeeded
+    // TODO: Perform the export, and return true if it succeeded
 
-		return false;
-	}
+    return false;
+  }
 
-	@Override
-	public List<Option> getOptions(DomainObjectService domainObjectService) {
-		List<Option> list = new ArrayList<>();
+  @Override
+  public List<Option> getOptions(DomainObjectService domainObjectService) {
+    List<Option> list = new ArrayList<>();
 
-		// TODO: If this exporter has custom options, add them to 'list'
-		list.add(new Option("Option name goes here",
-				"Default option value goes here"));
+    // TODO: If this exporter has custom options, add them to 'list'
+    list.add(new Option("Option name goes here", "Default option value goes here"));
 
-		return list;
-	}
+    return list;
+  }
 
-	@Override
-	public void setOptions(List<Option> options) throws OptionException {
+  @Override
+  public void setOptions(List<Option> options) throws OptionException {
 
-		// TODO: If this exporter has custom options, assign their values to the
-		// exporter here
-	}
+    // TODO: If this exporter has custom options, assign their values to the
+    // exporter here
+  }
 }
