@@ -49,16 +49,15 @@ public class NsisExecutable {
   /**
    * Use createNsisExecutable to create a Nsis Executable object
    */
-  public NsisExecutable() {
-  }
+  public NsisExecutable() {}
 
   /**
    * Creates and initializes a Nsis Executable object
    * 
-   * @param factory      that will be used to create Nsis Executable
-   * @param byteProvider object that will permit reading bytes from the file. The
-   *                     lifespan of the byte provider is controlled by Ghidra.
-   * @param layout       object used to load PE executables
+   * @param factory that will be used to create Nsis Executable
+   * @param byteProvider object that will permit reading bytes from the file. The lifespan of the
+   *        byte provider is controlled by Ghidra.
+   * @param layout object used to load PE executables
    * @return The Nsis executable object
    * @throws IOException
    * @throws InvalidFormatException
@@ -71,9 +70,8 @@ public class NsisExecutable {
   }
 
   /**
-   * Creates a Nsis Executable object, sets the reader and the offset parameter.
-   * To create and initialize a Nsis Executable object, use
-   * createInitializeNsisExecutable.
+   * Creates a Nsis Executable object, sets the reader and the offset parameter. To create and
+   * initialize a Nsis Executable object, use createInitializeNsisExecutable.
    * 
    * @param factory
    * @param bp
@@ -83,8 +81,8 @@ public class NsisExecutable {
   public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp)
       throws IOException, InvalidFormatException {
     NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
-    nsisExecutable.reader = new FactoryBundledWithBinaryReader(factory, bp,
-        NsisConstants.IS_LITTLE_ENDIAN);
+    nsisExecutable.reader =
+        new FactoryBundledWithBinaryReader(factory, bp, NsisConstants.IS_LITTLE_ENDIAN);
     nsisExecutable.headerOffset = nsisExecutable.findHeaderOffset();
     return nsisExecutable;
   }
@@ -94,8 +92,8 @@ public class NsisExecutable {
     initFirstHeader();
     this.decompressionProvider = getDecompressionProvider();
     try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
-      ByteProvider blockDataByteProvider = new InputStreamByteProvider(decompressesdStream,
-          this.firstHeader.inflatedHeaderSize);
+      ByteProvider blockDataByteProvider =
+          new InputStreamByteProvider(decompressesdStream, this.firstHeader.inflatedHeaderSize);
       BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider,
           NsisConstants.IS_LITTLE_ENDIAN);
       this.commonHeader = new NsisCommonHeader(blockReader);
@@ -113,19 +111,18 @@ public class NsisExecutable {
   }
 
   /**
-   * Get an array of the right amount of pages in the Nsis executable. The reader
-   * object is expected to be at the right offset (at the beginning of the first
-   * page) before calling this function. The reader index is advanced and after
-   * executing this function, the index of the reader is pointing to the first
-   * byte after the pages section.
+   * Get an array of the right amount of pages in the Nsis executable. The reader object is expected
+   * to be at the right offset (at the beginning of the first page) before calling this function.
+   * The reader index is advanced and after executing this function, the index of the reader is
+   * pointing to the first byte after the pages section.
    * 
    * @param reader
    * @return NsisPage array that contains all the pages in the Nsis executable
    * @throws IOException
    */
   private NsisPage[] getPages(BinaryReader reader) throws IOException {
-    NsisBlockHeader pagesBlockHeader = this.commonHeader
-        .getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal());
+    NsisBlockHeader pagesBlockHeader =
+        this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal());
     NsisPage[] pages = new NsisPage[pagesBlockHeader.getNumEntries()];
     for (int i = 0; i < pages.length; i++) {
       pages[i] = new NsisPage(reader);
@@ -134,19 +131,18 @@ public class NsisExecutable {
   }
 
   /**
-   * Get an array of the right amount of sections in the Nsis executable. The
-   * reader object is expected to be at the right offset (at the beginning of the
-   * first section) before calling this function. The reader index is advanced and
-   * after executing this function, the index of the reader is pointing to the
-   * first byte after the section headers section.
+   * Get an array of the right amount of sections in the Nsis executable. The reader object is
+   * expected to be at the right offset (at the beginning of the first section) before calling this
+   * function. The reader index is advanced and after executing this function, the index of the
+   * reader is pointing to the first byte after the section headers section.
    * 
    * @param reader
    * @return
    * @throws IOException
    */
   private NsisSection[] getSections(BinaryReader reader) throws IOException {
-    NsisBlockHeader sectionBlockHeader = this.commonHeader
-        .getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal());
+    NsisBlockHeader sectionBlockHeader =
+        this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal());
     NsisSection[] sections = new NsisSection[sectionBlockHeader.getNumEntries()];
     for (int i = 0; i < sections.length; i++) {
       sections[i] = new NsisSection(reader);
@@ -155,19 +151,18 @@ public class NsisExecutable {
   }
 
   /**
-   * Get an array of the right amount of entries in the Nsis executable. The
-   * reader object is expected to be at the right offset (at the beginning of the
-   * first entry) before calling this function. The reader index is advanced and
-   * after executing this function, the index of the reader is pointing to the
-   * first byte after the entries section.
+   * Get an array of the right amount of entries in the Nsis executable. The reader object is
+   * expected to be at the right offset (at the beginning of the first entry) before calling this
+   * function. The reader index is advanced and after executing this function, the index of the
+   * reader is pointing to the first byte after the entries section.
    * 
    * @param reader
    * @return
    * @throws IOException
    */
   private NsisEntry[] getEntries(BinaryReader reader) throws IOException {
-    NsisBlockHeader entriesBlockHeader = this.commonHeader
-        .getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal());
+    NsisBlockHeader entriesBlockHeader =
+        this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal());
     NsisEntry[] entries = new NsisEntry[entriesBlockHeader.getNumEntries()];
     for (int i = 0; i < entries.length; i++) {
       entries[i] = new NsisEntry(reader);
@@ -200,9 +195,9 @@ public class NsisExecutable {
   }
 
   /**
-   * Attempt to decompress the data from the reader. Supports LZMA algorithm. Will
-   * eventually support Bzip2 and Zlib. The reader offset has to be set at the
-   * beginning of the compressed data before calling this function.
+   * Attempt to decompress the data from the reader. Supports LZMA algorithm. Will eventually
+   * support Bzip2 and Zlib. The reader offset has to be set at the beginning of the compressed data
+   * before calling this function.
    * 
    * @param offset, the offset at which the compressed data can be found
    * @throws IOException
@@ -217,8 +212,8 @@ public class NsisExecutable {
             - NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
         ByteProvider compressedBytesProvider = new ByteProviderWrapper(
             this.reader.getByteProvider(), this.reader.getPointerIndex(), compressedDataLength);
-        NsisDecompressionProvider decompressionProvider = new NsisLZMAProvider(
-            compressedBytesProvider, compressionByte, dictionarySize);
+        NsisDecompressionProvider decompressionProvider =
+            new NsisLZMAProvider(compressedBytesProvider, compressionByte, dictionarySize);
         return decompressionProvider;
       } else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
         // TODO Bzip2 decompress

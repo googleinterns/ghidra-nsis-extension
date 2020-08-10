@@ -21,9 +21,9 @@ public class NsisLZMAProvider implements NsisDecompressionProvider {
   }
 
   /**
-   * Decompresse LZMA bytes using a known properties byte and dictionary size. The
-   * properties byte is the first byte in the LZMA header and the dictionary size
-   * corresponds to the 4 following bytes.
+   * Decompresse LZMA bytes using a known properties byte and dictionary size. The properties byte
+   * is the first byte in the LZMA header and the dictionary size corresponds to the 4 following
+   * bytes.
    */
   @Override
   public InputStream getDecompressedStream() throws IOException {

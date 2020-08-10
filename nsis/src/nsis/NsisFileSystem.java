@@ -1,17 +1,15 @@
-/* ###
- * IP: GHIDRA
+/*
+ * ### IP: GHIDRA
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package nsis;
 
@@ -28,11 +26,11 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
 /**
- * TODO: Provide class-level documentation that describes what this file system
- * does.
+ * TODO: Provide class-level documentation that describes what this file system does.
  */
 @FileSystemInfo(type = "fstypegoeshere", // ([a-z0-9]+ only)
-    description = "File system description goes here", factory = NsisFileSystem.MyFileSystemFactory.class)
+    description = "File system description goes here",
+    factory = NsisFileSystem.MyFileSystemFactory.class)
 public class NsisFileSystem implements GFileSystem {
 
   private final FSRLRoot fsFSRL;
@@ -44,7 +42,7 @@ public class NsisFileSystem implements GFileSystem {
   /**
    * File system constructor.
    * 
-   * @param fsFSRL   The root {@link FSRL} of the file system.
+   * @param fsFSRL The root {@link FSRL} of the file system.
    * @param provider The file system provider.
    */
   public NsisFileSystem(FSRLRoot fsFSRL, ByteProvider provider) {

@@ -6,8 +6,8 @@ public class NsisStrings {
   private int sectionLength;
 
   /**
-   * When creating a NsisStrings object, the pointer of the reader is advanced to
-   * the end of the strings section.
+   * When creating a NsisStrings object, the pointer of the reader is advanced to the end of the
+   * strings section.
    * 
    * @param reader
    * @param sectionStartOffset

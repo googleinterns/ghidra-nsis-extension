@@ -1,17 +1,15 @@
-/* ###
- * IP:.getMe GHIDRA
+/*
+ * ### IP:.getMe GHIDRA
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package nsis;
 
@@ -70,8 +68,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
     List<LoadSpec> loadSpecs = new ArrayList<>();
     try {
-      NsisExecutable ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE,
-          provider);
+      NsisExecutable ne =
+          NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
       LoadSpec my_spec = new LoadSpec(this, ne.getHeaderOffset(),
           new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
       loadSpecs.add(my_spec);
@@ -87,12 +85,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
       Program program, TaskMonitor monitor, MessageLog log) throws CancelledException, IOException {
     try {
       GenericFactory factory = MessageLogContinuesFactory.create(log);
-      NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(factory, provider,
-          SectionLayout.FILE);
+      NsisExecutable ne =
+          NsisExecutable.createInitializeNsisExecutable(factory, provider, SectionLayout.FILE);
       long scriptHeaderOffset = ne.getHeaderOffset();
 
-      Address firstHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
-          .getAddress(scriptHeaderOffset);
+      Address firstHeaderAddress =
+          program.getAddressFactory().getDefaultAddressSpace().getAddress(scriptHeaderOffset);
 
       try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
         initFirstHeader(headerInputStream, firstHeaderAddress, program, monitor);
@@ -129,7 +127,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * 
    * @param program
    * @param listing
-   * @param address  at which to apply the data structure
+   * @param address at which to apply the data structure
    * @param dataType to apply to the bytes
    * @return
    * @throws CodeUnitInsertionException
@@ -147,10 +145,9 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
   /**
    * 
-   * Initializes a memory block in Ghidra with the given permissions and the given
-   * data
+   * Initializes a memory block in Ghidra with the given permissions and the given data
    * 
-   * @param is                InputStream of the data
+   * @param is InputStream of the data
    * @param startingAddr
    * @param program
    * @param monitor
@@ -179,15 +176,13 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the first header and adds it to the "Program Trees" view in
-   * Ghidra.
+   * Initializes the first header and adds it to the "Program Trees" view in Ghidra.
    * 
-   * @param fileBytes            object that starts at the NSIS magic bytes
-   * @param scriptHeaderAddress, the address at which the nsis script header
-   *                             starts
-   * @param size                 of the header
-   * @param program              object
-   * @param dataType             of the script header
+   * @param fileBytes object that starts at the NSIS magic bytes
+   * @param scriptHeaderAddress, the address at which the nsis script header starts
+   * @param size of the header
+   * @param program object
+   * @param dataType of the script header
    * @throws MemoryConflictException
    * @throws AddressOverflowException
    * @throws CancelledException
@@ -209,8 +204,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the common header and adds it to the "Program Trees" view in
-   * Ghidra.
+   * Initializes the common header and adds it to the "Program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -240,8 +234,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the pages section and adds the section to the "program Trees"
-   * view in Ghidra.
+   * Initializes the pages section and adds the section to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -281,8 +274,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the section headers section and adds it to the "program Trees"
-   * view in Ghidra.
+   * Initializes the section headers section and adds it to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -319,8 +311,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
   /**
    * 
-   * Initializes the entries section and adds the section to the "program Trees"
-   * view in Ghidra.
+   * Initializes the entries section and adds the section to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -351,9 +342,9 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the strings section and adds the it to the "program Trees" view
-   * in Ghidra. Please not this function will not analyze the section to create
-   * the strings as the ASCII strings analyzer is available for this purpose.
+   * Initializes the strings section and adds the it to the "program Trees" view in Ghidra. Please
+   * not this function will not analyze the section to create the strings as the ASCII strings
+   * analyzer is available for this purpose.
    * 
    * @param is
    * @param startingAddr

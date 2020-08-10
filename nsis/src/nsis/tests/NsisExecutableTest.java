@@ -235,8 +235,8 @@ public class NsisExecutableTest {
   }
 
   /**
-   * Deobfuscated the inputStream object passed as a parameter. The obfuscation is
-   * a simple XOR with 0x55
+   * Deobfuscated the inputStream object passed as a parameter. The obfuscation is a simple XOR with
+   * 0x55
    * 
    * @param inputStream
    * @return the deobfuscated ByteArrayProvider object

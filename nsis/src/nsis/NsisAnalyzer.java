@@ -1,17 +1,15 @@
-/* ###
- * IP: GHIDRA
+/*
+ * ### IP: GHIDRA
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package nsis;
 
@@ -35,8 +33,7 @@ import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
 
 /**
- * This analyzer finds NSIS bytecode and will try to decompile it into the
- * original NSIS script.
+ * This analyzer finds NSIS bytecode and will try to decompile it into the original NSIS script.
  */
 public class NsisAnalyzer extends AbstractAnalyzer {
 
@@ -69,28 +66,26 @@ public class NsisAnalyzer extends AbstractAnalyzer {
    * Registers the options provided to the user for this analyzer.
    */
   @Override
-  public void registerOptions(Options options, Program program) {
-  }
+  public void registerOptions(Options options, Program program) {}
 
   /**
-   * Perform analysis when things get added to the 'program'. Return true if the
-   * analysis succeeded.
+   * Perform analysis when things get added to the 'program'. Return true if the analysis succeeded.
    */
   @Override
   public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
       throws CancelledException {
-    MemoryBlock entriesBlock = program.getMemory()
-        .getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
+    MemoryBlock entriesBlock =
+        program.getMemory().getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
     AddressSet modifiedAddrSet = disassembleByteCode(program, entriesBlock, monitor);
 
     if (modifiedAddrSet.isEmpty()) {
       return false;
     }
 
-    MemoryBlock stringsBlock = program.getMemory()
-        .getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
-    InstructionIterator instructions = program.getListing().getInstructions(modifiedAddrSet,
-        /* forward direction */ true);
+    MemoryBlock stringsBlock =
+        program.getMemory().getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
+    InstructionIterator instructions =
+        program.getListing().getInstructions(modifiedAddrSet, /* forward direction */ true);
 
     for (Instruction instr : instructions) {
       try {
@@ -107,15 +102,15 @@ public class NsisAnalyzer extends AbstractAnalyzer {
   /**
    * Disassembles the byte code in the specified memory block.
    * 
-   * @param program     to instanciate the disassembler with
+   * @param program to instanciate the disassembler with
    * @param memoryBlock to perform the disassembly on
-   * @param monitor     the TaskMonitor object to monitor the operation
+   * @param monitor the TaskMonitor object to monitor the operation
    * @return the AddressSet of the disassembled instructions
    */
   private AddressSet disassembleByteCode(Program program, MemoryBlock memoryBlock,
       TaskMonitor monitor) {
-    Disassembler disassembler = Disassembler.getDisassembler(program, monitor,
-        /* Object to notify */ null);
+    Disassembler disassembler =
+        Disassembler.getDisassembler(program, monitor, /* Object to notify */ null);
     AddressSet entriesAddrSet = new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd());
     return disassembler.disassemble(entriesAddrSet.getMinAddress(), entriesAddrSet,
         /* follow flow */ true);
@@ -124,7 +119,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
   /**
    * Resolve strings for the specified instruction.
    * 
-   * @param instr        the instruction
+   * @param instr the instruction
    * @param stringsBlock the memory block containing the strings
    * @throws MemoryAccessException
    */
@@ -132,14 +127,15 @@ public class NsisAnalyzer extends AbstractAnalyzer {
       throws MemoryAccessException {
     String mnemonic = instr.getMnemonicString();
     switch (mnemonic) {
-    case "MessageBox":
-      Address parameterAddr = stringsBlock.getStart().add(instr.getInt(NsisConstants.ARG2_OFFSET));
-      instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
-          SourceType.ANALYSIS);
-      break;
+      case "MessageBox":
+        Address parameterAddr =
+            stringsBlock.getStart().add(instr.getInt(NsisConstants.ARG2_OFFSET));
+        instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
+            SourceType.ANALYSIS);
+        break;
 
-    default:
-      break;
+      default:
+        break;
     }
   }
 
