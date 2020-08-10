@@ -23,6 +23,7 @@ import ghidra.program.disassemble.Disassembler;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.FlowOverride;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Program;
@@ -95,9 +96,10 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 		for (Instruction instr : instructions) {
 			try {
 				resolveStrings(instr, stringsBlock);
+				resolveControlFlow(instr, entriesBlock, program);
 			} catch (MemoryAccessException e) {
 				monitor.setMessage(
-						"Unable to revolve strings at instruction: " + instr.getAddressString(
+						"Unable to revolve parameters at instruction: " + instr.getAddressString(
 								/* display mnemonic */ true, /* pad address if necessary */ true));
 			}
 		}
@@ -138,6 +140,24 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 					.add(instr.getInt(NsisConstants.ARG2_OFFSET));
 			instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
 					SourceType.ANALYSIS);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	private void resolveControlFlow(Instruction instr, MemoryBlock entriesBlock, Program program)
+			throws MemoryAccessException {
+		String mnemonic = instr.getMnemonicString();
+		int offset;
+		switch (mnemonic) {
+		case "Call":
+			instr.setFlowOverride(FlowOverride.CALL);
+			offset = instr.getInt(NsisConstants.ARG1_OFFSET);
+			program.getReferenceManager().addMemoryReference(instr.getAddress(),
+					entriesBlock.getStart().add(offset * 0x1c), RefType.CALL_OVERRIDE_UNCONDITIONAL,
+					SourceType.ANALYSIS, 0);
 			break;
 
 		default:
