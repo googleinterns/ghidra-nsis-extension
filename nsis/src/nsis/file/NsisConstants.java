@@ -27,6 +27,7 @@ public class NsisConstants {
 	public static final String STRINGS_MEMORY_BLOCK_NAME = ".strings";
 
 	// NSIS instruction constants
+	public static final int INSTRUCTION_BYTE_LENGTH = 0x1c;
 	public static final int NUMBER_OF_PARAMETERS = 6;
 	public static final int ARG1_INDEX = 0;
 	public static final int ARG2_INDEX = 1;

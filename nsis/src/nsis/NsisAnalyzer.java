@@ -30,6 +30,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.symbol.RefType;
+import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -96,7 +97,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 		for (Instruction instr : instructions) {
 			try {
 				resolveStrings(instr, stringsBlock);
-				resolveControlFlow(instr, entriesBlock, program);
+				resolveControlFlow(instr, entriesBlock, program.getReferenceManager());
 			} catch (MemoryAccessException e) {
 				monitor.setMessage(
 						"Unable to revolve parameters at instruction: " + instr.getAddressString(
@@ -147,17 +148,39 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 		}
 	}
 
-	private void resolveControlFlow(Instruction instr, MemoryBlock entriesBlock, Program program)
-			throws MemoryAccessException {
+	/**
+	 * Resolve the control flow for the specified instruction
+	 * 
+	 * @param instr        the instruction
+	 * @param entriesBlock the memory block containing the instructions
+	 * @param program
+	 * @throws MemoryAccessException
+	 */
+	private void resolveControlFlow(Instruction instr, MemoryBlock entriesBlock,
+			ReferenceManager referenceManager) throws MemoryAccessException {
 		String mnemonic = instr.getMnemonicString();
-		int offset;
+		int instructionNumber;
 		switch (mnemonic) {
 		case "Call":
 			instr.setFlowOverride(FlowOverride.CALL);
-			offset = instr.getInt(NsisConstants.ARG1_OFFSET);
-			program.getReferenceManager().addMemoryReference(instr.getAddress(),
-					entriesBlock.getStart().add(offset * 0x1c), RefType.CALL_OVERRIDE_UNCONDITIONAL,
-					SourceType.ANALYSIS, 0);
+			instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
+			referenceManager.addMemoryReference(instr.getAddress(),
+					entriesBlock.getStart()
+							.add((instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH),
+					RefType.UNCONDITIONAL_CALL, SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+			break;
+
+		case "Jmp":
+			instr.setFlowOverride(FlowOverride.BRANCH);
+			instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
+			referenceManager.addMemoryReference(instr.getAddress(),
+					entriesBlock.getStart()
+							.add((instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH),
+					RefType.UNCONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+			break;
+
+		case "Return":
+			instr.setFlowOverride(FlowOverride.CALL_RETURN);
 			break;
 
 		default:
