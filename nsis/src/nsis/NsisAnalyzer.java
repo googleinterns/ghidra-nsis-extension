@@ -20,10 +20,16 @@ import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.Options;
 import ghidra.program.disassemble.Disassembler;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.symbol.RefType;
+import ghidra.program.model.symbol.SourceType;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
@@ -75,11 +81,68 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 			throws CancelledException {
 		MemoryBlock entriesBlock = program.getMemory()
 				.getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
-		Disassembler disassembler = Disassembler.getDisassembler(program, monitor, null);
-		AddressSet modifiedAddrSet = disassembler.disassemble(entriesBlock.getStart(), null);
+		AddressSet modifiedAddrSet = disassembleByteCode(program, entriesBlock, monitor);
+
 		if (modifiedAddrSet.isEmpty()) {
 			return false;
 		}
+
+		MemoryBlock stringsBlock = program.getMemory()
+				.getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
+		InstructionIterator instructions = program.getListing().getInstructions(modifiedAddrSet,
+				/* forward direction */ true);
+
+		for (Instruction instr : instructions) {
+			try {
+				resolveStrings(instr, stringsBlock);
+			} catch (MemoryAccessException e) {
+				monitor.setMessage(
+						"Unable to revolve strings at instruction: " + instr.getAddressString(
+								/* display mnemonic */ true, /* pad address if necessary */ true));
+			}
+		}
+
 		return true;
 	}
+
+	/**
+	 * Disassembles the byte code in the specified memory block.
+	 * 
+	 * @param program     to instanciate the disassembler with
+	 * @param memoryBlock to perform the disassembly on
+	 * @param monitor     the TaskMonitor object to monitor the operation
+	 * @return the AddressSet of the disassembled instructions
+	 */
+	private AddressSet disassembleByteCode(Program program, MemoryBlock memoryBlock,
+			TaskMonitor monitor) {
+		Disassembler disassembler = Disassembler.getDisassembler(program, monitor,
+				/* Object to notify */ null);
+		AddressSet entriesAddrSet = new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd());
+		return disassembler.disassemble(entriesAddrSet.getMinAddress(), entriesAddrSet,
+				/* follow flow */ true);
+	}
+
+	/**
+	 * Resolve strings for the specified instruction.
+	 * 
+	 * @param instr        the instruction
+	 * @param stringsBlock the memory block containing the strings
+	 * @throws MemoryAccessException
+	 */
+	private void resolveStrings(Instruction instr, MemoryBlock stringsBlock)
+			throws MemoryAccessException {
+		String mnemonic = instr.getMnemonicString();
+		switch (mnemonic) {
+		case "MessageBox":
+			Address parameterAddr = stringsBlock.getStart()
+					.add(instr.getInt(NsisConstants.ARG2_OFFSET));
+			instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
+					SourceType.ANALYSIS);
+			break;
+
+		default:
+			break;
+		}
+	}
+
 }

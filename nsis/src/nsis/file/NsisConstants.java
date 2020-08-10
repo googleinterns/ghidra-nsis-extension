@@ -25,4 +25,20 @@ public class NsisConstants {
 	public static final String SECTIONS_MEMORY_BLOCK_NAME = ".section_headers";
 	public static final String ENTRIES_MEMORY_BLOCK_NAME = ".entries";
 	public static final String STRINGS_MEMORY_BLOCK_NAME = ".strings";
+
+	// NSIS instruction constants
+	public static final int NUMBER_OF_PARAMETERS = 6;
+	public static final int ARG1_INDEX = 0;
+	public static final int ARG2_INDEX = 1;
+	public static final int ARG3_INDEX = 2;
+	public static final int ARG4_INDEX = 3;
+	public static final int ARG5_INDEX = 4;
+	public static final int ARG6_INDEX = 5;
+	public static final int ARG1_OFFSET = 4;
+	public static final int ARG2_OFFSET = 8;
+	public static final int ARG3_OFFSET = 12;
+	public static final int ARG4_OFFSET = 16;
+	public static final int ARG5_OFFSET = 20;
+	public static final int ARG6_OFFSET = 24;
+
 }
