@@ -183,10 +183,11 @@ public class NsisAnalyzer extends AbstractAnalyzer {
   }
 
   /**
+   * Get the address associated to the instruction number
    * 
-   * @param entriesBlock
-   * @param instructionNumber
-   * @return
+   * @param entriesBlock, the memory block containing the instructions (entries)
+   * @param instructionNumber, the instruction number for which the address is needed
+   * @return the address associated to that instruction
    */
   private Address getInstructionAddress(MemoryBlock entriesBlock, int instructionNumber) {
     long instructionOffset = (instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH;
