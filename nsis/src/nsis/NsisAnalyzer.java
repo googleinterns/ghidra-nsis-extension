@@ -159,18 +159,17 @@ public class NsisAnalyzer extends AbstractAnalyzer {
         instr.setFlowOverride(FlowOverride.CALL);
         instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
         referenceManager.addMemoryReference(instr.getAddress(),
-            entriesBlock.getStart()
-                .add((instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH),
-            RefType.UNCONDITIONAL_CALL, SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+            getInstructionAddress(entriesBlock, instructionNumber), RefType.UNCONDITIONAL_CALL,
+            SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
         break;
 
       case "Jmp":
         instr.setFlowOverride(FlowOverride.BRANCH);
         instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
         referenceManager.addMemoryReference(instr.getAddress(),
-            entriesBlock.getStart()
-                .add((instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH),
-            RefType.UNCONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+            getInstructionAddress(entriesBlock, instructionNumber), RefType.UNCONDITIONAL_JUMP,
+            SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+        instr.setFallThrough(null);
         break;
 
       case "Return":
@@ -181,6 +180,17 @@ public class NsisAnalyzer extends AbstractAnalyzer {
       default:
         break;
     }
+  }
+
+  /**
+   * 
+   * @param entriesBlock
+   * @param instructionNumber
+   * @return
+   */
+  private Address getInstructionAddress(MemoryBlock entriesBlock, int instructionNumber) {
+    long instructionOffset = (instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH;
+    return entriesBlock.getStart().add(instructionOffset);
   }
 
 }
