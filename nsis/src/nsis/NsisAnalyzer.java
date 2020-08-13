@@ -21,12 +21,14 @@ import ghidra.program.disassemble.Disassembler;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.FlowOverride;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.symbol.RefType;
+import ghidra.program.model.symbol.ReferenceManager;
 import ghidra.program.model.symbol.SourceType;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
@@ -90,8 +92,9 @@ public class NsisAnalyzer extends AbstractAnalyzer {
     for (Instruction instr : instructions) {
       try {
         resolveStrings(instr, stringsBlock);
+        fixUpInstruction(instr, entriesBlock, program.getReferenceManager());
       } catch (MemoryAccessException e) {
-        monitor.setMessage("Unable to revolve strings at instruction: " + instr
+        monitor.setMessage("Unable to revolve parameters at instruction: " + instr
             .getAddressString(/* display mnemonic */ true, /* pad address if necessary */ true));
       }
     }
@@ -137,6 +140,58 @@ public class NsisAnalyzer extends AbstractAnalyzer {
       default:
         break;
     }
+  }
+
+  /**
+   * Resolve the control flow for the specified instruction
+   * 
+   * @param instr the instruction
+   * @param entriesBlock the memory block containing the instructions
+   * @param program
+   * @throws MemoryAccessException
+   */
+  private void fixUpInstruction(Instruction instr, MemoryBlock entriesBlock,
+      ReferenceManager referenceManager) throws MemoryAccessException {
+    String mnemonic = instr.getMnemonicString();
+    int instructionNumber;
+    switch (mnemonic) {
+      case "Call":
+        instr.setFlowOverride(FlowOverride.CALL);
+        instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
+        referenceManager.addMemoryReference(instr.getAddress(),
+            getInstructionAddress(entriesBlock, instructionNumber), RefType.UNCONDITIONAL_CALL,
+            SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+        break;
+
+      case "Jmp":
+        instr.setFlowOverride(FlowOverride.BRANCH);
+        instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
+        referenceManager.addMemoryReference(instr.getAddress(),
+            getInstructionAddress(entriesBlock, instructionNumber), RefType.UNCONDITIONAL_JUMP,
+            SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
+        instr.setFallThrough(null);
+        break;
+
+      case "Return":
+        instr.setFlowOverride(FlowOverride.CALL_RETURN);
+        instr.setFallThrough(null);
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Get the address in memory associated to the position 'instruction number' in the entries block
+   * 
+   * @param entriesBlock, the memory block containing the instructions (entries)
+   * @param instructionNumber, the instruction number for which the address is needed
+   * @return the address associated to that instruction
+   */
+  private Address getInstructionAddress(MemoryBlock entriesBlock, int instructionNumber) {
+    long instructionOffset = (instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH;
+    return entriesBlock.getStart().add(instructionOffset);
   }
 
 }
