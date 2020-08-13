@@ -92,7 +92,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
     for (Instruction instr : instructions) {
       try {
         resolveStrings(instr, stringsBlock);
-        resolveControlFlow(instr, entriesBlock, program.getReferenceManager());
+        fixUpInstruction(instr, entriesBlock, program.getReferenceManager());
       } catch (MemoryAccessException e) {
         monitor.setMessage("Unable to revolve parameters at instruction: " + instr
             .getAddressString(/* display mnemonic */ true, /* pad address if necessary */ true));
@@ -150,7 +150,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
    * @param program
    * @throws MemoryAccessException
    */
-  private void resolveControlFlow(Instruction instr, MemoryBlock entriesBlock,
+  private void fixUpInstruction(Instruction instr, MemoryBlock entriesBlock,
       ReferenceManager referenceManager) throws MemoryAccessException {
     String mnemonic = instr.getMnemonicString();
     int instructionNumber;
@@ -183,7 +183,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
   }
 
   /**
-   * Get the address associated to the instruction number
+   * Get the address in memory associated to the position 'instruction number' in the entries block
    * 
    * @param entriesBlock, the memory block containing the instructions (entries)
    * @param instructionNumber, the instruction number for which the address is needed
