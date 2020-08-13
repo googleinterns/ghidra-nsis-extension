@@ -18,21 +18,21 @@ import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.framework.options.Options;
 import ghidra.program.disassemble.Disassembler;
-import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.listing.FlowOverride;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.InstructionIterator;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
-import ghidra.program.model.symbol.RefType;
-import ghidra.program.model.symbol.ReferenceManager;
-import ghidra.program.model.symbol.SourceType;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
+import nsis.instructions.Call;
+import nsis.instructions.Jmp;
+import nsis.instructions.MessageBox;
+import nsis.instructions.Operation;
+import nsis.instructions.Return;
 
 /**
  * This analyzer finds NSIS bytecode and will try to decompile it into the original NSIS script.
@@ -91,8 +91,10 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 
     for (Instruction instr : instructions) {
       try {
-        resolveStrings(instr, stringsBlock);
-        fixUpInstruction(instr, entriesBlock, program.getReferenceManager());
+        Operation op = toOperationType(instr);
+        if (op != null) {
+          op.fixUp(program.getReferenceManager(), instr, stringsBlock, entriesBlock);
+        }
       } catch (MemoryAccessException e) {
         monitor.setMessage("Unable to revolve parameters at instruction: " + instr
             .getAddressString(/* display mnemonic */ true, /* pad address if necessary */ true));
@@ -100,6 +102,29 @@ public class NsisAnalyzer extends AbstractAnalyzer {
     }
 
     return true;
+  }
+
+  /**
+   * Returns the Operation object associated with the given instruction. The association is made
+   * with the opcode of the instruction.
+   * 
+   * @param instruction to create the Operation object with
+   * @return the Operation object associated to the instruction
+   * @throws MemoryAccessException
+   */
+  private Operation toOperationType(Instruction instr) throws MemoryAccessException {
+    switch (instr.getInt(0)) {
+      case Return.OPCODE:
+        return new Return();
+      case Jmp.OPCODE:
+        return new Jmp();
+      case Call.OPCODE:
+        return new Call();
+      case MessageBox.OPCODE:
+        return new MessageBox();
+      default:
+        return null;
+    }
   }
 
   /**
@@ -117,81 +142,6 @@ public class NsisAnalyzer extends AbstractAnalyzer {
     AddressSet entriesAddrSet = new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd());
     return disassembler.disassemble(entriesAddrSet.getMinAddress(), entriesAddrSet,
         /* follow flow */ true);
-  }
-
-  /**
-   * Resolve strings for the specified instruction.
-   * 
-   * @param instr the instruction
-   * @param stringsBlock the memory block containing the strings
-   * @throws MemoryAccessException
-   */
-  private void resolveStrings(Instruction instr, MemoryBlock stringsBlock)
-      throws MemoryAccessException {
-    String mnemonic = instr.getMnemonicString();
-    switch (mnemonic) {
-      case "MessageBox":
-        Address parameterAddr =
-            stringsBlock.getStart().add(instr.getInt(NsisConstants.ARG2_OFFSET));
-        instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
-            SourceType.ANALYSIS);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Resolve the control flow for the specified instruction
-   * 
-   * @param instr the instruction
-   * @param entriesBlock the memory block containing the instructions
-   * @param program
-   * @throws MemoryAccessException
-   */
-  private void fixUpInstruction(Instruction instr, MemoryBlock entriesBlock,
-      ReferenceManager referenceManager) throws MemoryAccessException {
-    String mnemonic = instr.getMnemonicString();
-    int instructionNumber;
-    switch (mnemonic) {
-      case "Call":
-        instr.setFlowOverride(FlowOverride.CALL);
-        instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
-        referenceManager.addMemoryReference(instr.getAddress(),
-            getInstructionAddress(entriesBlock, instructionNumber), RefType.UNCONDITIONAL_CALL,
-            SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
-        break;
-
-      case "Jmp":
-        instr.setFlowOverride(FlowOverride.BRANCH);
-        instructionNumber = instr.getInt(NsisConstants.ARG1_OFFSET);
-        referenceManager.addMemoryReference(instr.getAddress(),
-            getInstructionAddress(entriesBlock, instructionNumber), RefType.UNCONDITIONAL_JUMP,
-            SourceType.ANALYSIS, NsisConstants.ARG1_INDEX);
-        instr.setFallThrough(null);
-        break;
-
-      case "Return":
-        instr.setFlowOverride(FlowOverride.CALL_RETURN);
-        instr.setFallThrough(null);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  /**
-   * Get the address in memory associated to the position 'instruction number' in the entries block
-   * 
-   * @param entriesBlock, the memory block containing the instructions (entries)
-   * @param instructionNumber, the instruction number for which the address is needed
-   * @return the address associated to that instruction
-   */
-  private Address getInstructionAddress(MemoryBlock entriesBlock, int instructionNumber) {
-    long instructionOffset = (instructionNumber - 1) * NsisConstants.INSTRUCTION_BYTE_LENGTH;
-    return entriesBlock.getStart().add(instructionOffset);
   }
 
 }
