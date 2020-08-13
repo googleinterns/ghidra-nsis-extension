@@ -22,6 +22,7 @@ import nsis.format.NsisBlockHeader;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisLangTables;
 import nsis.format.NsisPage;
 import nsis.format.NsisSection;
 import nsis.format.NsisStrings;
@@ -45,6 +46,7 @@ public class NsisExecutable {
   private NsisSection[] sections;
   private NsisEntry[] entries;
   private NsisStrings strings;
+  private NsisLangTables langTables;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -107,6 +109,9 @@ public class NsisExecutable {
       this.strings = new NsisStrings(blockReader,
           this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset(),
           this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset());
+      this.langTables = new NsisLangTables(blockReader,
+          this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
+          this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
     }
   }
 
@@ -313,6 +318,16 @@ public class NsisExecutable {
   }
 
   /**
+   * Get the offset of the langTables section.
+   * 
+   * @return
+   */
+  public int getLangTablesOffset() {
+    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
+        .getOffset();
+  }
+
+  /**
    * Get the number of pages in the Nsis executable
    * 
    * @return the number of pages
@@ -377,5 +392,14 @@ public class NsisExecutable {
    */
   public int getStringsSectionSize() {
     return this.strings.getStringsSectionLength();
+  }
+
+  /**
+   * Get the size of the langTables section of the NSIS executable
+   * 
+   * @return
+   */
+  public int getLangTablesSectionSize() {
+    return this.langTables.getLangTablesSectionLength();
   }
 }
