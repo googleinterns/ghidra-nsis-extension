@@ -91,7 +91,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 
     for (Instruction instr : instructions) {
       try {
-        Operation op = toOperationType(instr);
+        Operation op = toOperation(instr);
         if (op != null) {
           op.fixUp(program.getReferenceManager(), instr, stringsBlock, entriesBlock);
         }
@@ -112,7 +112,7 @@ public class NsisAnalyzer extends AbstractAnalyzer {
    * @return the Operation object associated to the instruction
    * @throws MemoryAccessException
    */
-  private Operation toOperationType(Instruction instr) throws MemoryAccessException {
+  private Operation toOperation(Instruction instr) throws MemoryAccessException {
     switch (instr.getInt(0)) {
       case Return.OPCODE:
         return new Return();
