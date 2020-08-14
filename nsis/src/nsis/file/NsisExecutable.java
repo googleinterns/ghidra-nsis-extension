@@ -20,6 +20,7 @@ import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisControlColors;
 import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisLangTables;
@@ -47,6 +48,7 @@ public class NsisExecutable {
   private NsisEntry[] entries;
   private NsisStrings strings;
   private NsisLangTables langTables;
+  private NsisControlColors ctlColors;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -112,6 +114,9 @@ public class NsisExecutable {
       this.langTables = new NsisLangTables(blockReader,
           this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
           this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
+      this.ctlColors = new NsisControlColors(blockReader,
+          this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset(),
+          this.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal()).getOffset());
     }
   }
 
@@ -328,6 +333,16 @@ public class NsisExecutable {
   }
 
   /**
+   * Get the offset of the ctlColors section.
+   * 
+   * @return
+   */
+  public int getControlColorsOffset() {
+    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal())
+        .getOffset();
+  }
+
+  /**
    * Get the number of pages in the Nsis executable
    * 
    * @return the number of pages
@@ -401,5 +416,14 @@ public class NsisExecutable {
    */
   public int getLangTablesSectionSize() {
     return this.langTables.getLangTablesSectionLength();
+  }
+
+  /**
+   * Get the size of the ctlColors section of the NSIS executable
+   * 
+   * @return
+   */
+  public int getControlColorsSectionSize() {
+    return this.ctlColors.getControlColorsSectionLength();
   }
 }

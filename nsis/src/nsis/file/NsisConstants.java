@@ -25,6 +25,7 @@ public class NsisConstants {
   public static final String ENTRIES_MEMORY_BLOCK_NAME = ".entries";
   public static final String STRINGS_MEMORY_BLOCK_NAME = ".strings";
   public static final String LANGTABLES_MEMORY_BLOCK_NAME = ".langtables";
+  public static final String CONTROL_COLORS_MEMORY_BLOCK_NAME = ".ctlcolors";
 
   // NSIS instruction constants
   public static final int INSTRUCTION_BYTE_LENGTH = 0x1c;

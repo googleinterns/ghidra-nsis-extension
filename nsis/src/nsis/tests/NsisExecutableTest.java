@@ -76,6 +76,9 @@ public class NsisExecutableTest {
 
       // LangTables
       assertEquals(0xc2, ne.getLangTablesSectionSize());
+      
+      // CtlColors
+      assertEquals(0x7da, ne.getControlColorsSectionSize());
     }
   }
 
