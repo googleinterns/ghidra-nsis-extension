@@ -73,6 +73,9 @@ public class NsisExecutableTest {
 
       // Strings
       assertEquals(0x11c, ne.getStringsSectionSize());
+
+      // LangTables
+      assertEquals(0xc2, ne.getLangTablesSectionSize());
     }
   }
 
@@ -125,6 +128,9 @@ public class NsisExecutableTest {
 
       // Strings
       assertEquals(0x11c, ne.getStringsSectionSize());
+
+      // LangTables
+      assertEquals(0xc2, ne.getLangTablesSectionSize());
     }
   }
 
@@ -178,6 +184,9 @@ public class NsisExecutableTest {
 
       // Strings
       assertEquals(0x11c, ne.getStringsSectionSize());
+
+      // LangTables
+      assertEquals(0xc2, ne.getLangTablesSectionSize());
     }
   }
 
@@ -231,6 +240,9 @@ public class NsisExecutableTest {
 
       // Strings
       assertEquals(0x11c, ne.getStringsSectionSize());
+
+      // LangTables
+      assertEquals(0xc2, ne.getLangTablesSectionSize());
     }
   }
 

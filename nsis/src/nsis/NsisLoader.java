@@ -115,6 +115,10 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
         initStringsSection(bodyInputStream, stringsAddress, program, monitor,
             ne.getStringsSectionSize());
 
+        Address langTablesAddress = commonHeaderAddress.add(ne.getLangTablesOffset());
+        initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
+            ne.getLangTablesSectionSize());
+
       }
 
     } catch (Exception e) {
@@ -367,6 +371,34 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
       boolean executePermission = false;
       createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
           NsisConstants.STRINGS_MEMORY_BLOCK_NAME, readPermission, writePermission,
+          executePermission);
+    }
+  }
+
+  /**
+   * Initializes the langTables section and adds the it to the "program Trees" view in Ghidra.
+   * 
+   * @param is
+   * @param startingAddr
+   * @param program
+   * @param monitor
+   * @param sectionLength
+   * @throws LockException
+   * @throws MemoryConflictException
+   * @throws AddressOverflowException
+   * @throws CancelledException
+   * @throws DuplicateNameException
+   */
+  private void initLangTablesSection(InputStream is, Address startingAddr, Program program,
+      TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+      AddressOverflowException, CancelledException, DuplicateNameException {
+
+    if (sectionLength > 0) {
+      boolean readPermission = true;
+      boolean writePermission = false;
+      boolean executePermission = false;
+      createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
+          NsisConstants.LANGTABLES_MEMORY_BLOCK_NAME, readPermission, writePermission,
           executePermission);
     }
   }

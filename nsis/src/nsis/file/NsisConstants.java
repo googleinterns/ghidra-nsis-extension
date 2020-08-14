@@ -24,6 +24,7 @@ public class NsisConstants {
   public static final String SECTIONS_MEMORY_BLOCK_NAME = ".section_headers";
   public static final String ENTRIES_MEMORY_BLOCK_NAME = ".entries";
   public static final String STRINGS_MEMORY_BLOCK_NAME = ".strings";
+  public static final String LANGTABLES_MEMORY_BLOCK_NAME = ".langtables";
 
   // NSIS instruction constants
   public static final int INSTRUCTION_BYTE_LENGTH = 0x1c;
