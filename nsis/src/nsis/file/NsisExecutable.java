@@ -102,11 +102,11 @@ public class NsisExecutable {
       BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider,
           NsisConstants.IS_LITTLE_ENDIAN);
       this.commonHeader = new NsisCommonHeader(blockReader);
-      blockReader.setPointerIndex(this.getPagesOffset());
+      blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
       this.pages = getPages(blockReader);
-      blockReader.setPointerIndex(this.getSectionsOffset());
+      blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.SECTIONS));
       this.sections = getSections(blockReader);
-      blockReader.setPointerIndex(this.getEntriesOffset());
+      blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
       this.entries = getEntries(blockReader);
       initStrings(blockReader);
       initLangTables(blockReader);
@@ -180,7 +180,7 @@ public class NsisExecutable {
    * @param reader
    */
   private void initStrings(BinaryReader reader) {
-    reader.setPointerIndex(this.getStringsOffset());
+    reader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.STRINGS));
     long stringsSectionLength = getSectionSizeFromOffsets(
         this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset(),
         this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset());
@@ -194,7 +194,7 @@ public class NsisExecutable {
    * @param reader
    */
   private void initLangTables(BinaryReader reader) {
-    reader.setPointerIndex(this.getLangTablesOffset());
+    reader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.LANGTABLES));
     long langTablesSectionLength = getSectionSizeFromOffsets(
         this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
         this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
@@ -304,53 +304,13 @@ public class NsisExecutable {
   }
 
   /**
-   * Get the offset of the Pages section.
+   * Get the offset of the given section
    * 
+   * @param section
    * @return
    */
-  public int getPagesOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the Section headers section.
-   * 
-   * @return
-   */
-  public int getSectionsOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the Entries section.
-   * 
-   * @return
-   */
-  public int getEntriesOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the Strings section.
-   * 
-   * @return
-   */
-  public int getStringsOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the langTables section.
-   * 
-   * @return
-   */
-  public int getLangTablesOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
-        .getOffset();
+  public int getSectionOffset(NsisConstants.BlockHeaderType section) {
+    return this.commonHeader.getBlockHeader(section.ordinal()).getOffset();
   }
 
   /**

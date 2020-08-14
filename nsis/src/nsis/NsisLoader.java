@@ -100,22 +100,27 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
         Address commonHeaderAddress = firstHeaderAddress.add(NsisFirstHeader.getHeaderSize());
         initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
 
-        Address pagesSectionAddress = commonHeaderAddress.add(ne.getPagesOffset());
+        Address pagesSectionAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
         initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor, ne.getNumPages());
 
-        Address sectionHeadersAddress = commonHeaderAddress.add(ne.getSectionsOffset());
+        Address sectionHeadersAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.SECTIONS));
         initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
             ne.getNumSections());
 
-        Address entriesSectionAddress = commonHeaderAddress.add(ne.getEntriesOffset());
+        Address entriesSectionAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
         initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
             ne.getNumEntries());
 
-        Address stringsAddress = commonHeaderAddress.add(ne.getStringsOffset());
+        Address stringsAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.STRINGS));
         initStringsSection(bodyInputStream, stringsAddress, program, monitor,
             ne.getStringsSectionSize());
 
-        Address langTablesAddress = commonHeaderAddress.add(ne.getLangTablesOffset());
+        Address langTablesAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.LANGTABLES));
         initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
             ne.getLangTablesSectionSize());
 
