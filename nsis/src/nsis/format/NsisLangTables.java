@@ -3,7 +3,7 @@ package nsis.format;
 import ghidra.app.util.bin.BinaryReader;
 
 public class NsisLangTables {
-  private int sectionLength;
+  private long sectionLength;
 
   /**
    * When creating a NsisLangTables object, the pointer of the reader is advanced to the end of the
@@ -13,12 +13,12 @@ public class NsisLangTables {
    * @param sectionStartOffset
    * @param sectionEndOffset
    */
-  public NsisLangTables(BinaryReader reader, int sectionStartOffset, int sectionEndOffset) {
-    this.sectionLength = sectionEndOffset - sectionStartOffset;
+  public NsisLangTables(BinaryReader reader, long sectionLength) {
+    this.sectionLength = sectionLength;
     reader.setPointerIndex(reader.getPointerIndex() + this.sectionLength);
   }
 
-  public int getLangTablesSectionLength() {
+  public long getLangTablesSectionLength() {
     return this.sectionLength;
   }
 }

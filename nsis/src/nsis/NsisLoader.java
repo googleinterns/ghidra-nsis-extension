@@ -167,7 +167,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws LockException
    */
   private void createGhidraMemoryBlock(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int size, String blockName, boolean readPermission,
+      TaskMonitor monitor, long size, String blockName, boolean readPermission,
       boolean writePermission, boolean executePermission)
       throws LockException, MemoryConflictException, AddressOverflowException, CancelledException,
       DuplicateNameException {
@@ -362,7 +362,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws DuplicateNameException
    */
   private void initStringsSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
       AddressOverflowException, CancelledException, DuplicateNameException {
 
     if (sectionLength > 0) {
@@ -390,7 +390,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws DuplicateNameException
    */
   private void initLangTablesSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
       AddressOverflowException, CancelledException, DuplicateNameException {
 
     if (sectionLength > 0) {
