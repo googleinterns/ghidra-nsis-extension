@@ -47,6 +47,7 @@ public class NsisExecutable {
   private NsisEntry[] entries;
   private NsisStrings strings;
   private NsisLangTables langTables;
+  private long crcSignatureOffset;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -92,6 +93,8 @@ public class NsisExecutable {
   private void initNsisExecutable(GenericFactory factory)
       throws IOException, InvalidFormatException {
     initFirstHeader();
+    this.crcSignatureOffset =
+        this.headerOffset + (this.firstHeader.archiveSize - NsisConstants.NSIS_CRC_LENGTH);
     this.decompressionProvider = getDecompressionProvider();
     try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
       ByteProvider blockDataByteProvider =
