@@ -100,22 +100,27 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
         Address commonHeaderAddress = firstHeaderAddress.add(NsisFirstHeader.getHeaderSize());
         initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
 
-        Address pagesSectionAddress = commonHeaderAddress.add(ne.getPagesOffset());
+        Address pagesSectionAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
         initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor, ne.getNumPages());
 
-        Address sectionHeadersAddress = commonHeaderAddress.add(ne.getSectionsOffset());
+        Address sectionHeadersAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.SECTIONS));
         initSectionHeaders(bodyInputStream, sectionHeadersAddress, program, monitor,
             ne.getNumSections());
 
-        Address entriesSectionAddress = commonHeaderAddress.add(ne.getEntriesOffset());
+        Address entriesSectionAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
         initEntriesSection(bodyInputStream, entriesSectionAddress, program, monitor,
             ne.getNumEntries());
 
-        Address stringsAddress = commonHeaderAddress.add(ne.getStringsOffset());
+        Address stringsAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.STRINGS));
         initStringsSection(bodyInputStream, stringsAddress, program, monitor,
             ne.getStringsSectionSize());
 
-        Address langTablesAddress = commonHeaderAddress.add(ne.getLangTablesOffset());
+        Address langTablesAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.LANGTABLES));
         initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
             ne.getLangTablesSectionSize());
 
@@ -167,7 +172,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws LockException
    */
   private void createGhidraMemoryBlock(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int size, String blockName, boolean readPermission,
+      TaskMonitor monitor, long size, String blockName, boolean readPermission,
       boolean writePermission, boolean executePermission)
       throws LockException, MemoryConflictException, AddressOverflowException, CancelledException,
       DuplicateNameException {
@@ -362,7 +367,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws DuplicateNameException
    */
   private void initStringsSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
       AddressOverflowException, CancelledException, DuplicateNameException {
 
     if (sectionLength > 0) {
@@ -390,7 +395,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws DuplicateNameException
    */
   private void initLangTablesSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
       AddressOverflowException, CancelledException, DuplicateNameException {
 
     if (sectionLength > 0) {

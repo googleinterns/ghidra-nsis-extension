@@ -47,6 +47,7 @@ public class NsisExecutable {
   private NsisEntry[] entries;
   private NsisStrings strings;
   private NsisLangTables langTables;
+  private long crcSignatureOffset;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -92,6 +93,8 @@ public class NsisExecutable {
   private void initNsisExecutable(GenericFactory factory)
       throws IOException, InvalidFormatException {
     initFirstHeader();
+    this.crcSignatureOffset =
+        this.headerOffset + (this.firstHeader.archiveSize - NsisConstants.NSIS_CRC_LENGTH);
     this.decompressionProvider = getDecompressionProvider();
     try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
       ByteProvider blockDataByteProvider =
@@ -99,19 +102,14 @@ public class NsisExecutable {
       BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider,
           NsisConstants.IS_LITTLE_ENDIAN);
       this.commonHeader = new NsisCommonHeader(blockReader);
-      blockReader.setPointerIndex(this.getPagesOffset());
+      blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
       this.pages = getPages(blockReader);
-      blockReader.setPointerIndex(this.getSectionsOffset());
+      blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.SECTIONS));
       this.sections = getSections(blockReader);
-      blockReader.setPointerIndex(this.getEntriesOffset());
+      blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
       this.entries = getEntries(blockReader);
-      blockReader.setPointerIndex(this.getStringsOffset());
-      this.strings = new NsisStrings(blockReader,
-          this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset(),
-          this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset());
-      this.langTables = new NsisLangTables(blockReader,
-          this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
-          this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
+      initStrings(blockReader);
+      initLangTables(blockReader);
     }
   }
 
@@ -173,6 +171,34 @@ public class NsisExecutable {
       entries[i] = new NsisEntry(reader);
     }
     return entries;
+  }
+
+  /**
+   * Initializes the strings section. After passing through this function, the BinaryReader's index
+   * will be at the end of the strings section.
+   * 
+   * @param reader
+   */
+  private void initStrings(BinaryReader reader) {
+    reader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.STRINGS));
+    long stringsSectionLength = getSectionSizeFromOffsets(
+        this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset(),
+        this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset());
+    this.strings = new NsisStrings(reader, stringsSectionLength);
+  }
+
+  /**
+   * Initializes the langTables section. After passing through this function, the BinaryReader's
+   * index will be at the end of the langTables section.
+   * 
+   * @param reader
+   */
+  private void initLangTables(BinaryReader reader) {
+    reader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.LANGTABLES));
+    long langTablesSectionLength = getSectionSizeFromOffsets(
+        this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
+        this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
+    this.langTables = new NsisLangTables(reader, langTablesSectionLength);
   }
 
   private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -278,53 +304,13 @@ public class NsisExecutable {
   }
 
   /**
-   * Get the offset of the Pages section.
+   * Get the offset of the given section
    * 
+   * @param section
    * @return
    */
-  public int getPagesOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.PAGES.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the Section headers section.
-   * 
-   * @return
-   */
-  public int getSectionsOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.SECTIONS.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the Entries section.
-   * 
-   * @return
-   */
-  public int getEntriesOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.ENTRIES.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the Strings section.
-   * 
-   * @return
-   */
-  public int getStringsOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal())
-        .getOffset();
-  }
-
-  /**
-   * Get the offset of the langTables section.
-   * 
-   * @return
-   */
-  public int getLangTablesOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal())
-        .getOffset();
+  public int getSectionOffset(NsisConstants.BlockHeaderType section) {
+    return this.commonHeader.getBlockHeader(section.ordinal()).getOffset();
   }
 
   /**
@@ -390,7 +376,7 @@ public class NsisExecutable {
    * 
    * @return
    */
-  public int getStringsSectionSize() {
+  public long getStringsSectionSize() {
     return this.strings.getStringsSectionLength();
   }
 
@@ -399,7 +385,27 @@ public class NsisExecutable {
    * 
    * @return
    */
-  public int getLangTablesSectionSize() {
+  public long getLangTablesSectionSize() {
     return this.langTables.getLangTablesSectionLength();
+  }
+
+  /**
+   * Get the section size from the section's start offset and the next section's start offset. If
+   * the next section's start offset is 0, it calculates the size using the CRC signature offset,
+   * meaning that the section is the last section of the file before the CRC bytes. If the current
+   * section offset is 0, the section is not initialized so the returned size will be 0.
+   * 
+   * @param currentSectionStartOffset, the start offset of the section to calculate the size of
+   * @param nextSectionStartOffset, the start offset of the next section. This valus should be 0 if
+   *        there is no next section.
+   * @return the size of the current section
+   */
+  private long getSectionSizeFromOffsets(int currentSectionOffset, int nextSectionOffset) {
+    if (currentSectionOffset == 0) {
+      return 0;
+    } else if (nextSectionOffset == 0) {
+      return this.crcSignatureOffset - currentSectionOffset; // Last section of the file
+    }
+    return nextSectionOffset - currentSectionOffset;
   }
 }
