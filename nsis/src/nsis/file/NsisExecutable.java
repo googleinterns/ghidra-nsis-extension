@@ -430,7 +430,7 @@ public class NsisExecutable {
     if (currentSectionOffset == 0) {
       return 0;
     } else if (nextSectionOffset == 0) {
-      return this.firstHeader.inflatedHeaderSize - currentSectionOffset;
+      return this.firstHeader.inflatedHeaderSize - currentSectionOffset; // Last section of the file
     }
     return nextSectionOffset - currentSectionOffset;
   }
