@@ -427,8 +427,10 @@ public class NsisExecutable {
    * @return the size of the current section
    */
   private long getSectionSizeFromOffsets(int currentSectionOffset, int nextSectionOffset) {
-    if (currentSectionOffset == 0 || currentSectionOffset == this.firstHeader.inflatedHeaderSize) {
+    if (currentSectionOffset == 0) {
       return 0;
+    } else if (nextSectionOffset == 0) {
+      return this.firstHeader.inflatedHeaderSize - currentSectionOffset;
     }
     return nextSectionOffset - currentSectionOffset;
   }
