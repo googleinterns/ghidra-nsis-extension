@@ -112,9 +112,7 @@ public class NsisExecutable {
       this.entries = getEntries(blockReader);
       initStrings(blockReader);
       initLangTables(blockReader);
-      this.ctlColors = new NsisControlColors(blockReader,
-          this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset(),
-          this.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal()).getOffset());
+      initCtlColors(blockReader);
     }
   }
 
@@ -204,6 +202,20 @@ public class NsisExecutable {
         this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
         this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
     this.langTables = new NsisLangTables(reader, langTablesSectionLength);
+  }
+
+  /**
+   * Initializes the ctlColors section. After passing through this function, the BinaryReader's
+   * index will be at the end of the ctlColors section.
+   * 
+   * @param reader
+   */
+  private void initCtlColors(BinaryReader reader) {
+    reader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
+    long ctlColorsSectionLength = getSectionSizeFromOffsets(
+        this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset(),
+        this.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal()).getOffset());
+    this.ctlColors = new NsisControlColors(reader, ctlColorsSectionLength);
   }
 
   private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -399,7 +411,7 @@ public class NsisExecutable {
    * 
    * @return
    */
-  public int getControlColorsSectionSize() {
+  public long getControlColorsSectionSize() {
     return this.ctlColors.getControlColorsSectionLength();
   }
 

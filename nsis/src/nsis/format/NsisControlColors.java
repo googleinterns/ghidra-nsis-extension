@@ -3,7 +3,7 @@ package nsis.format;
 import ghidra.app.util.bin.BinaryReader;
 
 public class NsisControlColors {
-  private int sectionLength;
+  private long sectionLength;
 
   /**
    * When creating a NsisControlColors object, the pointer of the reader is advanced to the end of
@@ -13,12 +13,12 @@ public class NsisControlColors {
    * @param sectionStartOffset
    * @param sectionEndOffset
    */
-  public NsisControlColors(BinaryReader reader, int sectionStartOffset, int sectionEndOffset) {
-    this.sectionLength = Math.abs(sectionEndOffset - sectionStartOffset);
+  public NsisControlColors(BinaryReader reader, long sectionLength) {
+    this.sectionLength = sectionLength;
     reader.setPointerIndex(reader.getPointerIndex() + this.sectionLength);
   }
 
-  public int getControlColorsSectionLength() {
+  public long getControlColorsSectionLength() {
     return this.sectionLength;
   }
 }

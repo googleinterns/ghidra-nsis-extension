@@ -427,7 +427,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws DuplicateNameException
    */
   private void initCtlColorsSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, int sectionLength) throws LockException, MemoryConflictException,
+      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
       AddressOverflowException, CancelledException, DuplicateNameException {
 
     if (sectionLength > 0) {
