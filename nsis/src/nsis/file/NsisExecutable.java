@@ -39,17 +39,17 @@ public class NsisExecutable {
   public static final int FLAG_IS_COMPRESSED = 0x80000000;
 
   private BinaryReader reader;
+  private long headerOffset;
+  private long crcSignatureOffset;
   private NsisDecompressionProvider decompressionProvider;
   private NsisFirstHeader firstHeader;
   private NsisCommonHeader commonHeader;
   private NsisPage[] pages;
-  private long headerOffset;
   private NsisSection[] sections;
   private NsisEntry[] entries;
   private NsisStrings strings;
   private NsisLangTables langTables;
   private NsisControlColors ctlColors;
-  private long crcSignatureOffset;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -427,10 +427,8 @@ public class NsisExecutable {
    * @return the size of the current section
    */
   private long getSectionSizeFromOffsets(int currentSectionOffset, int nextSectionOffset) {
-    if (currentSectionOffset == 0) {
+    if (currentSectionOffset == 0 || currentSectionOffset == this.firstHeader.inflatedHeaderSize) {
       return 0;
-    } else if (nextSectionOffset == 0) {
-      return this.crcSignatureOffset - currentSectionOffset; // Last section of the file
     }
     return nextSectionOffset - currentSectionOffset;
   }
