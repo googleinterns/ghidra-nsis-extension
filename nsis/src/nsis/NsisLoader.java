@@ -124,7 +124,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
         initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
             ne.getLangTablesSectionSize());
 
-        Address ctlColorsAddress = commonHeaderAddress.add(ne.getControlColorsOffset());
+        Address ctlColorsAddress = commonHeaderAddress
+            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
         initCtlColorsSection(bodyInputStream, ctlColorsAddress, program, monitor,
             ne.getControlColorsSectionSize());
       }

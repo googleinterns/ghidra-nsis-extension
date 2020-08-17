@@ -48,11 +48,8 @@ public class NsisExecutable {
   private NsisEntry[] entries;
   private NsisStrings strings;
   private NsisLangTables langTables;
-<<<<<<< HEAD
   private NsisControlColors ctlColors;
-=======
   private long crcSignatureOffset;
->>>>>>> origin/master
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -113,21 +110,11 @@ public class NsisExecutable {
       this.sections = getSections(blockReader);
       blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
       this.entries = getEntries(blockReader);
-<<<<<<< HEAD
-      blockReader.setPointerIndex(this.getStringsOffset());
-      this.strings = new NsisStrings(blockReader,
-          this.getBlockHeader(NsisConstants.BlockHeaderType.STRINGS.ordinal()).getOffset(),
-          this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset());
-      this.langTables = new NsisLangTables(blockReader,
-          this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
-          this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
+      initStrings(blockReader);
+      initLangTables(blockReader);
       this.ctlColors = new NsisControlColors(blockReader,
           this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset(),
           this.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal()).getOffset());
-=======
-      initStrings(blockReader);
-      initLangTables(blockReader);
->>>>>>> origin/master
     }
   }
 
@@ -332,16 +319,6 @@ public class NsisExecutable {
   }
 
   /**
-   * Get the offset of the ctlColors section.
-   * 
-   * @return
-   */
-  public int getControlColorsOffset() {
-    return this.commonHeader.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal())
-        .getOffset();
-  }
-
-  /**
    * Get the number of pages in the Nsis executable
    * 
    * @return the number of pages
@@ -418,14 +395,15 @@ public class NsisExecutable {
   }
 
   /**
-<<<<<<< HEAD
    * Get the size of the ctlColors section of the NSIS executable
    * 
    * @return
    */
   public int getControlColorsSectionSize() {
     return this.ctlColors.getControlColorsSectionLength();
-=======
+  }
+
+  /**
    * Get the section size from the section's start offset and the next section's start offset. If
    * the next section's start offset is 0, it calculates the size using the CRC signature offset,
    * meaning that the section is the last section of the file before the CRC bytes. If the current
@@ -443,6 +421,5 @@ public class NsisExecutable {
       return this.crcSignatureOffset - currentSectionOffset; // Last section of the file
     }
     return nextSectionOffset - currentSectionOffset;
->>>>>>> origin/master
   }
 }
