@@ -1,5 +1,7 @@
 **This is not an officially supported Google product.**
 
+Build status: ![Java CI with Gradle](https://github.com/googleinterns/ghidra-nsis-extension/workflows/Java%20CI%20with%20Gradle/badge.svg)
+
 This extension supports Nullsoft Scriptable Install System (NSIS) binaries built using the NSIS builder available from https://nsis.sourceforge.io/
 
 # Loading Extension into Eclipse for Development
