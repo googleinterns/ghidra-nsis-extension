@@ -7,15 +7,18 @@ public class NsisConstants {
       {'N', 'u', 'l', 'l', 's', 'o', 'f', 't', 'I', 'n', 's', 't'};
   public static final int NSIS_MAX_STRLEN = 1024;
   public static final int NSIS_MAX_INST_TYPES = 32;
-  public static final byte COMPRESSION_LZMA = 0x5d;
-  public static final byte COMPRESSION_BZIP2 = 0x31;
-  public static final int COMPRESSION_LZMA_HEADER_LENGTH = 5;
-
+  public static final int NSIS_CRC_LENGTH = 4;
+  
   // The order of the blocks is important as their ordinal value corresponds to
   // their position in the NsisCommonHeader
   public enum BlockHeaderType {
     PAGES, SECTIONS, ENTRIES, STRINGS, LANGTABLES, CONTROL_COLORS, BACKGROUND_FONT, DATA
   }
+  
+  // Compression related constants
+  public static final byte COMPRESSION_LZMA = 0x5d;
+  public static final byte COMPRESSION_BZIP2 = 0x31;
+  public static final int COMPRESSION_LZMA_HEADER_LENGTH = 5;
 
   // Ghidra memory block names
   public static final String FIRST_HEADER_MEMORY_BLOCK_NAME = ".first_header";
