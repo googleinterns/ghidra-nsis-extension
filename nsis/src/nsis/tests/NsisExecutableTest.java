@@ -76,9 +76,9 @@ public class NsisExecutableTest {
 
       // LangTables
       assertEquals(0xc2, ne.getLangTablesSectionSize());
-      
+
       // CtlColors
-      assertEquals(0x7da, ne.getControlColorsSectionSize());
+      assertEquals(0x8e20, ne.getControlColorsSectionSize());
     }
   }
 
@@ -134,6 +134,9 @@ public class NsisExecutableTest {
 
       // LangTables
       assertEquals(0xc2, ne.getLangTablesSectionSize());
+
+      // CtlColors
+      assertEquals(0x81b1, ne.getControlColorsSectionSize());
     }
   }
 
@@ -190,6 +193,9 @@ public class NsisExecutableTest {
 
       // LangTables
       assertEquals(0xc2, ne.getLangTablesSectionSize());
+
+      // CtlColors
+      assertEquals(0x8e20, ne.getControlColorsSectionSize());
     }
   }
 
@@ -246,6 +252,9 @@ public class NsisExecutableTest {
 
       // LangTables
       assertEquals(0xc2, ne.getLangTablesSectionSize());
+
+      // CtlColors
+      assertEquals(0x8e20, ne.getControlColorsSectionSize());
     }
   }
 
