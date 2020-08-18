@@ -21,6 +21,7 @@ import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisCommonHeader;
 import nsis.format.NsisControlColors;
+import nsis.format.NsisCrc;
 import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisLangTables;
@@ -50,6 +51,7 @@ public class NsisExecutable {
   private NsisStrings strings;
   private NsisLangTables langTables;
   private NsisControlColors ctlColors;
+  private NsisCrc crc;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -113,6 +115,7 @@ public class NsisExecutable {
       initStrings(blockReader);
       initLangTables(blockReader);
       initCtlColors(blockReader);
+      initCrc();
     }
   }
 
@@ -232,6 +235,17 @@ public class NsisExecutable {
   }
 
   /**
+   * Initializes the CRC signature bytes. After passing through this function, the binary reader's
+   * index will be at the beginning of the CRC.
+   * 
+   * @throws IOException
+   */
+  private void initCrc() throws IOException {
+    this.reader.setPointerIndex(this.crcSignatureOffset);
+    this.crc = new NsisCrc(this.reader);
+  }
+
+  /**
    * Initializes the script header.
    * 
    * @throws IOException
@@ -284,6 +298,10 @@ public class NsisExecutable {
 
   public long getHeaderOffset() {
     return this.headerOffset;
+  }
+
+  public long getCrcOffset() {
+    return this.crcSignatureOffset;
   }
 
   public int getInflatedHeaderSize() {

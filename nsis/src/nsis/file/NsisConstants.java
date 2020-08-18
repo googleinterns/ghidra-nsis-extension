@@ -8,13 +8,13 @@ public class NsisConstants {
   public static final int NSIS_MAX_STRLEN = 1024;
   public static final int NSIS_MAX_INST_TYPES = 32;
   public static final int NSIS_CRC_LENGTH = 4;
-  
+
   // The order of the blocks is important as their ordinal value corresponds to
   // their position in the NsisCommonHeader
   public enum BlockHeaderType {
     PAGES, SECTIONS, ENTRIES, STRINGS, LANGTABLES, CONTROL_COLORS, BACKGROUND_FONT, DATA
   }
-  
+
   // Compression related constants
   public static final byte COMPRESSION_LZMA = 0x5d;
   public static final byte COMPRESSION_BZIP2 = 0x31;
@@ -29,6 +29,7 @@ public class NsisConstants {
   public static final String STRINGS_MEMORY_BLOCK_NAME = ".strings";
   public static final String LANGTABLES_MEMORY_BLOCK_NAME = ".langtables";
   public static final String CONTROL_COLORS_MEMORY_BLOCK_NAME = ".ctlcolors";
+  public static final String CRC_SIGNATURE_MEMORY_BLOCK_NAME = ".crc";
 
   // NSIS instruction constants
   public static final int INSTRUCTION_BYTE_LENGTH = 0x1c;

@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import generic.continues.GenericFactory;
 import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.Option;
@@ -128,6 +127,12 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
             .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
         initCtlColorsSection(bodyInputStream, ctlColorsAddress, program, monitor,
             ne.getControlColorsSectionSize());
+      }
+
+      try (InputStream crcInputStream = provider.getInputStream(ne.getCrcOffset())) {
+        Address lastSetAddress =
+            program.getMemory().getLoadedAndInitializedAddressSet().getMaxAddress();
+        initCrcSection(crcInputStream, lastSetAddress.add(1), program, monitor);
       }
 
     } catch (Exception e) {
@@ -439,4 +444,31 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
           executePermission);
     }
   }
+
+  /**
+   * Initializes the CRC section and adds the it to the "program Trees" view in Ghidra.
+   * 
+   * @param is
+   * @param startingAddr
+   * @param program
+   * @param monitor
+   * @param sectionLength
+   * @throws LockException
+   * @throws MemoryConflictException
+   * @throws AddressOverflowException
+   * @throws CancelledException
+   * @throws DuplicateNameException
+   */
+  private void initCrcSection(InputStream is, Address startingAddr, Program program,
+      TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException,
+      CancelledException, DuplicateNameException {
+
+    boolean readPermission = true;
+    boolean writePermission = false;
+    boolean executePermission = false;
+    createGhidraMemoryBlock(is, startingAddr, program, monitor, NsisConstants.NSIS_CRC_LENGTH,
+        NsisConstants.CRC_SIGNATURE_MEMORY_BLOCK_NAME, readPermission, writePermission,
+        executePermission);
+  }
+
 }
