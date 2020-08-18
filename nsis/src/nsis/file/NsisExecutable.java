@@ -20,6 +20,7 @@ import nsis.compression.NsisUncompressedProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisControlColors;
 import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisLangTables;
@@ -38,16 +39,17 @@ public class NsisExecutable {
   public static final int FLAG_IS_COMPRESSED = 0x80000000;
 
   private BinaryReader reader;
+  private long headerOffset;
+  private long crcSignatureOffset;
   private NsisDecompressionProvider decompressionProvider;
   private NsisFirstHeader firstHeader;
   private NsisCommonHeader commonHeader;
   private NsisPage[] pages;
-  private long headerOffset;
   private NsisSection[] sections;
   private NsisEntry[] entries;
   private NsisStrings strings;
   private NsisLangTables langTables;
-  private long crcSignatureOffset;
+  private NsisControlColors ctlColors;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -110,6 +112,7 @@ public class NsisExecutable {
       this.entries = getEntries(blockReader);
       initStrings(blockReader);
       initLangTables(blockReader);
+      initCtlColors(blockReader);
     }
   }
 
@@ -199,6 +202,20 @@ public class NsisExecutable {
         this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
         this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
     this.langTables = new NsisLangTables(reader, langTablesSectionLength);
+  }
+
+  /**
+   * Initializes the ctlColors section. After passing through this function, the BinaryReader's
+   * index will be at the end of the ctlColors section.
+   * 
+   * @param reader
+   */
+  private void initCtlColors(BinaryReader reader) {
+    reader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
+    long ctlColorsSectionLength = getSectionSizeFromOffsets(
+        this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset(),
+        this.getBlockHeader(NsisConstants.BlockHeaderType.BACKGROUND_FONT.ordinal()).getOffset());
+    this.ctlColors = new NsisControlColors(reader, ctlColorsSectionLength);
   }
 
   private long findHeaderOffset() throws IOException, InvalidFormatException {
@@ -390,6 +407,15 @@ public class NsisExecutable {
   }
 
   /**
+   * Get the size of the ctlColors section of the NSIS executable
+   * 
+   * @return
+   */
+  public long getControlColorsSectionSize() {
+    return this.ctlColors.getControlColorsSectionLength();
+  }
+
+  /**
    * Get the section size from the section's start offset and the next section's start offset. If
    * the next section's start offset is 0, it calculates the size using the CRC signature offset,
    * meaning that the section is the last section of the file before the CRC bytes. If the current
@@ -404,7 +430,7 @@ public class NsisExecutable {
     if (currentSectionOffset == 0) {
       return 0;
     } else if (nextSectionOffset == 0) {
-      return this.crcSignatureOffset - currentSectionOffset; // Last section of the file
+      return this.firstHeader.inflatedHeaderSize - currentSectionOffset; // Last section of the file
     }
     return nextSectionOffset - currentSectionOffset;
   }

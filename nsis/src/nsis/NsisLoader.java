@@ -124,6 +124,10 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
         initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
             ne.getLangTablesSectionSize());
 
+        Address ctlColorsAddress = commonHeaderAddress
+            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
+        initCtlColorsSection(bodyInputStream, ctlColorsAddress, program, monitor,
+            ne.getControlColorsSectionSize());
       }
 
     } catch (Exception e) {
@@ -408,4 +412,31 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
     }
   }
 
+  /**
+   * Initializes the ctlColors section and adds the it to the "program Trees" view in Ghidra.
+   * 
+   * @param is
+   * @param startingAddr
+   * @param program
+   * @param monitor
+   * @param sectionLength
+   * @throws LockException
+   * @throws MemoryConflictException
+   * @throws AddressOverflowException
+   * @throws CancelledException
+   * @throws DuplicateNameException
+   */
+  private void initCtlColorsSection(InputStream is, Address startingAddr, Program program,
+      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
+      AddressOverflowException, CancelledException, DuplicateNameException {
+
+    if (sectionLength > 0) {
+      boolean readPermission = true;
+      boolean writePermission = false;
+      boolean executePermission = false;
+      createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
+          NsisConstants.CONTROL_COLORS_MEMORY_BLOCK_NAME, readPermission, writePermission,
+          executePermission);
+    }
+  }
 }
