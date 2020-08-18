@@ -5,7 +5,7 @@ import ghidra.app.util.bin.BinaryReader;
 import nsis.file.NsisConstants;
 
 public class NsisCrc {
-  private byte[] crc;
+  private byte[] signature;
 
   /**
    * Creates a NsisCrc object with the reader. The index of the reader has to already be at the
@@ -17,7 +17,7 @@ public class NsisCrc {
    * @throws IOException
    */
   public NsisCrc(BinaryReader reader) throws IOException {
-    this.crc = reader.readNextByteArray(NsisConstants.NSIS_CRC_LENGTH);
+    this.signature = reader.readNextByteArray(NsisConstants.NSIS_CRC_LENGTH);
   }
 
   /**
@@ -25,7 +25,7 @@ public class NsisCrc {
    * 
    * @return
    */
-  public byte[] getCrcBytes() {
-    return this.crc;
+  public byte[] getBytes() {
+    return this.signature;
   }
 }

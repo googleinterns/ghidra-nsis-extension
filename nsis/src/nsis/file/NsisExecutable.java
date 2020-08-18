@@ -452,4 +452,13 @@ public class NsisExecutable {
     }
     return nextSectionOffset - currentSectionOffset;
   }
+
+  /**
+   * Get the CRC bytes of the Nsis executable
+   * 
+   * @return the CRC bytes
+   */
+  public byte[] getCrcBytes() {
+    return this.crc.getBytes();
+  }
 }
