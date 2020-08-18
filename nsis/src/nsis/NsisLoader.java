@@ -49,6 +49,7 @@ import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisCommonHeader;
+import nsis.format.NsisCrc;
 import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
 import nsis.format.NsisPage;
@@ -458,10 +459,11 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @throws AddressOverflowException
    * @throws CancelledException
    * @throws DuplicateNameException
+   * @throws CodeUnitInsertionException
    */
   private void initCrcSection(InputStream is, Address startingAddr, Program program,
       TaskMonitor monitor) throws LockException, MemoryConflictException, AddressOverflowException,
-      CancelledException, DuplicateNameException {
+      CancelledException, DuplicateNameException, CodeUnitInsertionException {
 
     boolean readPermission = true;
     boolean writePermission = false;
@@ -469,6 +471,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
     createGhidraMemoryBlock(is, startingAddr, program, monitor, NsisConstants.NSIS_CRC_LENGTH,
         NsisConstants.CRC_SIGNATURE_MEMORY_BLOCK_NAME, readPermission, writePermission,
         executePermission);
+    createData(program, startingAddr, NsisCrc.STRUCTURE);
   }
 
 }
