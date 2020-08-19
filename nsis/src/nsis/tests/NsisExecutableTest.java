@@ -1,5 +1,6 @@
 package nsis.tests;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -79,6 +80,10 @@ public class NsisExecutableTest {
 
       // CtlColors
       assertEquals(0x0, ne.getControlColorsSectionSize());
+
+      // CRC
+      assertArrayEquals(new byte[] {(byte) 0xb3, (byte) 0x19, (byte) 0x41, (byte) 0x44},
+          ne.getCrcBytes());
     }
   }
 
@@ -137,6 +142,10 @@ public class NsisExecutableTest {
 
       // CtlColors
       assertEquals(0x0, ne.getControlColorsSectionSize());
+
+      // CRC
+      assertArrayEquals(new byte[] {(byte) 0x83, (byte) 0x61, (byte) 0xa1, (byte) 0xaa},
+          ne.getCrcBytes());
     }
   }
 
@@ -196,6 +205,10 @@ public class NsisExecutableTest {
 
       // CtlColors
       assertEquals(0x0, ne.getControlColorsSectionSize());
+
+      // CRC
+      assertArrayEquals(new byte[] {(byte) 0x78, (byte) 0x88, (byte) 0x39, (byte) 0x0a},
+          ne.getCrcBytes());
     }
   }
 
@@ -255,6 +268,10 @@ public class NsisExecutableTest {
 
       // CtlColors
       assertEquals(0x0, ne.getControlColorsSectionSize());
+
+      // CRC
+      assertArrayEquals(new byte[] {(byte) 0x85, (byte) 0x81, (byte) 0x2e, (byte) 0xd0},
+          ne.getCrcBytes());
     }
   }
 
