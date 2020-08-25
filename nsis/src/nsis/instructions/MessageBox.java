@@ -2,6 +2,7 @@ package nsis.instructions;
 
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOutOfBoundsException;
+import ghidra.program.model.listing.FlowOverride;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.mem.MemoryAccessException;
 import ghidra.program.model.mem.MemoryBlock;
@@ -17,6 +18,7 @@ public class MessageBox extends Operation {
   public void fixUp(ReferenceManager referenceManager, Instruction instr, MemoryBlock stringsBlock,
       MemoryBlock entriesBlock) throws AddressOutOfBoundsException, MemoryAccessException {
     resolveStrings(instr, stringsBlock);
+    resolveBranches(instr, entriesBlock, referenceManager);
   }
 
   /**
@@ -32,6 +34,39 @@ public class MessageBox extends Operation {
     Address parameterAddr = stringsBlock.getStart().add(instr.getInt(NsisConstants.ARG2_OFFSET));
     instr.addOperandReference(NsisConstants.ARG2_INDEX, parameterAddr, RefType.PARAM,
         SourceType.ANALYSIS);
+  }
+
+  /**
+   * Resolves the conditional branches
+   * 
+   * @param instr
+   * @param entriesBlock
+   * @param referenceManager
+   * @throws MemoryAccessException
+   */
+  private void resolveBranches(Instruction instr, MemoryBlock entriesBlock,
+      ReferenceManager referenceManager) throws MemoryAccessException {
+    instr.setFlowOverride(FlowOverride.BRANCH);
+
+    int arg4InstructionNumber = instr.getInt(NsisConstants.ARG4_OFFSET);
+
+    if (arg4InstructionNumber != 0) {
+      referenceManager.addMemoryReference(instr.getAddress(),
+          super.getInstructionAddress(entriesBlock, arg4InstructionNumber),
+          RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG4_INDEX);
+    }
+
+    int arg5InstructionNumber = instr.getInt(NsisConstants.ARG5_OFFSET);
+    if (arg5InstructionNumber != 0) {
+      referenceManager.addMemoryReference(instr.getAddress(),
+          super.getInstructionAddress(entriesBlock, arg5InstructionNumber),
+          RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG5_INDEX);
+    }
+
+    if (arg4InstructionNumber != 0 && arg5InstructionNumber != 0) {
+      instr.setFallThrough(null);
+    }
+
   }
 
 }
