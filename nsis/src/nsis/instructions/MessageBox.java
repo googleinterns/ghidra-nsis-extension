@@ -56,14 +56,14 @@ public class MessageBox extends Operation {
           RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG4_INDEX);
     }
 
-    int arg5InstructionNumber = instr.getInt(NsisConstants.ARG5_OFFSET);
-    if (arg5InstructionNumber != 0) {
+    int arg6InstructionNumber = instr.getInt(NsisConstants.ARG6_OFFSET);
+    if (arg6InstructionNumber != 0) {
       referenceManager.addMemoryReference(instr.getAddress(),
-          super.getInstructionAddress(entriesBlock, arg5InstructionNumber),
-          RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG5_INDEX);
+          super.getInstructionAddress(entriesBlock, arg6InstructionNumber),
+          RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG6_INDEX);
     }
 
-    if (arg4InstructionNumber != 0 && arg5InstructionNumber != 0) {
+    if (arg4InstructionNumber != 0 && arg6InstructionNumber != 0) {
       instr.setFallThrough(null);
     }
 
