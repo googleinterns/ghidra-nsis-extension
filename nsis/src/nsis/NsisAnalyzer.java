@@ -34,6 +34,7 @@ import nsis.instructions.MessageBox;
 import nsis.instructions.Operation;
 import nsis.instructions.Return;
 import nsis.instructions.Strcmp;
+import nsis.instructions.UpdateText;
 
 /**
  * This analyzer finds NSIS bytecode and will try to decompile it into the original NSIS script.
@@ -125,6 +126,8 @@ public class NsisAnalyzer extends AbstractAnalyzer {
         return new MessageBox();
       case Strcmp.OPCODE:
         return new Strcmp();
+      case UpdateText.OPCODE:
+        return new UpdateText();
       default:
         return null;
     }

@@ -62,7 +62,7 @@ define token argument6(32)
 :GetTempFilename arg1 arg2 is opcode=0x13 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :ExtractFile arg1 arg2 arg3 arg4 arg5 arg6 is opcode=0x14 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :DeleteFile arg1 arg2 is opcode=0x15 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
-:MessageBox arg1 arg2 arg3 arg4 arg5 is opcode=0x16 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:MessageBox arg1 arg2 arg3 arg4 arg5 arg6 is opcode=0x16 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :RmDir arg1 arg2 is opcode=0x17 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :StrLen arg1 arg2 is opcode=0x18 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :StrCpy arg1 arg2 arg3 arg4 is opcode=0x19 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
