@@ -48,22 +48,22 @@ public class MessageBox extends Operation {
       ReferenceManager referenceManager) throws MemoryAccessException {
     instr.setFlowOverride(FlowOverride.BRANCH);
 
-    int arg4InstructionNumber = instr.getInt(NsisConstants.ARG4_OFFSET);
+    int branchDestination1 = instr.getInt(NsisConstants.ARG4_OFFSET);
 
-    if (arg4InstructionNumber != 0) {
+    if (branchDestination1 != 0) {
       referenceManager.addMemoryReference(instr.getAddress(),
-          super.getInstructionAddress(entriesBlock, arg4InstructionNumber),
-          RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG4_INDEX);
+          super.getInstructionAddress(entriesBlock, branchDestination1), RefType.CONDITIONAL_JUMP,
+          SourceType.ANALYSIS, NsisConstants.ARG4_INDEX);
     }
 
-    int arg6InstructionNumber = instr.getInt(NsisConstants.ARG6_OFFSET);
-    if (arg6InstructionNumber != 0) {
+    int branchDestination2 = instr.getInt(NsisConstants.ARG6_OFFSET);
+    if (branchDestination2 != 0) {
       referenceManager.addMemoryReference(instr.getAddress(),
-          super.getInstructionAddress(entriesBlock, arg6InstructionNumber),
-          RefType.CONDITIONAL_JUMP, SourceType.ANALYSIS, NsisConstants.ARG6_INDEX);
+          super.getInstructionAddress(entriesBlock, branchDestination2), RefType.CONDITIONAL_JUMP,
+          SourceType.ANALYSIS, NsisConstants.ARG6_INDEX);
     }
 
-    if (arg4InstructionNumber != 0 && arg6InstructionNumber != 0) {
+    if (branchDestination1 != 0 && branchDestination2 != 0) {
       instr.setFallThrough(null);
     }
 
