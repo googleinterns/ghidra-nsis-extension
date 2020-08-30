@@ -20,14 +20,16 @@ import nsis.format.InvalidFormatException;
 
 public class NsisExecutableTest {
 
-  private final String pathWithoutCompression = "src/testData/nsis_without_compression.dat";
-  private final String pathWithBzip = "src/testData/nsis_with_bzip.dat";
-  private final String pathWithLZMA = "src/testData/nsis_with_lzma.dat";
-  private final String pathWithZlib = "src/testData/nsis_with_zlib.dat";
+  private final String pathWithoutCompression = "testData/nsis_without_compression.dat";
+  private final String pathWithBzip = "testData/nsis_with_bzip.dat";
+  private final String pathWithLZMA = "testData/nsis_with_lzma.dat";
+  private final String pathWithZlib = "testData/nsis_with_zlib.dat";
 
   @Test
   public void testNsisCreationNotCompressed() throws IOException, InvalidFormatException {
-    try (InputStream binaryInputStream = new FileInputStream(new File(pathWithoutCompression))) {
+    ClassLoader classLoader = getClass().getClassLoader();
+    try (InputStream binaryInputStream = new FileInputStream(
+        new File(classLoader.getResource(pathWithoutCompression).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
           .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
@@ -89,7 +91,9 @@ public class NsisExecutableTest {
 
   @Test
   public void testNsisCreationLZMACompressed() throws IOException, InvalidFormatException {
-    try (InputStream binaryInputStream = new FileInputStream(new File(pathWithLZMA))) {
+    ClassLoader classLoader = getClass().getClassLoader();
+    try (InputStream binaryInputStream = new FileInputStream(
+        new File(classLoader.getResource(pathWithLZMA).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
           .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
@@ -152,7 +156,9 @@ public class NsisExecutableTest {
   @Disabled
   @Test
   public void testNsisCreationZlibCompressed() throws IOException, InvalidFormatException {
-    try (InputStream binaryInputStream = new FileInputStream(new File(pathWithZlib))) {
+    ClassLoader classLoader = getClass().getClassLoader();
+    try (InputStream binaryInputStream = new FileInputStream(
+        new File(classLoader.getResource(pathWithZlib).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
           .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
@@ -215,7 +221,9 @@ public class NsisExecutableTest {
   @Disabled
   @Test
   public void testNsisCreationBzipCompressed() throws IOException, InvalidFormatException {
-    try (InputStream binaryInputStream = new FileInputStream(new File(pathWithBzip))) {
+    ClassLoader classLoader = getClass().getClassLoader();
+    try (InputStream binaryInputStream = new FileInputStream(
+        new File(classLoader.getResource(pathWithBzip).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
           .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
