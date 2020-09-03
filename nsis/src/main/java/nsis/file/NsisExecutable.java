@@ -14,6 +14,7 @@ import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
+import nsis.compression.NsisBzipProvider;
 import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
@@ -279,11 +280,10 @@ public class NsisExecutable {
             new NsisLZMAProvider(compressedBytesProvider, compressionByte, dictionarySize);
         return decompressionProvider;
       } else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
-        // TODO Bzip2 decompress
-        System.out.println("Decompress Bzip");
-        ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
-            this.reader.getPointerIndex(), this.firstHeader.compressedHeaderSize);
-        return new NsisUncompressedProvider(uncompressedBytes);
+        int compressedDataLength = this.firstHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED;
+        ByteProvider compressedBytesProvider = new ByteProviderWrapper(this.reader.getByteProvider(),
+            this.reader.getPointerIndex(), compressedDataLength);
+        return new NsisBzipProvider(compressedBytesProvider);
       } else {
         int compressedDataLength = this.firstHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED;
         ByteProvider compressedBytesProvider = new ByteProviderWrapper(
