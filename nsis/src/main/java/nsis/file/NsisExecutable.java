@@ -17,6 +17,7 @@ import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import nsis.compression.NsisDecompressionProvider;
 import nsis.compression.NsisLZMAProvider;
 import nsis.compression.NsisUncompressedProvider;
+import nsis.compression.NsisZlibProvider;
 import nsis.format.InvalidFormatException;
 import nsis.format.NsisBlockHeader;
 import nsis.format.NsisCommonHeader;
@@ -283,12 +284,11 @@ public class NsisExecutable {
         ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
             this.reader.getPointerIndex(), this.firstHeader.compressedHeaderSize);
         return new NsisUncompressedProvider(uncompressedBytes);
-      } else {// TODO find a was to identify Zlib compressed
-        // TODO Zlib decompress
-        System.out.println("Decompress Zlib");
-        ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
-            this.reader.getPointerIndex(), this.firstHeader.compressedHeaderSize);
-        return new NsisUncompressedProvider(uncompressedBytes);
+      } else {
+        int compressedDataLength = this.firstHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED;
+        ByteProvider compressedBytesProvider = new ByteProviderWrapper(
+            this.reader.getByteProvider(), this.reader.getPointerIndex(), compressedDataLength);
+        return new NsisZlibProvider(compressedBytesProvider);
       }
     }
     ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),

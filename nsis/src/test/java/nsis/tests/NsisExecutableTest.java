@@ -153,7 +153,6 @@ public class NsisExecutableTest {
     }
   }
 
-  @Disabled
   @Test
   public void testNsisCreationZlibCompressed() throws IOException, InvalidFormatException {
     ClassLoader classLoader = getClass().getClassLoader();
