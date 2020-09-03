@@ -37,9 +37,17 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+  localDeps
+}
+
 dependencies {
 	testImplementation('org.junit.jupiter:junit-jupiter-api:5.6.0')
 	testRuntime('org.junit.jupiter:junit-jupiter-engine:5.6.0')
+	localDeps group:'org.tukaani', name:'xz', version:'1.8'
+	compile (
+	  configurations.localDeps
+	)
 }
 
 test {
@@ -55,10 +63,10 @@ test {
 	}
 }
 
-sourceSets {
-	test {
-		java {
-			srcDirs = ["src/nsis"]
-		}
-	}
+task copyLibs(type: Copy) {
+    from configurations.localDeps
+    into 'lib'
 }
+
+buildExtension.dependsOn(copyLibs)
+buildExtension.dependsOn(test)
