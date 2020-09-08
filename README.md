@@ -4,6 +4,23 @@
 
 This extension supports Nullsoft Scriptable Install System (NSIS) binaries built using the NSIS builder available from https://nsis.sourceforge.io/
 
+# Installing the extension
+
+* Download the built extension from GitHub
+  * Visit the [Releases](../../releases) page, normally use the latest release
+  * Download the built extension zip file, the name will be similar to:
+    `ghidra_9.1.2_PUBLIC_YYYYMMDD_nsis.zip`
+* If you don't already have Ghdira, download and install Ghidra from
+  https://ghidra-sre.org/
+* Install the extension into Ghidra
+  * Start Ghidra
+  * Open `File->Install Extensions...`
+  * Press the `+` icon found in the top right of the `Install Extensions` window
+  * Navigate to the file location where you downloaded the extension zip file
+    above and select it
+  * Press `OK`
+  * You will be prompted to restart Ghidra for the changes to take effect
+
 # Loading Extension into Eclipse for Development
 * Install Java
   * Tested verison: `jdk-11.0.2`
@@ -45,12 +62,6 @@ This extension supports Nullsoft Scriptable Install System (NSIS) binaries built
 $ gradle -PGHIDRA_INSTALL_DIR=<path_to_ghidra>
 ```
 * Zip file will be created in the `dist` folder
-
-# Installing extension
-
-* Open Ghidra and select `File->Install Extensions...`
-* Press the `plus` icon in the top right and find the extension zip file
-* Press `OK` you will be prompted to restart Ghidra
 
 # Resources
 
