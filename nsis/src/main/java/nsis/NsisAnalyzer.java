@@ -29,15 +29,19 @@ import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
 import nsis.instructions.Call;
+import nsis.instructions.DeleteFile;
+import nsis.instructions.DeleteReg;
 import nsis.instructions.Jmp;
 import nsis.instructions.MessageBox;
 import nsis.instructions.Operation;
 import nsis.instructions.Return;
+import nsis.instructions.RmDir;
 import nsis.instructions.Strcmp;
 import nsis.instructions.UpdateText;
 
 /**
- * This analyzer finds NSIS bytecode and will try to decompile it into the original NSIS script.
+ * This analyzer finds NSIS bytecode and will try to decompile it into the
+ * original NSIS script.
  */
 public class NsisAnalyzer extends AbstractAnalyzer {
 
@@ -70,26 +74,28 @@ public class NsisAnalyzer extends AbstractAnalyzer {
    * Registers the options provided to the user for this analyzer.
    */
   @Override
-  public void registerOptions(Options options, Program program) {}
+  public void registerOptions(Options options, Program program) {
+  }
 
   /**
-   * Perform analysis when things get added to the 'program'. Return true if the analysis succeeded.
+   * Perform analysis when things get added to the 'program'. Return true if the
+   * analysis succeeded.
    */
   @Override
   public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
       throws CancelledException {
-    MemoryBlock entriesBlock =
-        program.getMemory().getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
+    MemoryBlock entriesBlock = program.getMemory()
+        .getBlock(NsisConstants.ENTRIES_MEMORY_BLOCK_NAME);
     AddressSet modifiedAddrSet = disassembleByteCode(program, entriesBlock, monitor);
 
     if (modifiedAddrSet.isEmpty()) {
       return false;
     }
 
-    MemoryBlock stringsBlock =
-        program.getMemory().getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
-    InstructionIterator instructions =
-        program.getListing().getInstructions(modifiedAddrSet, /* forward direction */ true);
+    MemoryBlock stringsBlock = program.getMemory()
+        .getBlock(NsisConstants.STRINGS_MEMORY_BLOCK_NAME);
+    InstructionIterator instructions = program.getListing().getInstructions(modifiedAddrSet,
+        /* forward direction */ true);
 
     for (Instruction instr : instructions) {
       try {
@@ -107,8 +113,8 @@ public class NsisAnalyzer extends AbstractAnalyzer {
   }
 
   /**
-   * Returns the Operation object associated with the given instruction. The association is made
-   * with the opcode of the instruction.
+   * Returns the Operation object associated with the given instruction. The
+   * association is made with the opcode of the instruction.
    * 
    * @param instruction to create the Operation object with
    * @return the Operation object associated to the instruction
@@ -116,35 +122,42 @@ public class NsisAnalyzer extends AbstractAnalyzer {
    */
   private Operation toOperation(Instruction instr) throws MemoryAccessException {
     switch (instr.getInt(0)) {
-      case Return.OPCODE:
-        return new Return();
-      case Jmp.OPCODE:
-        return new Jmp();
-      case Call.OPCODE:
-        return new Call();
-      case MessageBox.OPCODE:
-        return new MessageBox();
-      case Strcmp.OPCODE:
-        return new Strcmp();
-      case UpdateText.OPCODE:
-        return new UpdateText();
-      default:
-        return null;
+    case Return.OPCODE:
+      return new Return();
+    case Jmp.OPCODE:
+      return new Jmp();
+    case Call.OPCODE:
+      return new Call();
+    case UpdateText.OPCODE:
+      return new UpdateText();
+    case DeleteFile.OPCODE:
+      return new DeleteFile();
+    case RmDir.OPCODE:
+      return new RmDir();
+    case MessageBox.OPCODE:
+      return new MessageBox();
+    case Strcmp.OPCODE:
+      return new Strcmp();
+    case DeleteReg.OPCODE:
+      return new DeleteReg();
+
+    default:
+      return null;
     }
   }
 
   /**
    * Disassembles the byte code in the specified memory block.
    * 
-   * @param program to instanciate the disassembler with
+   * @param program     to instanciate the disassembler with
    * @param memoryBlock to perform the disassembly on
-   * @param monitor the TaskMonitor object to monitor the operation
+   * @param monitor     the TaskMonitor object to monitor the operation
    * @return the AddressSet of the disassembled instructions
    */
   private AddressSet disassembleByteCode(Program program, MemoryBlock memoryBlock,
       TaskMonitor monitor) {
-    Disassembler disassembler =
-        Disassembler.getDisassembler(program, monitor, /* Object to notify */ null);
+    Disassembler disassembler = Disassembler.getDisassembler(program, monitor,
+        /* Object to notify */ null);
     AddressSet entriesAddrSet = new AddressSet(memoryBlock.getStart(), memoryBlock.getEnd());
     return disassembler.disassemble(entriesAddrSet.getMinAddress(), entriesAddrSet,
         /* follow flow */ true);

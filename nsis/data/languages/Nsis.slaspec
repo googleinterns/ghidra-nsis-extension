@@ -90,7 +90,7 @@ define token argument6(32)
 :Reboot is opcode=0x2f ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :WriteIni arg1 arg2 arg3 arg4 is opcode=0x30 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :ReadIni arg1 arg2 arg3 arg4 is opcode=0x31 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
-:DeleteRegKey arg1 arg2 arg3 arg4 is opcode=0x32 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:DeleteReg arg1 arg2 arg3 arg4 arg5 is opcode=0x32 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :WriteRegValue arg1 arg2 arg3 arg4 arg5 is opcode=0x33 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :ReadRegStr arg1 arg2 arg3 arg4 arg5 is opcode=0x34 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :RegEnumKey arg1 arg2 arg3 arg4 arg5 is opcode=0x35 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
