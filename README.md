@@ -50,8 +50,7 @@ This extension supports Nullsoft Scriptable Install System (NSIS) binaries built
 
 # Updating The Disassembler Specification
 
-* If a change is made to Nsis.slaspec, it needs to be reprocessed by the sleight utility. Example commande: `<ghidra installer folder>/support/sleigh data/languages/Nsis.slaspec`
-* The newly generated files then need to be moved to the `<ghidra install folder>/Ghidra/Processors/Nsis/`folder.
+* If a change is made to Nsis.slaspec, it needs to be reprocessed by the sleight utility. Example command: `<ghidra installer folder>/support/sleigh data/languages/Nsis.slaspec`
 
 # Build extension from the command line
 
