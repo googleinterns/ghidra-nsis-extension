@@ -154,5 +154,9 @@ public class NsisCommonHeader implements StructConverter {
   public int getFlags() {
     return this.flags;
   }
+  
+  public int getLangtableSize() {
+    return this.langtableSize;
+  }
 
 }
