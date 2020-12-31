@@ -1,9 +1,9 @@
 name: Ghidra NSIS Extension Build
 
 env:
-  ghidra-url: https://ghidra-sre.org/ghidra_9.1.2_PUBLIC_20200212.zip
-  ghidra-zip-filename: ghidra_9.1.2_PUBLIC.zip
-  ghidra-directory: ghidra_9.1.2_PUBLIC
+  ghidra-url: https://ghidra-sre.org/ghidra_9.2.1_PUBLIC_20201215.zip
+  ghidra-zip-filename: ghidra_9.2.1_PUBLIC.zip
+  ghidra-directory: ghidra_9.2.1_PUBLIC
 
 on:
   push:
