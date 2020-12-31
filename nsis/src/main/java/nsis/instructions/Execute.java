@@ -6,8 +6,8 @@ import ghidra.program.model.mem.MemoryAccessException;
 import nsis.NsisAnalyzer;
 import nsis.file.NsisConstants;
 
-public class RmDir extends Operation {
-  public static final int OPCODE = 0x17;
+public class Execute extends Operation {
+  public static final int OPCODE = 0x29;
 
   @Override
   public void fixUp(Instruction instr, NsisAnalyzer nsisAnalyzer)

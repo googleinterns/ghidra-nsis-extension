@@ -52,6 +52,7 @@ import nsis.format.NsisCommonHeader;
 import nsis.format.NsisCrc;
 import nsis.format.NsisEntry;
 import nsis.format.NsisFirstHeader;
+import nsis.format.NsisLangTables;
 import nsis.format.NsisPage;
 import nsis.format.NsisSection;
 
@@ -134,7 +135,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
         currentOffset += accountForPadding(currentOffset, langTablesAddress.getOffset(),
             bodyInputStream);
         currentOffset += initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
-            ne.getLangTablesSectionSize());
+            ne.getLangTablesSectionSize(), ne.getLangTables());
 
         Address ctlColorsAddress = commonHeaderAddress
             .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
@@ -458,16 +459,19 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * @param program
    * @param monitor
    * @param sectionLength
+   * @param langTables 
    * @return The number of bytes the input stream was advanced
    * @throws LockException
    * @throws MemoryConflictException
    * @throws AddressOverflowException
    * @throws CancelledException
    * @throws DuplicateNameException
+   * @throws IOException 
+   * @throws CodeUnitInsertionException 
    */
   private long initLangTablesSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, long sectionLength) throws LockException, MemoryConflictException,
-      AddressOverflowException, CancelledException, DuplicateNameException {
+      TaskMonitor monitor, long sectionLength, NsisLangTables langTables) throws LockException, MemoryConflictException,
+      AddressOverflowException, CancelledException, DuplicateNameException, CodeUnitInsertionException, IOException {
 
     if (sectionLength > 0) {
       boolean readPermission = true;
@@ -476,6 +480,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
       createGhidraMemoryBlock(is, startingAddr, program, monitor, sectionLength,
           NsisConstants.LANGTABLES_MEMORY_BLOCK_NAME, readPermission, writePermission,
           executePermission);
+      createData(program, startingAddr, langTables.toDataType());
       return sectionLength;
     }
     return 0;

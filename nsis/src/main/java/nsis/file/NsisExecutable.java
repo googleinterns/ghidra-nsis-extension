@@ -206,7 +206,7 @@ public class NsisExecutable {
     long langTablesSectionLength = getSectionSizeFromOffsets(
         this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
         this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
-    this.langTables = new NsisLangTables(reader, langTablesSectionLength);
+    this.langTables = new NsisLangTables(reader, langTablesSectionLength, this.commonHeader.getLangtableSize());
   }
 
   /**
@@ -460,5 +460,9 @@ public class NsisExecutable {
    */
   public byte[] getCrcBytes() {
     return this.crc.getBytes();
+  }
+  
+  public NsisLangTables getLangTables() {
+    return this.langTables;
   }
 }
