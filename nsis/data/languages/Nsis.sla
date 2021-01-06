@@ -1640,7 +1640,7 @@
 <oper id="0x19b"/>
 <oper id="0x19c"/>
 <oper id="0x19d"/>
-<print piece="GetLabelAddr"/>
+<print piece="GetOSInfo"/>
 <print piece=" "/>
 <opprint id="0"/>
 <print piece=" "/>
@@ -1663,7 +1663,7 @@
 <oper id="0x1a1"/>
 <oper id="0x1a2"/>
 <oper id="0x1a3"/>
-<print piece="GetFunctionAddr"/>
+<print piece="ReservedOpCode"/>
 <print piece=" "/>
 <opprint id="0"/>
 <print piece=" "/>

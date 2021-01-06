@@ -50,32 +50,77 @@ import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 import nsis.file.NsisConstants;
 import nsis.file.NsisLangTableMapper;
+import nsis.instructions.Abort;
+import nsis.instructions.BringToFront;
 import nsis.instructions.Call;
+import nsis.instructions.ChDetailsView;
 import nsis.instructions.CopyFiles;
 import nsis.instructions.CreateDir;
+import nsis.instructions.CreateFont;
+import nsis.instructions.CreateShortcut;
 import nsis.instructions.DeleteFile;
 import nsis.instructions.DeleteReg;
 import nsis.instructions.Execute;
+import nsis.instructions.ExtractFile;
+import nsis.instructions.FileClose;
+import nsis.instructions.FileOpen;
+import nsis.instructions.FileRead;
+import nsis.instructions.FileReadUTF16LE;
+import nsis.instructions.FileSeek;
+import nsis.instructions.FileWrite;
+import nsis.instructions.FileWriteUTF16LE;
+import nsis.instructions.FindClose;
+import nsis.instructions.FindFirst;
+import nsis.instructions.FindNext;
+import nsis.instructions.FindWindow;
+import nsis.instructions.GetDLLVersion;
 import nsis.instructions.GetDlgItem;
+import nsis.instructions.GetFileTime;
+import nsis.instructions.GetFlag;
+import nsis.instructions.GetFullPathName;
+import nsis.instructions.GetOSInfo;
+import nsis.instructions.GetTempFilename;
 import nsis.instructions.IfFileExists;
+import nsis.instructions.IfFlag;
+import nsis.instructions.InstTypeSet;
 import nsis.instructions.IntCmp;
 import nsis.instructions.IntFmt;
 import nsis.instructions.IntOp;
+import nsis.instructions.IsWindow;
 import nsis.instructions.Jmp;
+import nsis.instructions.LockWindow;
+import nsis.instructions.LogText;
 import nsis.instructions.MessageBox;
 import nsis.instructions.Operation;
 import nsis.instructions.PushPop;
+import nsis.instructions.Quit;
+import nsis.instructions.ReadEnv;
+import nsis.instructions.ReadIni;
 import nsis.instructions.ReadRegStr;
+import nsis.instructions.Reboot;
+import nsis.instructions.RegEnumKey;
 import nsis.instructions.RegisterDLL;
+import nsis.instructions.Rename;
+import nsis.instructions.ReservedOpCode;
 import nsis.instructions.Return;
 import nsis.instructions.RmDir;
+import nsis.instructions.SearchPath;
+import nsis.instructions.SectionSet;
 import nsis.instructions.SendMessage;
+import nsis.instructions.SetBrandingImage;
+import nsis.instructions.SetCtlColors;
+import nsis.instructions.SetFileAttributes;
 import nsis.instructions.SetFlag;
+import nsis.instructions.ShellExec;
+import nsis.instructions.ShowWindow;
+import nsis.instructions.Sleep;
 import nsis.instructions.StrCpy;
 import nsis.instructions.StrLen;
 import nsis.instructions.StrCmp;
 import nsis.instructions.UpdateText;
+import nsis.instructions.WriteIni;
 import nsis.instructions.WriteRegValue;
+import nsis.instructions.WriteUninstaller;
 
 /**
  * This analyzer finds NSIS bytecode and will try to decompile it into the
@@ -92,7 +137,82 @@ public class NsisAnalyzer extends AbstractAnalyzer {
   private EquateTable equateTable;
   private MessageLog log;
   private int charWidth = 1;
-
+  
+  public static final Map<Integer, Operation> operations;
+  static {
+    operations = new HashMap<Integer, Operation>();
+    operations.put(Return.OPCODE, new Return()); // 0x1
+    operations.put(Jmp.OPCODE, new Jmp()); // 0x2
+    operations.put(Abort.OPCODE, new Abort()); // 0x3
+    operations.put(Quit.OPCODE, new Quit()); // 0x4
+    operations.put(Call.OPCODE, new Call()); // 0x5
+    operations.put(UpdateText.OPCODE, new UpdateText()); // 0x6
+    operations.put(Sleep.OPCODE, new Sleep()); // 0x7
+    operations.put(BringToFront.OPCODE, new BringToFront()); // 0x8
+    operations.put(ChDetailsView.OPCODE, new ChDetailsView()); // 0x9
+    operations.put(SetFileAttributes.OPCODE, new SetFileAttributes()); // 0xa
+    operations.put(CreateDir.OPCODE, new CreateDir()); // 0xb
+    operations.put(IfFileExists.OPCODE, new IfFileExists()); // 0xc
+    operations.put(SetFlag.OPCODE, new SetFlag()); // 0xd
+    operations.put(IfFlag.OPCODE, new IfFlag()); // 0e
+    operations.put(GetFlag.OPCODE, new GetFlag()); // 0xf
+    operations.put(Rename.OPCODE, new Rename()); // 0x10
+    operations.put(GetFullPathName.OPCODE, new GetFullPathName()); // 0x11
+    operations.put(SearchPath.OPCODE, new SearchPath()); // 0x12
+    operations.put(GetTempFilename.OPCODE, new GetTempFilename()); // 0x13
+    operations.put(ExtractFile.OPCODE, new ExtractFile()); // 0x14
+    operations.put(DeleteFile.OPCODE, new DeleteFile()); // 0x15
+    operations.put(MessageBox.OPCODE, new MessageBox()); // 0x16
+    operations.put(RmDir.OPCODE, new RmDir()); // 0x17
+    operations.put(StrLen.OPCODE, new StrLen()); // 0x18
+    operations.put(StrCpy.OPCODE, new StrCpy()); // 0x19
+    operations.put(StrCmp.OPCODE, new StrCmp()); // 0x1a
+    operations.put(ReadEnv.OPCODE, new ReadEnv()); // 0x1b
+    operations.put(IntCmp.OPCODE, new IntCmp()); // 0x1c
+    operations.put(IntOp.OPCODE, new IntOp()); // 0x1d
+    operations.put(IntFmt.OPCODE, new IntFmt()); // 0x1e
+    operations.put(PushPop.OPCODE, new PushPop()); // 0x1f
+    operations.put(FindWindow.OPCODE, new FindWindow()); // 0x20
+    operations.put(SendMessage.OPCODE, new SendMessage()); // 0x21
+    operations.put(IsWindow.OPCODE, new IsWindow()); // 0x22
+    operations.put(GetDlgItem.OPCODE, new GetDlgItem()); // 0x23
+    operations.put(SetCtlColors.OPCODE, new SetCtlColors()); // 0x24
+    operations.put(SetBrandingImage.OPCODE, new SetBrandingImage()); // 0x25
+    operations.put(CreateFont.OPCODE, new CreateFont()); // 0x26
+    operations.put(ShowWindow.OPCODE, new ShowWindow()); // 0x27
+    operations.put(ShellExec.OPCODE, new ShellExec()); // 0x28
+    operations.put(Execute.OPCODE, new Execute()); // 0x29
+    operations.put(GetFileTime.OPCODE, new GetFileTime()); // 0x2a
+    operations.put(GetDLLVersion.OPCODE, new GetDLLVersion()); // 0x2b
+    operations.put(RegisterDLL.OPCODE, new RegisterDLL()); // 0x2c
+    operations.put(CreateShortcut.OPCODE, new CreateShortcut()); // 0x2d
+    operations.put(CopyFiles.OPCODE, new CopyFiles()); // 0x2e
+    operations.put(Reboot.OPCODE, new Reboot()); // 0x2f
+    operations.put(WriteIni.OPCODE, new WriteIni()); // 0x30
+    operations.put(ReadIni.OPCODE, new ReadIni()); // 0x31
+    operations.put(DeleteReg.OPCODE, new DeleteReg()); // 0x32
+    operations.put(WriteRegValue.OPCODE, new WriteRegValue()); // 0x33
+    operations.put(ReadRegStr.OPCODE, new ReadRegStr()); // 0x34
+    operations.put(RegEnumKey.OPCODE, new RegEnumKey()); // 0x35
+    operations.put(FileClose.OPCODE, new FileClose()); // 0x36
+    operations.put(FileOpen.OPCODE, new FileOpen()); // 0x37
+    operations.put(FileWrite.OPCODE, new FileWrite()); // 0x38
+    operations.put(FileRead.OPCODE, new FileRead()); // 0x39
+    operations.put(FileSeek.OPCODE, new FileSeek()); // 0x3a
+    operations.put(FindClose.OPCODE, new FindClose()); // 0x3b
+    operations.put(FindNext.OPCODE, new FindNext()); // 0x3c
+    operations.put(FindFirst.OPCODE, new FindFirst()); // 0x3d
+    operations.put(WriteUninstaller.OPCODE, new WriteUninstaller()); // 0x3e
+    operations.put(LogText.OPCODE, new LogText()); // 0x3f
+    operations.put(SectionSet.OPCODE, new SectionSet()); // 0x40
+    operations.put(InstTypeSet.OPCODE, new InstTypeSet()); // 0x41
+    operations.put(GetOSInfo.OPCODE, new GetOSInfo()); // 0x42
+    operations.put(ReservedOpCode.OPCODE, new ReservedOpCode()); // 0x43
+    operations.put(LockWindow.OPCODE, new LockWindow()); // 0x44
+    operations.put(FileWriteUTF16LE.OPCODE, new FileWriteUTF16LE()); // 0x45
+    operations.put(FileReadUTF16LE.OPCODE, new FileReadUTF16LE()); // 0x46
+  }
+  
   public NsisAnalyzer() {
     super("NSIS script decompiler", "Decompiles NSIS bytecode into NSIS script.",
         AnalyzerType.BYTE_ANALYZER);
@@ -253,61 +373,11 @@ public class NsisAnalyzer extends AbstractAnalyzer {
    * @throws MemoryAccessException
    */
   private Operation toOperation(Instruction instr) throws MemoryAccessException {
-    switch (instr.getInt(0)) {
-    case Return.OPCODE: // 0x1
-      return new Return();
-    case Jmp.OPCODE: // 0x2
-      return new Jmp();
-    case Call.OPCODE: // 0x5
-      return new Call();
-    case UpdateText.OPCODE: // 0x6
-      return new UpdateText();
-    case CreateDir.OPCODE: // 0xb
-      return new CreateDir();
-    case IfFileExists.OPCODE: // 0xc
-      return new IfFileExists();
-    case SetFlag.OPCODE: // 0xd
-      return new SetFlag();
-    case DeleteFile.OPCODE: // 0x15
-      return new DeleteFile();
-    case MessageBox.OPCODE: // 0x16
-      return new MessageBox();
-    case RmDir.OPCODE: // 0x17
-      return new RmDir();
-    case StrLen.OPCODE: // 0x18
-      return new StrLen();
-    case StrCpy.OPCODE: // 0x19
-      return new StrCpy();
-    case StrCmp.OPCODE: // 0x1a
-      return new StrCmp();
-    case IntCmp.OPCODE: // 0x1c
-      return new IntCmp();
-    case IntOp.OPCODE: // 0x1d
-      return new IntOp();
-    case IntFmt.OPCODE: // 0x1e
-      return new IntFmt();
-    case PushPop.OPCODE: // 0x1f
-      return new PushPop();
-    case SendMessage.OPCODE: // 0x21
-      return new SendMessage();
-    case GetDlgItem.OPCODE: // 0x23
-      return new GetDlgItem();
-    case Execute.OPCODE: // 0x29
-      return new Execute();
-    case RegisterDLL.OPCODE: // 0x2c
-      return new RegisterDLL();
-    case CopyFiles.OPCODE: // 0x2e
-      return new CopyFiles();
-    case DeleteReg.OPCODE: // 0x32
-      return new DeleteReg();
-    case WriteRegValue.OPCODE: // 0x33
-      return new WriteRegValue();
-    case ReadRegStr.OPCODE: // 0x34
-      return new ReadRegStr();
-
-    default:
-      return null;
+    int opcode = instr.getInt(0);
+    if (NsisAnalyzer.operations.containsKey(opcode)) {
+      return NsisAnalyzer.operations.get(opcode);
     }
+    return null;
   }
 
   /**
@@ -412,7 +482,10 @@ public class NsisAnalyzer extends AbstractAnalyzer {
 
         if (java.lang.Math.abs(c) == NsisConstants.NS_LANG_CODE) {
           int langIdx = this.decodeShort(curAddr.add(this.charWidth));
-          str.append(buildString(this.langTableMapper.getStringOffset(langIdx), false));
+          Integer langEntry = this.langTableMapper.getStringOffset(langIdx);
+          if (langEntry != null) {
+        	  str.append(buildString(langEntry, false));
+          }
           i += this.charWidth + StructConverter.WORD.getLength();
         } else if (java.lang.Math.abs(c) == NsisConstants.NS_SHELL_CODE) {
           int curUserParam = this.stringsBlock.getByte(curAddr.add(this.charWidth));

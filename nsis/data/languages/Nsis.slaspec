@@ -106,8 +106,8 @@ define token argument6(32)
 :LogText arg1 arg2 is opcode=0x3f ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :SectionSet arg1 arg2 arg3 is opcode=0x40 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :InstTypeSet arg1 arg2 arg3 is opcode=0x41 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
-:GetLabelAddr arg1 arg2 arg3 arg4 arg5 arg6 is opcode=0x42 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
-:GetFunctionAddr arg1 arg2 arg3 arg4 arg5 arg6 is opcode=0x43 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:GetOSInfo arg1 arg2 arg3 arg4 arg5 arg6 is opcode=0x42 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
+:ReservedOpCode arg1 arg2 arg3 arg4 arg5 arg6 is opcode=0x43 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :LockWindow arg1 is opcode=0x44 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :FileWriteUTF16LE arg1 arg2 arg3 arg4 is opcode=0x45 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
 :FileReadUTF16LE arg1 arg2 arg3 arg4 is opcode=0x46 ; arg1 ; arg2 ; arg3 ; arg4 ; arg5 ; arg6 { }
