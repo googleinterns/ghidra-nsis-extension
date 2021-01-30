@@ -18,9 +18,13 @@ public class NsisConstants {
     PAGES, SECTIONS, ENTRIES, STRINGS, LANGTABLES, CONTROL_COLORS, BACKGROUND_FONT, DATA
   }
 
+  public static final int DWORD_SZ = 4;
+  
   // Compression related constants
   public static final byte COMPRESSION_LZMA = 0x5d;
+  public static final int COMPRESSION_LZMA_MASK = 0xffffff;
   public static final byte COMPRESSION_BZIP2 = 0x31;
+  public static final int COMPRESSION_BZIP2_MASK = 0xff;
   public static final int COMPRESSION_LZMA_HEADER_LENGTH = 5;
 
   // Ghidra memory block names

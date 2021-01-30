@@ -69,8 +69,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
     List<LoadSpec> loadSpecs = new ArrayList<>();
     try {
-      NsisExecutable ne = NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE,
-          provider);
+      NsisExecutable ne =
+          NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
       LoadSpec my_spec = new LoadSpec(this, ne.getHeaderOffset(),
           new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
       loadSpecs.add(my_spec);
@@ -86,68 +86,73 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
       Program program, TaskMonitor monitor, MessageLog log) throws CancelledException, IOException {
     try {
       GenericFactory factory = MessageLogContinuesFactory.create(log);
-      NsisExecutable ne = NsisExecutable.createInitializeNsisExecutable(factory, provider,
-          SectionLayout.FILE);
+      NsisExecutable ne =
+          NsisExecutable.createInitializeNsisExecutable(factory, provider, SectionLayout.FILE);
       long scriptHeaderOffset = ne.getHeaderOffset();
 
-      Address firstHeaderAddress = program.getAddressFactory().getDefaultAddressSpace()
-          .getAddress(scriptHeaderOffset);
+      Address firstHeaderAddress =
+          program.getAddressFactory().getDefaultAddressSpace().getAddress(scriptHeaderOffset);
 
       try (InputStream headerInputStream = provider.getInputStream(scriptHeaderOffset)) {
         initFirstHeader(headerInputStream, firstHeaderAddress, program, monitor);
       }
 
       try (InputStream bodyInputStream = ne.getDecompressedInputStream()) {
-        long currentOffset = ne.getHeaderOffset() + NsisFirstHeader.getHeaderSize();
+        long currentOffset = ne.getHeaderOffset() + NsisFirstHeader.getHeaderSize()
+            + ne.getCompressionHeaderAdjustment();
         Address commonHeaderAddress = firstHeaderAddress.add(NsisFirstHeader.getHeaderSize());
+        if (ne.isSolid()) {
+          commonHeaderAddress.add(NsisConstants.DWORD_SZ);
+          bodyInputStream.skip(NsisConstants.DWORD_SZ);
+        }
         currentOffset += initCommonHeader(bodyInputStream, commonHeaderAddress, program, monitor);
 
-        Address pagesSectionAddress = commonHeaderAddress
-            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
-        currentOffset += accountForPadding(currentOffset, pagesSectionAddress.getOffset(),
-            bodyInputStream);
+        Address pagesSectionAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
+        currentOffset +=
+            accountForPadding(currentOffset, pagesSectionAddress.getOffset(), bodyInputStream);
         currentOffset += initPagesSection(bodyInputStream, pagesSectionAddress, program, monitor,
             ne.getNumPages());
 
-        Address sectionHeadersAddress = commonHeaderAddress
-            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.SECTIONS));
-        currentOffset += accountForPadding(currentOffset, sectionHeadersAddress.getOffset(),
-            bodyInputStream);
+        Address sectionHeadersAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.SECTIONS));
+        currentOffset +=
+            accountForPadding(currentOffset, sectionHeadersAddress.getOffset(), bodyInputStream);
         currentOffset += initSectionHeaders(bodyInputStream, sectionHeadersAddress, program,
             monitor, ne.getNumSections());
 
-        Address entriesSectionAddress = commonHeaderAddress
-            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
-        currentOffset += accountForPadding(currentOffset, entriesSectionAddress.getOffset(),
-            bodyInputStream);
+        Address entriesSectionAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.ENTRIES));
+        currentOffset +=
+            accountForPadding(currentOffset, entriesSectionAddress.getOffset(), bodyInputStream);
         currentOffset += initEntriesSection(bodyInputStream, entriesSectionAddress, program,
             monitor, ne.getNumEntries());
 
-        Address stringsAddress = commonHeaderAddress
-            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.STRINGS));
-        currentOffset += accountForPadding(currentOffset, stringsAddress.getOffset(),
-            bodyInputStream);
+        Address stringsAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.STRINGS));
+        currentOffset +=
+            accountForPadding(currentOffset, stringsAddress.getOffset(), bodyInputStream);
         currentOffset += initStringsSection(bodyInputStream, stringsAddress, program, monitor,
             ne.getStringsSectionSize());
 
-        Address langTablesAddress = commonHeaderAddress
-            .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.LANGTABLES));
-        currentOffset += accountForPadding(currentOffset, langTablesAddress.getOffset(),
-            bodyInputStream);
+        Address langTablesAddress =
+            commonHeaderAddress.add(ne.getSectionOffset(NsisConstants.BlockHeaderType.LANGTABLES));
+        currentOffset +=
+            accountForPadding(currentOffset, langTablesAddress.getOffset(), bodyInputStream);
         currentOffset += initLangTablesSection(bodyInputStream, langTablesAddress, program, monitor,
             ne.getLangTablesSectionSize(), ne.getLangTables());
 
         Address ctlColorsAddress = commonHeaderAddress
             .add(ne.getSectionOffset(NsisConstants.BlockHeaderType.CONTROL_COLORS));
-        currentOffset += accountForPadding(currentOffset, ctlColorsAddress.getOffset(),
-            bodyInputStream);
+        currentOffset +=
+            accountForPadding(currentOffset, ctlColorsAddress.getOffset(), bodyInputStream);
         currentOffset += initCtlColorsSection(bodyInputStream, ctlColorsAddress, program, monitor,
             ne.getControlColorsSectionSize());
       }
 
       try (InputStream crcInputStream = provider.getInputStream(ne.getCrcOffset())) {
-        Address lastSetAddress = program.getMemory().getLoadedAndInitializedAddressSet()
-            .getMaxAddress();
+        Address lastSetAddress =
+            program.getMemory().getLoadedAndInitializedAddressSet().getMaxAddress();
         initCrcSection(crcInputStream, lastSetAddress.add(1), program, monitor);
       }
 
@@ -157,19 +162,17 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Determines if there is any padding between the sections or blocks and
-   * advances the input stream if so
+   * Determines if there is any padding between the sections or blocks and advances the input stream
+   * if so
    * 
    * @param currentOffset The current offset in the input stream
-   * @param nextOffset          The next offset that needs to be read from
-   * @param is                  The input stream, the function has the side effect
-   *                            of advancing the input stream is required
-   * @return The size of padding, also equals how many bytes the input stream was
-   *         advanced
+   * @param nextOffset The next offset that needs to be read from
+   * @param is The input stream, the function has the side effect of advancing the input stream is
+   *        required
+   * @return The size of padding, also equals how many bytes the input stream was advanced
    * @throws IOException
    */
-  private long accountForPadding(
-      long currentOffset, long nextOffset, InputStream is)
+  private long accountForPadding(long currentOffset, long nextOffset, InputStream is)
       throws IOException {
     long paddingSize = nextOffset - currentOffset;
     if (paddingSize > 0) {
@@ -184,7 +187,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
    * 
    * @param program
    * @param listing
-   * @param address  at which to apply the data structure
+   * @param address at which to apply the data structure
    * @param dataType to apply to the bytes
    * @return
    * @throws CodeUnitInsertionException
@@ -202,10 +205,9 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
   /**
    * 
-   * Initializes a memory block in Ghidra with the given permissions and the given
-   * data
+   * Initializes a memory block in Ghidra with the given permissions and the given data
    * 
-   * @param is                InputStream of the data
+   * @param is InputStream of the data
    * @param startingAddr
    * @param program
    * @param monitor
@@ -234,15 +236,13 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the first header and adds it to the "Program Trees" view in
-   * Ghidra.
+   * Initializes the first header and adds it to the "Program Trees" view in Ghidra.
    * 
-   * @param fileBytes            object that starts at the NSIS magic bytes
-   * @param scriptHeaderAddress, the address at which the nsis script header
-   *                             starts
-   * @param size                 of the header
-   * @param program              object
-   * @param dataType             of the script header
+   * @param fileBytes object that starts at the NSIS magic bytes
+   * @param scriptHeaderAddress, the address at which the nsis script header starts
+   * @param size of the header
+   * @param program object
+   * @param dataType of the script header
    * @throws MemoryConflictException
    * @throws AddressOverflowException
    * @throws CancelledException
@@ -264,8 +264,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the common header and adds it to the "Program Trees" view in
-   * Ghidra.
+   * Initializes the common header and adds it to the "Program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -298,8 +297,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the pages section and adds the section to the "program Trees"
-   * view in Ghidra.
+   * Initializes the pages section and adds the section to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -342,8 +340,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the section headers section and adds it to the "program Trees"
-   * view in Ghidra.
+   * Initializes the section headers section and adds it to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -383,8 +380,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
 
   /**
    * 
-   * Initializes the entries section and adds the section to the "program Trees"
-   * view in Ghidra.
+   * Initializes the entries section and adds the section to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -418,9 +414,9 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the strings section and adds the it to the "program Trees" view
-   * in Ghidra. Please not this function will not analyze the section to create
-   * the strings as the ASCII strings analyzer is available for this purpose.
+   * Initializes the strings section and adds the it to the "program Trees" view in Ghidra. Please
+   * not this function will not analyze the section to create the strings as the ASCII strings
+   * analyzer is available for this purpose.
    * 
    * @param is
    * @param startingAddr
@@ -451,27 +447,27 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the langTables section and adds the it to the "program Trees"
-   * view in Ghidra.
+   * Initializes the langTables section and adds the it to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
    * @param program
    * @param monitor
    * @param sectionLength
-   * @param langTables 
+   * @param langTables
    * @return The number of bytes the input stream was advanced
    * @throws LockException
    * @throws MemoryConflictException
    * @throws AddressOverflowException
    * @throws CancelledException
    * @throws DuplicateNameException
-   * @throws IOException 
-   * @throws CodeUnitInsertionException 
+   * @throws IOException
+   * @throws CodeUnitInsertionException
    */
   private long initLangTablesSection(InputStream is, Address startingAddr, Program program,
-      TaskMonitor monitor, long sectionLength, NsisLangTables langTables) throws LockException, MemoryConflictException,
-      AddressOverflowException, CancelledException, DuplicateNameException, CodeUnitInsertionException, IOException {
+      TaskMonitor monitor, long sectionLength, NsisLangTables langTables)
+      throws LockException, MemoryConflictException, AddressOverflowException, CancelledException,
+      DuplicateNameException, CodeUnitInsertionException, IOException {
 
     if (sectionLength > 0) {
       boolean readPermission = true;
@@ -487,8 +483,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the ctlColors section and adds the it to the "program Trees" view
-   * in Ghidra.
+   * Initializes the ctlColors section and adds the it to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr
@@ -519,8 +514,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   }
 
   /**
-   * Initializes the CRC section and adds the it to the "program Trees" view in
-   * Ghidra.
+   * Initializes the CRC section and adds the it to the "program Trees" view in Ghidra.
    * 
    * @param is
    * @param startingAddr

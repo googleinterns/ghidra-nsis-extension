@@ -16,7 +16,6 @@ public class NsisFirstHeader implements StructConverter {
   private byte[] magic;
   public final int inflatedHeaderSize;
   public final int archiveSize;
-  public final int compressedHeaderSize;
   public final static Structure STRUCTURE;
 
   static {
@@ -31,8 +30,6 @@ public class NsisFirstHeader implements StructConverter {
         "Points to the header+sections+entries+stringtable in the datablock");
     STRUCTURE.add(DWORD, DWORD.getLength(), "length_of_following_data",
         "Length of all the data (including the firstheader and the CRC)");
-    STRUCTURE.add(DWORD, DWORD.getLength(), "compressed_header_size",
-        "If the most significant bit is set, the following data is compressed");
   }
 
   public NsisFirstHeader(BinaryReader reader) throws IOException, InvalidFormatException {
@@ -48,7 +45,6 @@ public class NsisFirstHeader implements StructConverter {
 
     this.inflatedHeaderSize = reader.readNextInt();
     this.archiveSize = reader.readNextInt();
-    this.compressedHeaderSize = reader.readNextInt();
   }
 
   @Override
