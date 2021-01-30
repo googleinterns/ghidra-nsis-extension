@@ -54,6 +54,11 @@ public class NsisExecutable {
   private NsisLangTables langTables;
   private NsisControlColors ctlColors;
   private NsisCrc crc;
+  private int compressionInfoRaw = 0;
+  private int compressedDataSize = 0;
+  // "Solid" is a flag passed to the compression option
+  // when set the compressed data is slightly different
+  private boolean isSolid = false;
 
   /**
    * Use createNsisExecutable to create a Nsis Executable object
@@ -103,6 +108,9 @@ public class NsisExecutable {
         this.headerOffset + (this.firstHeader.archiveSize - NsisConstants.NSIS_CRC_LENGTH);
     this.decompressionProvider = getDecompressionProvider();
     try (InputStream decompressesdStream = this.getDecompressedInputStream()) {
+      if (this.isSolid) {
+        decompressesdStream.skip(NsisConstants.DWORD_SZ);
+      }
       ByteProvider blockDataByteProvider =
           new InputStreamByteProvider(decompressesdStream, this.firstHeader.inflatedHeaderSize);
       BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider,
@@ -206,7 +214,8 @@ public class NsisExecutable {
     long langTablesSectionLength = getSectionSizeFromOffsets(
         this.getBlockHeader(NsisConstants.BlockHeaderType.LANGTABLES.ordinal()).getOffset(),
         this.getBlockHeader(NsisConstants.BlockHeaderType.CONTROL_COLORS.ordinal()).getOffset());
-    this.langTables = new NsisLangTables(reader, langTablesSectionLength, this.commonHeader.getLangtableSize());
+    this.langTables =
+        new NsisLangTables(reader, langTablesSectionLength, this.commonHeader.getLangtableSize());
   }
 
   /**
@@ -259,6 +268,23 @@ public class NsisExecutable {
   }
 
   /**
+   * Creates an Lzma decompresison provider based on the passed in parameters
+   * 
+   * @param compressionByte flags for Lzma decompression
+   * @param dictionarySize dictionary size
+   * @return the initialized Lzma provider
+   * @throws IOException
+   */
+  private NsisLZMAProvider getLzmaDecompressionProvider(byte compressionByte, int dictionarySize)
+      throws IOException {
+    long lzmaCompressedDataSize =
+        this.compressedDataSize - NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
+    ByteProvider compressedBytesProvider = new ByteProviderWrapper(this.reader.getByteProvider(),
+        this.reader.getPointerIndex(), lzmaCompressedDataSize);
+    return new NsisLZMAProvider(compressedBytesProvider, compressionByte, dictionarySize);
+  }
+
+  /**
    * Attempt to decompress the data from the reader. Supports LZMA algorithm. Will eventually
    * support Bzip2 and Zlib. The reader offset has to be set at the beginning of the compressed data
    * before calling this function.
@@ -267,33 +293,62 @@ public class NsisExecutable {
    * @throws IOException
    */
   private NsisDecompressionProvider getDecompressionProvider() throws IOException {
-    if ((this.firstHeader.compressedHeaderSize & FLAG_IS_COMPRESSED) != 0) {
+    int tempInfo = this.reader.peekNextInt();
+
+    int tempCompressedDataSize = tempInfo & ~FLAG_IS_COMPRESSED;
+    int calculatedCompressedDataSize = this.firstHeader.archiveSize - NsisConstants.NSIS_CRC_LENGTH
+        - NsisFirstHeader.STRUCTURE.getLength();
+
+    // When uncompressed the next dword will be the same as the inflatedHeaderSize
+    if (tempInfo == this.firstHeader.inflatedHeaderSize) {
+      this.compressionInfoRaw = this.reader.readNextInt();
+      this.compressedDataSize = tempCompressedDataSize;
+      ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
+          this.reader.getPointerIndex(), this.compressedDataSize);
+      return new NsisUncompressedProvider(uncompressedBytes);
+    }
+
+    if ((tempInfo & FLAG_IS_COMPRESSED) != 0
+        && tempCompressedDataSize == (calculatedCompressedDataSize - NsisConstants.DWORD_SZ)) {
+      this.compressionInfoRaw = this.reader.readNextInt();
+      this.compressedDataSize = tempCompressedDataSize;
       byte compressionByte = this.reader.peekNextByte();
       if (NsisConstants.COMPRESSION_LZMA == compressionByte) {
         this.reader.readNextByte();
         int dictionarySize = this.reader.readNextInt();
-        long compressedDataLength = (this.firstHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED)
-            - NsisConstants.COMPRESSION_LZMA_HEADER_LENGTH;
-        ByteProvider compressedBytesProvider = new ByteProviderWrapper(
-            this.reader.getByteProvider(), this.reader.getPointerIndex(), compressedDataLength);
-        NsisDecompressionProvider decompressionProvider =
-            new NsisLZMAProvider(compressedBytesProvider, compressionByte, dictionarySize);
-        return decompressionProvider;
+        return this.getLzmaDecompressionProvider(compressionByte, dictionarySize);
       } else if (NsisConstants.COMPRESSION_BZIP2 == compressionByte) {
-        int compressedDataLength = this.firstHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED;
-        ByteProvider compressedBytesProvider = new ByteProviderWrapper(this.reader.getByteProvider(),
-            this.reader.getPointerIndex(), compressedDataLength);
+        ByteProvider compressedBytesProvider = new ByteProviderWrapper(
+            this.reader.getByteProvider(), this.reader.getPointerIndex(), this.compressedDataSize);
         return new NsisBzipProvider(compressedBytesProvider);
       } else {
-        int compressedDataLength = this.firstHeader.compressedHeaderSize & ~FLAG_IS_COMPRESSED;
         ByteProvider compressedBytesProvider = new ByteProviderWrapper(
-            this.reader.getByteProvider(), this.reader.getPointerIndex(), compressedDataLength);
+            this.reader.getByteProvider(), this.reader.getPointerIndex(), this.compressedDataSize);
         return new NsisZlibProvider(compressedBytesProvider);
       }
     }
-    ByteProvider uncompressedBytes = new ByteProviderWrapper(this.reader.getByteProvider(),
-        this.reader.getPointerIndex(), this.firstHeader.compressedHeaderSize);
-    return new NsisUncompressedProvider(uncompressedBytes);
+
+    // If the /SOLID flag is passed to SetCompressor command the file structure is slightly
+    // different
+    this.isSolid = true;
+    this.compressedDataSize = calculatedCompressedDataSize;
+
+    if ((tempInfo & NsisConstants.COMPRESSION_LZMA_MASK) == NsisConstants.COMPRESSION_LZMA) {
+      byte compressionByte = this.reader.readNextByte();
+      int dictionarySize = this.reader.readNextInt();
+      return this.getLzmaDecompressionProvider(compressionByte, dictionarySize);
+    }
+
+    // There is an assumption here that a zLib compressed stream will not start with 0x31
+    if ((tempInfo & NsisConstants.COMPRESSION_BZIP2_MASK) == NsisConstants.COMPRESSION_BZIP2) {
+      ByteProvider compressedBytesProvider = new ByteProviderWrapper(this.reader.getByteProvider(),
+          this.reader.getPointerIndex(), this.compressedDataSize);
+      return new NsisBzipProvider(compressedBytesProvider);
+    }
+
+    ByteProvider compressedBytesProvider = new ByteProviderWrapper(this.reader.getByteProvider(),
+        this.reader.getPointerIndex(), this.compressedDataSize);
+    return new NsisZlibProvider(compressedBytesProvider);
   }
 
   public long getHeaderOffset() {
@@ -310,10 +365,6 @@ public class NsisExecutable {
 
   public int getArchiveSize() {
     return this.firstHeader.archiveSize;
-  }
-
-  public int getCompressedHeaderSize() {
-    return this.firstHeader.compressedHeaderSize;
   }
 
   public int getScriptHeaderFlags() {
@@ -461,8 +512,31 @@ public class NsisExecutable {
   public byte[] getCrcBytes() {
     return this.crc.getBytes();
   }
-  
+
   public NsisLangTables getLangTables() {
     return this.langTables;
+  }
+
+  /**
+   * This determines if there is an extra 4 bytes between the first header and the rest of the data.
+   * If the /SOLID flag is passed to the SetCompressor command in the NSIS script an adjustment must
+   * be returned.
+   * 
+   * @return
+   */
+  public int getCompressionHeaderAdjustment() {
+    if (!this.isSolid) {
+      return NsisConstants.DWORD_SZ;
+    } else {
+      return 0;
+    }
+  }
+
+  public int getCompressionInfoRaw() {
+    return compressionInfoRaw;
+  }
+
+  public boolean isSolid() {
+    return isSolid;
   }
 }
