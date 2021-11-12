@@ -42,10 +42,9 @@ configurations {
 }
 
 dependencies {
-	testImplementation('org.junit.jupiter:junit-jupiter-api:5.6.0')
-	testRuntime('org.junit.jupiter:junit-jupiter-engine:5.6.0')
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 	localDeps group:'org.tukaani', name:'xz', version:'1.8'
-	compile (
+	implementation (
 	  configurations.localDeps
 	)
 }
@@ -58,7 +57,7 @@ test {
 	useJUnitPlatform()
 
 	testLogging {
-		events "failed"
+		events "passed", "skipped", "failed"
 		exceptionFormat "full"
 	}
 }
@@ -70,3 +69,5 @@ task copyLibs(type: Copy) {
 
 buildExtension.dependsOn(copyLibs)
 buildExtension.dependsOn(test)
+compileTestJava.dependsOn(copyLibs)
+compileJava.dependsOn(copyLibs)
