@@ -13,12 +13,11 @@ import org.junit.jupiter.api.Test;
 import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
-import ghidra.test.AbstractGhidraHeadedIntegrationTest;
 import nsis.file.NsisConstants;
 import nsis.file.NsisExecutable;
 import nsis.format.InvalidFormatException;
 
-public class NsisExecutableTest extends AbstractGhidraHeadedIntegrationTest {
+public class NsisExecutableTest {
 
   private static final String pathWithoutCompression = "testData/nsis_without_compression.dat";
   private static final String pathWithBzip = "testData/nsis_with_bzip.dat";
