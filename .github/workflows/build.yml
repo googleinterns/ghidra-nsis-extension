@@ -1,9 +1,9 @@
 name: Ghidra NSIS Extension Build
 
 env:
-  ghidra-url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.1.2_build/ghidra_10.1.2_PUBLIC_20220125.zip
-  ghidra-zip-filename: ghidra_10.1.2_PUBLIC.zip
-  ghidra-directory: ghidra_10.1.2_PUBLIC
+  ghidra-url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.0_build/ghidra_11.0_PUBLIC_20231222.zip
+  ghidra-zip-filename: ghidra_11.0_PUBLIC_20231222.zip
+  ghidra-directory: ghidra_11.0_PUBLIC
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
         args: unzip -qq ${{ steps.download-ghidra.outputs.file-path }} -d .
     - uses: actions/setup-java@v1
       with:
-        java-version: '11.0.2'
+        java-version: '18.0.2'
 
     - name: Build extension
       uses: eskatos/gradle-command-action@v1

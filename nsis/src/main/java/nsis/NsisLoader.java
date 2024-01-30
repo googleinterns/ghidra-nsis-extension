@@ -18,13 +18,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import generic.continues.GenericFactory;
-import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import ghidra.app.util.importer.MessageLog;
-import ghidra.app.util.importer.MessageLogContinuesFactory;
 import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
 import ghidra.app.util.opinion.LoadSpec;
 import ghidra.framework.store.LockException;
@@ -69,8 +66,7 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
     List<LoadSpec> loadSpecs = new ArrayList<>();
     try {
-      NsisExecutable ne =
-          NsisExecutable.createNsisExecutable(RethrowContinuesFactory.INSTANCE, provider);
+      NsisExecutable ne = NsisExecutable.createNsisExecutable(provider);
       LoadSpec my_spec = new LoadSpec(this, ne.getHeaderOffset(),
           new LanguageCompilerSpecPair("Nsis:LE:32:default", "default"), true);
       loadSpecs.add(my_spec);
@@ -85,9 +81,8 @@ public class NsisLoader extends AbstractLibrarySupportLoader {
   protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
       Program program, TaskMonitor monitor, MessageLog log) throws CancelledException, IOException {
     try {
-      GenericFactory factory = MessageLogContinuesFactory.create(log);
       NsisExecutable ne =
-          NsisExecutable.createInitializeNsisExecutable(factory, provider, SectionLayout.FILE);
+          NsisExecutable.createInitializeNsisExecutable(provider, SectionLayout.FILE);
       long scriptHeaderOffset = ne.getHeaderOffset();
 
       Address firstHeaderAddress =
