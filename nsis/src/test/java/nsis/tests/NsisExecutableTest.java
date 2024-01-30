@@ -10,7 +10,6 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import generic.continues.RethrowContinuesFactory;
 import ghidra.app.util.bin.ByteArrayProvider;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import nsis.file.NsisConstants;
@@ -34,7 +33,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithoutCompression).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x00008e00, ne.getHeaderOffset());
@@ -98,7 +97,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithLzma).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x00008800, ne.getHeaderOffset());
@@ -162,7 +161,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithLzmaSolid).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x8e00, ne.getHeaderOffset());
@@ -226,7 +225,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithZlib).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x00008e00, ne.getHeaderOffset());
@@ -290,7 +289,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithZlibSolid).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x9000, ne.getHeaderOffset());
@@ -354,7 +353,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithBzip).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x00008a00, ne.getHeaderOffset());
@@ -418,7 +417,7 @@ public class NsisExecutableTest {
         new File(classLoader.getResource(pathWithBzipSolid).getFile()))) {
       ByteArrayProvider bp = deobfuscate(binaryInputStream);
       NsisExecutable ne = NsisExecutable
-          .createInitializeNsisExecutable(RethrowContinuesFactory.INSTANCE, bp, SectionLayout.FILE);
+          .createInitializeNsisExecutable(bp, SectionLayout.FILE);
 
       // First header
       assertEquals(0x8e00, ne.getHeaderOffset());

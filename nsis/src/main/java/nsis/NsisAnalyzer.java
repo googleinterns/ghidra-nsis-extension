@@ -28,7 +28,6 @@ import ghidra.program.model.address.AddressOutOfBoundsException;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.data.DataType;
-import ghidra.program.model.data.DataTypeConflictException;
 import ghidra.program.model.data.TerminatedStringDataType;
 import ghidra.program.model.data.TerminatedUnicodeDataType;
 import ghidra.program.model.listing.Data;
@@ -348,9 +347,6 @@ public class NsisAnalyzer extends AbstractAnalyzer {
               }
               this.getListing().createData(stringAddr, dataType);
             } catch (CodeUnitInsertionException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            } catch (DataTypeConflictException e) {
               // TODO Auto-generated catch block
               e.printStackTrace();
             }

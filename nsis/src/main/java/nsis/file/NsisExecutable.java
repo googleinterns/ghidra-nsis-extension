@@ -6,13 +6,11 @@ import java.util.Arrays;
 
 import com.google.common.primitives.Bytes;
 
-import generic.continues.GenericFactory;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.ByteProviderWrapper;
 import ghidra.app.util.bin.InputStreamByteProvider;
 import ghidra.app.util.bin.StructConverter;
-import ghidra.app.util.bin.format.FactoryBundledWithBinaryReader;
 import ghidra.app.util.bin.format.pe.PortableExecutable.SectionLayout;
 import nsis.compression.NsisBzipProvider;
 import nsis.compression.NsisDecompressionProvider;
@@ -76,12 +74,12 @@ public class NsisExecutable {
    * @throws IOException
    * @throws InvalidFormatException
    */
-  public static NsisExecutable createInitializeNsisExecutable(GenericFactory factory,
-      ByteProvider bp, SectionLayout layout) throws IOException, InvalidFormatException {
-    NsisExecutable nsisExecutable = NsisExecutable.createNsisExecutable(factory, bp);
-    nsisExecutable.initNsisExecutable(factory);
-    return nsisExecutable;
-  }
+	public static NsisExecutable createInitializeNsisExecutable(ByteProvider bp, SectionLayout layout)
+			throws IOException, InvalidFormatException {
+		NsisExecutable nsisExecutable = NsisExecutable.createNsisExecutable(bp);
+		nsisExecutable.initNsisExecutable();
+		return nsisExecutable;
+	}
 
   /**
    * Creates a Nsis Executable object, sets the reader and the offset parameter. To create and
@@ -92,16 +90,16 @@ public class NsisExecutable {
    * @throws IOException
    * @throws InvalidFormatException
    */
-  public static NsisExecutable createNsisExecutable(GenericFactory factory, ByteProvider bp)
+  public static NsisExecutable createNsisExecutable(ByteProvider bp)
       throws IOException, InvalidFormatException {
-    NsisExecutable nsisExecutable = (NsisExecutable) factory.create(NsisExecutable.class);
+    NsisExecutable nsisExecutable = new NsisExecutable();
     nsisExecutable.reader =
-        new FactoryBundledWithBinaryReader(factory, bp, NsisConstants.IS_LITTLE_ENDIAN);
+        new BinaryReader(bp, NsisConstants.IS_LITTLE_ENDIAN);
     nsisExecutable.headerOffset = nsisExecutable.findHeaderOffset();
     return nsisExecutable;
   }
 
-  private void initNsisExecutable(GenericFactory factory)
+  private void initNsisExecutable()
       throws IOException, InvalidFormatException {
     initFirstHeader();
     this.crcSignatureOffset =
@@ -113,8 +111,7 @@ public class NsisExecutable {
       }
       ByteProvider blockDataByteProvider =
           new InputStreamByteProvider(decompressesdStream, this.firstHeader.inflatedHeaderSize);
-      BinaryReader blockReader = new FactoryBundledWithBinaryReader(factory, blockDataByteProvider,
-          NsisConstants.IS_LITTLE_ENDIAN);
+      BinaryReader blockReader = new BinaryReader(blockDataByteProvider, NsisConstants.IS_LITTLE_ENDIAN);
       this.commonHeader = new NsisCommonHeader(blockReader);
       blockReader.setPointerIndex(this.getSectionOffset(NsisConstants.BlockHeaderType.PAGES));
       this.pages = getPages(blockReader);
