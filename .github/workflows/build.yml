@@ -1,10 +1,5 @@
 name: Ghidra NSIS Extension Build
 
-env:
-  ghidra-url: https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_11.0_build/ghidra_11.0_PUBLIC_20231222.zip
-  ghidra-zip-filename: ghidra_11.0_PUBLIC_20231222.zip
-  ghidra-directory: ghidra_11.0_PUBLIC
-
 on:
   push:
     branches: [ master ]
@@ -17,35 +12,43 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        ghidra:
+          - "11.1.2"
+          - "11.1.1"
+          - "11.1"
+          - "11.0.3"
+          - "11.0.2"
+          - "11.0.1"
+          - "11.0"
+
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone Repository
+      uses: actions/checkout@v4
 
-    - name: Download Ghidra release
-      uses: carlosperate/download-file-action@v1.0.3
-      id: download-ghidra
+    - name: Install Java
+      uses: actions/setup-java@v4
       with:
-        file-url: ${{ env.ghidra-url }}
-        file-name: ${{ env.ghidra-zip-filename }}
+        distribution: 'temurin'
+        java-version: '21'
 
-    - name: Unzip Ghidra
-      uses: TonyBogdanov/zip@1.0
-      with:
-        args: unzip -qq ${{ steps.download-ghidra.outputs.file-path }} -d .
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '18.0.2'
+    - name: Install Gradle
+      uses: gradle/actions/setup-gradle@v3
 
-    - name: Build extension
-      uses: eskatos/gradle-command-action@v1
+    - name: Install Ghidra ${{ matrix.ghidra }}
+      uses: antoniovazquezblanco/setup-ghidra@v2.0.4
       with:
-        gradle-version: '7.3'
-        build-root-directory: ${{ github.workspace }}/nsis
-        arguments: '-PGHIDRA_INSTALL_DIR=${{ github.workspace }}/${{ env.ghidra-directory }}'
+        auth_token: ${{ secrets.GITHUB_TOKEN }}
+        version: ${{ matrix.ghidra }}
+
+    - name: Build
+      run: cd nsis; gradle buildExtension
 
     - name: Upload built extension
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: extension
+        name: NSIS_Ghidra_${{ matrix.ghidra }}
         path: nsis/dist/*.zip
 
   release:
